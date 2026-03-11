@@ -2,6 +2,7 @@
 *.d
 
 build/
+*.pem
 
 # Object files
 *.o
