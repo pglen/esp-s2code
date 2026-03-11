@@ -1,0 +1,7 @@
+    Pin 	Signal       New
+    -----------------------------
+    CS 	    IO15         gpio 42
+    RST 	IO32         gpio 41
+    MISO 	IO13         gpio 36
+    MOSI 	IO12         gpio 37
+    SCK 	IO14         gpio 40
