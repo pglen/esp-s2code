@@ -1,0 +1,72 @@
+<script async>
+
+    //console.log("Start LORA");
+
+    const isNumeric2 = (str) => Number.isFinite(+str);
+
+    function check_lims(data, validx, lower, upper) {
+
+        valx = data.get(validx)
+
+        if (!isNumeric2(valx))
+            {
+            alert("Field: " + validx + " must be a number.")
+            return;
+            }
+
+        //console.log("value: %s", valx);
+        if (valx < lower || valx > upper)
+            {
+            alert("Number out of range for:  " + validx + " value = " + valx)
+            return;
+            }
+        }
+    async function save_wifi() {
+        //console.log("Save WIFI");
+        const formData = new FormData(myform);
+        console.log("formData", formData);
+        if(formData.get("appass") != formData.get("appass2"))
+            {
+            alert("Wifi passes must match.")
+            return;
+            }
+        const plainFormData = Object.fromEntries(formData.entries());
+        const jsonString = JSON.stringify(plainFormData);
+        //console.log("Submitting: '%s'", jsonString);
+        document.getElementById("myform").submit();
+    }
+</script>
+
+<table width=100%>
+
+    <tr><td colspan=2 align=center height=12>
+    The following fields determine the Station Name and Password of this IOCOMX.
+    The device will appear on your WiFI network by this name. For safety and security,
+    the IOCOMX must be configured with a password. The password needs to be at
+    least <font color=#0000bb> 8 characters</font>
+    or longer. Please avoid using space, punctuation marks and non ASCII characters.<br>
+    You may use the _ (underscore) - (minus) sign + (plus) sign.
+    <tr><td colspan=2 align=center>
+        <table align=center border=0 width=100%  frame=void>
+            <tr><td colspan=3 width=100%>
+                    <tr bgcolor=#eeeeee><td align=center>
+                    <div style="font-size:large" align=center>
+                    <b>New Web Login Credentials:</b><br>
+                    </div>
+        </table>
+
+        <tr><td>
+        <tr> <td align=right>
+    Station name:  &nbsp<td width=50%><input id=apname name=apname type=text value=sssssssssssssssssssssssssssssss>
+        <tr><td align=right>
+    Station password:  &nbsp<td><input name=appass type=password  value=sssssssssssssssssssssssssssssss>
+        <tr><td align=right>
+    Repeat password:  &nbsp<td><input name=appass2 type=password value=sssssssssssssssssssssssssssssss>
+
+    <tr><td>
+
+    <tr> <td colspan=3 align=center>
+    <input type=button onclick=save_wifi() name=netbutt value='Save Configuration'>
+    <tr> <td colspan=3 align=center>
+
+</table>

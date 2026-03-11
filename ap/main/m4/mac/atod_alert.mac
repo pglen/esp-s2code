@@ -1,0 +1,35 @@
+include(mac/general.mac)
+include(mac/cntlines.mac)
+<tr> <td height=8>
+    <table align=center border=0 width=100% frame=void>
+    <tr><td colspan=3 width=100%>
+        <tr bgcolor=#aaffaa><td align=center>
+            <div style="font-size:large" align=center>
+                <b> Analog Sensor Alert:&nbsp </b>
+            </div>
+    </table>
+    <tr><td colspan=3 align=center>
+        &nbsp; The analog sensors may trigger an alert, and the analog threshold
+        may be set here. The alert normally triggers when the analog value
+        exceeds the threshold. The reverse alert triggers when the analog value falls
+        below a certain value. This may be used for sensors that provide reversed
+        interpretations of values. (ex. Distance measurement vs. Proximity sensor)
+
+    <table align=center border=0 width=100% frame=void>
+        <tr> <td height=8>
+        <tr bgcolor=#bbbbbb>
+            <th>Input
+            <th> Input Name
+            <th> Alert Value Volts
+            <th> Enable<br>Alert
+            <th> Reverse<br>Alert
+        <tr><td>
+
+        ANAXLINE(1, `#eeeeee', xxxxxxxxxx,   checked, checked)
+        ANAXLINE(2, `#dddddd', xxxxxxxxxx,   checked, checked)
+        ANAXLINE(3, `#eeeeee', xxxxxxxxxx,   checked, checked)
+        ANAXLINE(4, `#dddddd', xxxxxxxxxx,   checked, checked)
+
+    </table>
+
+

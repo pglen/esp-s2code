@@ -1,0 +1,41 @@
+include(mac/general.mac)
+include(mac/cntlines.mac)
+<tr> <td height=8>
+    &nbsp; The items on this page are considered to be part of the advanced level
+    configuration. It is safe to leave these values untouched. They are only
+    needed if the device receives non-steady inputs, or additional - increased -
+    accuracy is required.
+
+    <table align=center border=0 width=100% frame=void>
+    <tr><td colspan=3 width=100%>
+        <tr bgcolor=#aaffaa><td align=center>
+            <div style="font-size:large" align=center>
+                <b> Analog Sensor Config:&nbsp </b>
+            </div>
+    </table>
+    <tr><td colspan=3 align=center>
+        &nbsp; The analog sensors may trigger an alert, and the trigger event may be
+        influenced with the following parameters: 1.) Hysteresis; 2.) Filtering; <br>
+        &nbsp; The hysteresis value determines the Voltage gap between switch on and switch off points.
+        Useful values are between 0 ... 1.0V; with 0V => no hysteresis, 1.0V => max hysteresis.<br>
+        &nbsp; The Filter Coefficient is the low pass filter's first order divisor. Useful range
+        is 1 ... 6 where 1 is no filter, 6 is filter to slow the input response. The filter
+        factor of 6 yields about 3 sec settle time. Intermediate integer values representing
+        linear proportion between the two end values.
+
+    <table align=center border=0 width=100% frame=void>
+        <tr> <td height=8>
+        <tr bgcolor=#bbbbbb>
+            <th> Input
+            <th> Input Name
+            <th> Hysteresis (V)
+            <th> Filter <br>Coefficient (N)
+        <tr><td>
+
+        ANACLINE(1, `#eeeeee', xxxxxxxxxx,  yyyyyyyyyy)
+        ANACLINE(2, `#dddddd', xxxxxxxxxx,  yyyyyyyyyy)
+        ANACLINE(3, `#eeeeee', xxxxxxxxxx,  yyyyyyyyyy)
+        ANACLINE(4, `#dddddd', xxxxxxxxxx,  yyyyyyyyyy)
+
+    </table>
+

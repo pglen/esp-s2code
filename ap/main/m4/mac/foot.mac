@@ -1,0 +1,23 @@
+    <tr>
+    <td colspan=2 align=center>
+    <hr>
+    <!--<tr><td colspan=2 align=center>
+        <div style="font-size:large" align=center>
+            <a href=page_1.html?home=true>Back to Home Page</a>
+        </div>
+    -->
+    <tr><td colspan=2 align=center>
+        <div style="font-size:small">
+            ID (Main) (Mac Address): macmacmacmacmacmacmac<br>
+            Current Boot Count:  bcountbcount<br>
+            Software Version / Build Date: softversoftversoftversoftversoftversoftver<br>
+        </div>
+    <tr><td colspan=2 align=center>
+        Peter Glen, (C) 2026 <br>
+    <tr><td colspan=2 align=center>
+</table>
+
+</form>
+</body>
+</html>
+dnl

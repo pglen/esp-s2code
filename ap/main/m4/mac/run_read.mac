@@ -1,0 +1,47 @@
+include(mac/general.mac)
+include(mac/cntlines.mac)
+
+<tr><td>
+    <table align=center border=0 width=100%>
+    <tr bgcolor=#aaffaa><td align=center colspan=2>
+        <div style="font-size:large" align=center>
+            <b>RunTime Readings:&nbsp  </b>
+        </div>
+    <tr><td>
+        <tr><td>
+        <tr><td colspan=6>
+            &nbsp; The current time intervals reading as seen by the device at the last page load.
+            This time interval counter starts at the switch activation (ON), and ends
+            at the switch deactivation (OFF). The running total for this input is kept
+            in the Maintainance Time field. The grand total for this input is kept in the Total Time field.
+            The time value is maintained by hours with four digits accuracy. For example the value of
+            0.0001 represents 0.36 seconds. The internal time value is maintained accurate to
+            the millisecond.
+            If you would like to monitor the time values in real time please see the
+             <a href=page_2.html?home=true>Quick status</a> page.
+    </table>
+
+    <table align=center border=0 width=100%>
+    <tr> <td>
+    <tr  bgcolor=#bbbbbb>
+        <th  align=center style="padding:4"> Input
+        <th  align=center style="padding:4"> Name
+        <th  align=center style="padding:4"> Maintainance Time<br> (hours)
+        <th  align=center style="padding:4"> Total Time<br> (hours)
+        <th  align=center style="padding:4"> Alert at<br> (hours)
+        <th  align=center style="padding:4"> Alert<br> Enabled
+
+        TLINE(1, `#eeeeee', 77777777.7777, 99999999.9999, 88888888.8888, YES)
+        TLINE(2, `#dddddd', 77777777.7777, 99999999.9999, 88888888.8888, YES)
+        TLINE(3, `#eeeeee', 77777777.7777, 99999999.9999, 88888888.8888, YES)
+        TLINE(4, `#dddddd', 77777777.7777, 99999999.9999, 88888888.8888, YES)
+        TLINE(5, `#eeeeee', 77777777.7777, 99999999.9999, 88888888.8888, YES)
+        TLINE(6, `#dddddd', 77777777.7777, 99999999.9999, 88888888.8888, YES)
+        TLINE(7, `#eeeeee', 77777777.7777, 99999999.9999, 88888888.8888, YES)
+        TLINE(8, `#dddddd', 77777777.7777, 99999999.9999, 88888888.8888, YES)
+
+    </table>
+
+    <tr><td> <center><a href=page_1.html>Refresh page for updated values</a></center>
+
+dnl

@@ -1,0 +1,595 @@
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+<title>LORA WiFi Network Settings</title>
+<meta charset="UTF-8">
+<link rel='icon' href='data:;base64,iVBORw0KGgo='>
+</head>
+<body>
+<form method=post id=myform>
+<table align=center border=0 width=800 frame=void>
+
+<script async>
+
+// Use this to set witout raising error
+function assign_text(ctrl, valx)
+{
+    ddd = document.getElementById(ctrl)
+    if(ddd)
+        {
+        ddd.innerHTML = valx
+        }
+    else
+        {
+        //console.log("assign_text -- NO such control", ctrl);
+        }
+
+    // See if there is a progress bar
+
+
+}
+
+function assign_color(ctrl, valx)
+{
+    ddd = document.getElementById(ctrl)
+    if(ddd)
+        {
+        ddd.style.backgroundColor = valx;
+        }
+    else
+        {
+        //console.log("assign_color -- NO such control", ctrl);
+        }
+}
+
+function walk_templine(xstr, num)
+
+{
+    //console.log("walk_templine %d '%s' ", num, xstr);
+    var prog = 0;
+    var idx = xstr.indexOf(" ");
+    if(idx >= 0)
+        {
+        var  sss = Number(xstr.slice(prog, idx))
+        //console.log("sss '%s' ", sss);
+        var  ccc = xstr.slice(idx+1, xstr.length)
+        //console.log("ccc '%s' ", ccc);
+        var  idx2 = ccc.indexOf(" ")
+        if(idx2 >= 0)
+            {
+            var  ddd = Number(ccc.slice(0, idx2))
+            //console.log("ddd '%s' ", ddd);
+            if(ddd == -100)
+                assign_text('tab_' + (num + 1), "SENSOR?" )
+            else
+                assign_text('tab_' + (num + 1), ddd.toFixed(2) + " &#8451")
+            }
+        }
+}
+
+function walk_a2dline(xstr, num)
+
+{
+    //console.log("walk_a2dline %d '%s' ", num, xstr);
+    var prog = 0;
+    var idx = xstr.indexOf(" ");
+    if(idx >= 0)
+        {
+        var  sss = xstr.slice(prog, idx)
+        //console.log("sss '%s' ", sss);
+        //assign_text( (num + 1) + 'h', sss )             // Set current data text
+
+        var  ccc = xstr.slice(idx+1, xstr.length)
+        //console.log("ccc '%s' ", ccc);
+        var  idx2 = ccc.indexOf(" ")
+        if(idx2 >= 0)
+            {
+            var  dddd = Number(ccc.slice(0, idx2) )
+            //console.log("dddd '%s' ", dddd);
+            if((dddd < 0.) || (dddd > 15.))
+                {
+                assign_text((num + 1) + 'h', "OOR");
+                assign_text((num + 1) + 'i', "OOR");
+                //assign_text((num + 1) + 'j', "OOR");
+                }
+            else
+                {
+                //assign_text((num + 1) + 'h', (dddd / 4096 * 5).toFixed(2) +    " V")
+                //assign_text((num + 1) + 'i', (dddd / 4096 * 10).toFixed(2) +   " V")
+                assign_text((num + 1) + 'i', dddd.toFixed(2) +   " V")
+                assign_text((num + 1) + 'j', (dddd / 10 * 100).toFixed(2) + " %")
+                }
+            }
+        }
+}
+
+function walk_swline(xstr, num)
+
+{
+    //console.log("walk_swline %d '%s' ", num, xstr);
+
+    var prog = 0;
+    var idx = xstr.indexOf(" ");
+    if(idx >= 0)
+        {
+        var  sss = xstr.slice(prog, idx)
+        //console.log("sss %d '%s' ", num, sss);
+        assign_text( (num + 1) + 'c', sss )             // Set current data text
+
+        var  ccc = xstr.slice(idx+1, xstr.length)
+        //console.log("ccc %d '%s' ", num, ccc);
+        var  idx2 = ccc.indexOf(" ")
+        if(idx2 >= 0)
+            {
+            var  dddd = ccc.slice(0, idx2)
+            //console.log("dddd %n '%s' ", num, dddd);
+            assign_text((num + 1) + 'd', dddd )
+            }
+        }
+}
+
+function walk_relline(xstr, num)
+
+{
+    //console.log("walk_relline %d '%s' ", num, xstr);
+
+    var prog = 0;
+    var idx = xstr.indexOf(" ");
+    if(idx >= 0)
+        {
+        var  sss = xstr.slice(prog, idx)
+        //console.log("sss '%s' ", sss);
+        //assign_text("rel_" +  (num + 1), sss )             // Set current data text
+
+        var  ccc = xstr.slice(idx+1, xstr.length)
+        //console.log("ccc '%s' ", ccc);
+        var  idx2 = ccc.indexOf(" ")
+        if(idx2 >= 0)
+            {
+            var  dddd = Number(ccc.slice(0, idx2))
+            var nnn = "rel_" + (num + 1)
+            //console.log(" nnn " + nnn + " dddd " + dddd );
+            if (dddd == 0)
+                {
+                assign_text(nnn, "OFF" )
+                assign_color(nnn, "#bbbbbb")
+                }
+            else
+                {
+                assign_text(nnn, "ON " )
+                assign_color(nnn, "#ffaa00")
+                }
+            }
+        }
+}
+
+function walk_nums(xstr)
+{
+
+    //console.log("walk_nums '%s' ", xstr);
+
+    var prog = 0;
+    var num = 0;
+    while(1)
+        {
+        var idx = xstr.indexOf("\\n", prog);
+        if(idx < 0)
+            break;
+        if(num < 8)
+            {
+            walk_swline(xstr.slice(prog, idx), num)
+            }
+        else if(num < 12)
+            {
+            walk_a2dline(xstr.slice(prog, idx), num-8)
+            }
+        else if(num < 14)
+            {
+            walk_templine(xstr.slice(prog, idx), num-12)
+            }
+        else
+            {
+            walk_relline(xstr.slice(prog, idx), num-14)
+            }
+
+        prog = idx+1
+        num = num + 1
+        }
+}
+
+//window.addEventListener('load', function()
+//{
+//    //startTime();
+//
+//    var xhr = null;
+//    var xhr2 = null;
+//
+//    getXmlHttpRequestObject = function()
+//    {
+//        if(!xhr)
+//        {
+//            // Create a new XMLHttpRequest object
+//            xhr = new XMLHttpRequest();
+//        }
+//        return xhr;
+//    };
+//    //getXmlHttpRequestObject2 = function()
+//    //{
+//    //    if(!xhr2)
+//    //    {
+//    //        // Create a new XMLHttpRequest object
+//    //        xhr2 = new XMLHttpRequest();
+//    //    }
+//    //    return xhr2;
+//    //};
+//
+//    updateLiveData = function()
+//    {
+//        var url = 'swtable.txt?'
+//        // + now.getTime();
+//        xhr = getXmlHttpRequestObject();
+//        xhr.onreadystatechange = evenHandler;
+//        // asynchronous requests
+//        xhr.open("GET", url, true);
+//        // Send the request over the network
+//        xhr.send(null);
+//    };
+//    //updateLiveData2 = function()
+//    //{
+//    //    var url2 = 'swtable2.txt?'
+//    //    // + now.getTime();
+//    //    xhr2 = getXmlHttpRequestObject2();
+//    //    xhr2.onreadystatechange = evenHandler2;
+//    //    // asynchronous requests
+//    //    xhr2.open("GET", url2, true);
+//    //    // Send the request over the network
+//    //    xhr2.send(null);
+//    //};
+//    updateLiveData();
+//    //updateLiveData2();
+//
+//    function evenHandler()
+//    {
+//        //console.log("Answer %d %d '%s' ",
+//        //        xhr.readyState, xhr.status, xhr.responseText);
+//
+//        // Check response is ready or not
+//        if(xhr.readyState == 4 && xhr.status == 200)
+//            {
+//            // Walk all the numbers
+//            walk_nums(xhr.responseText)
+//            // Update the live data every xx msec
+//            setTimeout(updateLiveData, 200);
+//            }
+//    }
+//    function evenHandler2()
+//    {
+//        // Check response is ready or not
+//        if(xhr2.readyState == 4 && xhr2.status == 200)
+//        {
+//            //dataDiv = document.getElementById('liveTable');
+//            // Set current data text
+//            //dataDiv.innerHTML = xhr2.responseText;
+//            // Update the live data every 1 sec
+//            //setTimeout(updateLiveData2(), 600);
+//        }
+//    }
+//});
+
+function padTime(i) {
+  if (i < 10) {i = "0" + i};
+  return i;
+}
+
+var     cnt = 0;
+
+function updTime() {
+    var today = new(Date);    var today3 = new(Date);
+    today3.setTime(today.getTime() +
+                    today_remote.getTime() - today_org.getTime());
+    var hh = today3.getHours();
+    var mm = today3.getMinutes();
+    var ss = today3.getSeconds();
+    var amstr = "";
+    if(ampm) {
+        if (hh >= 12) { amstr = "PM"; }
+        else   { amstr = "AM"; }
+        if(hh > 12) { hh -= 12; }
+        }
+    hh = padTime(hh);  mm = padTime(mm);  ss = padTime(ss);
+    //document.getElementById('ddd').innerHTML = amstr;
+    ttt = hh + ":" + mm + ":" + ss + " ";
+
+    cnt += 103
+
+    //document.getElementById('1c').innerHTML = cnt +1
+    //document.getElementById('1d').innerHTML = cnt +2
+    document.getElementById('2c').innerHTML = cnt +3
+    document.getElementById('2d').innerHTML = cnt +4
+    document.getElementById('3c').innerHTML = cnt +5
+    document.getElementById('3d').innerHTML = cnt +6
+    document.getElementById('4c').innerHTML = cnt +7
+    document.getElementById('4d').innerHTML = cnt +8
+    document.getElementById('5c').innerHTML = cnt +1
+    document.getElementById('5d').innerHTML = cnt +2
+    document.getElementById('6c').innerHTML = cnt +3
+    document.getElementById('6d').innerHTML = cnt +4
+    document.getElementById('7c').innerHTML = cnt +5
+    document.getElementById('7d').innerHTML = cnt +6
+    document.getElementById('8c').innerHTML = cnt +7
+    document.getElementById('8d').innerHTML = cnt +8
+
+    var t = setTimeout(updTime, 500);
+}
+
+function startTime() {
+
+  //today_org  = new Date();  today_remote = new Date();
+ // var doc = document.getElementById('ccc');  var sstr = doc.innerHTML
+//  var ddoc = document.getElementById('ddd'); var dstr = ddoc.innerHTML
+//
+//  /* console.log("got_time_0 '%s' ", sstr);*/
+//  /*console.log("got_ampm_0 '%s' ", dstr);*/
+//  var  hhh = sstr.slice(1, 3);  var  mmm =  sstr.slice(4, 6);
+//  var  sss = sstr.slice(7, 9)
+//  var hhhh = Number(hhh); var ssss = Number(sss);
+//  var mmmm = Number(mmm);
+//  if(dstr.indexOf("AM") >= 0) {
+//    ampm = true;
+//    }
+//  else if(dstr.indexOf("PM") >= 0)  {
+//    ampm = true;
+//    hhhh += 12;
+//    }
+//  else {
+//    /*console.log("got_none");*/
+//    }
+//
+//  today_remote.setHours(hhhh);
+//  today_remote.setMinutes(mmmm);
+//  today_remote.setSeconds(ssss);
+//  /*console.log("hhh='%s' mmm='%s' sss='%s' ampm='%s'", hhh, mmm, sss, ampm);*/
+//  /*console.log("remote: %d org: %d",  today_remote, today_org);*/
+    //var t = setTimeout(updTime, 500);
+}
+
+</script>
+
+
+<style>
+.container {
+	text-align: left;
+	border: 1px solid green;
+	padding: 5px;
+    }
+.container table {
+	border: 1px solid red;
+    margin: 0 auto;
+    }
+.chris {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      45px;
+    font-style:     bold;
+    }
+.chris2  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      45px;
+    font-style:     bold;
+    display:        inline-block;
+    }
+.chris2a  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      25px;
+    font-style:     bold;
+    display:        inline-block;
+    }
+.chris2b  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      25px;
+    font-style:     bold;
+    }
+.chris2c  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      25px;
+    font-style:     bold;
+    }
+.chris3  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      16px;
+    }
+.myDiv {
+  font-size: 100px;
+  text-align: center;
+}
+
+html, address, blockquote, body, dd, div, dl, dt, fieldset,
+form, h1, h2, h3, h4, h5, h6, noframes, ol, p, ul, center,
+dir, hr, menu, pre {
+    font-family:    Arial, Helvetica, sans-serif;
+    }
+
+.mydiv {
+    /*background:yellow;
+    color:blue;
+    border-style:solid;
+    border-width:1px;
+    display:inline-block;
+    */
+    vertical-align:top;
+    horizontal-align:right;
+}
+textarea {
+    border-color:#eeeeee;
+    width:90%;
+}
+
+.mytext {
+    /*background:yellow;
+    color:blue;*/
+    width:100%;
+    border-style:solid;
+    border-width:1px;
+    border-color:#eeeeee;
+    display:inline-block;
+}
+</style>
+
+<tr><td>
+    <table width=100% border=0>
+    <tr bgcolor=#eeeeee><td align=center>
+    <a href=page_1.html?home=true style="text-decoration: none; color: black;">
+        <div class="chris" align=center>
+            LORA WiFi Transceiver
+        </div>
+    </a>
+    </table>
+
+
+    <tr><td>
+    <table align=center>
+        <tr><td>
+        <div style="font-size:large" align=center>
+            <font color=#0000ff>
+            StatusStatusStatusStatusStatusStatusStatusStatus
+            </font>
+        </div>
+    </table>
+    <tr><td>
+    <table align=center>
+        <tr><td>
+        <div style="font-size:large" align=center>
+            <font color=#ff0000>
+            RebootRebootRebootRebootRebootRebootRebootRebootReboot
+            </font>
+        </div>
+    </table>
+
+<script async>
+
+    //console.log("Start LORA");
+
+    const isNumeric2 = (str) => Number.isFinite(+str);
+
+    function check_lims(data, validx, lower, upper) {
+
+        valx = data.get(validx)
+
+        if (!isNumeric2(valx))
+            {
+            alert("Field: " + validx + " must be a number.")
+            return;
+            }
+
+        //console.log("value: %s", valx);
+        if (valx < lower || valx > upper)
+            {
+            alert("Number out of range for:  " + validx + " value = " + valx)
+            return;
+            }
+        }
+    async function save_wifi() {
+        //console.log("Save WIFI");
+        const formData = new FormData(myform);
+        console.log("formData", formData);
+        if(formData.get("appass") != formData.get("appass2"))
+            {
+            alert("Wifi passes must match.")
+            return;
+            }
+        const plainFormData = Object.fromEntries(formData.entries());
+        const jsonString = JSON.stringify(plainFormData);
+        //console.log("Submitting: '%s'", jsonString);
+        document.getElementById("myform").submit();
+    }
+</script>
+
+<table width=100%>
+
+    <tr><td colspan=2 align=center height=12>
+    The following fields determine the Station Name and Password of this LORA WiFi.
+    The device will appear on your WiFI network by this name. For safety and security,
+    the LORA WiFi must be configured with a password. The password needs to be at
+    least <font color=#0000bb> 8 characters</font>
+    or longer. Please avoid using space, punctuation marks and non ASCII characters.<br>
+    You may use the _ (underscore) - (minus) sign + (plus) sign.
+    <tr><td colspan=2 align=center>
+        <table align=center border=0 width=100%  frame=void>
+            <tr><td colspan=3 width=100%>
+                    <tr bgcolor=#eeeeee><td align=center>
+                    <div style="font-size:large" align=center>
+                    <b>New Web Login Credentials:</b><br>
+                    </div>
+        </table>
+
+        <tr><td>
+        <tr> <td align=right>
+    Station name:  &nbsp<td width=50%><input id=apname name=apname type=text value=sssssssssssssssssssssssssssssss>
+        <tr><td align=right>
+    Station password:  &nbsp<td><input name=appass type=password  value=sssssssssssssssssssssssssssssss>
+        <tr><td align=right>
+    Repeat password:  &nbsp<td><input name=appass2 type=password value=sssssssssssssssssssssssssssssss>
+
+    <tr><td>
+
+    <tr> <td colspan=3 align=center>
+    <input type=button onclick=save_wifi() name=netbutt value='Save Configuration'>
+    <tr> <td colspan=3 align=center>
+
+</table>
+<tr><td>
+  <table width=100% border=0>
+        <tr>
+            <td align=center colspan=2 width=100%>
+            <hr>
+        <tr>
+            <td align=center>
+                <div style="font-size:large"   align=center>
+                   <a href=page_2.html>Settings</a>
+                </div>
+            <td align=center>
+                 <div style="font-size:large"   align=center>
+                    <a href=page_3.html> LORA Parameters</a>
+                </div>
+        <tr>
+            <td align=center>
+                <div style="font-size:large" >
+                    <a href=page_8.html> Quick Start Manual</a>
+                </div>
+
+            <td align=center>
+                <div style="font-size:large" >
+                   <a href=page_1.html?reboot=true>Reboot Device</a>
+                </div>
+        <tr>
+            <td align=center colspan=2>
+                <div style="font-size:large" >
+                   <a href=page_1.html>Back to Home Page</a>
+                </div>
+
+    </table>
+
+    <tr>
+    <td colspan=2 align=center>
+    <hr>
+    <!--<tr><td colspan=2 align=center>
+        <div style="font-size:large" align=center>
+            <a href=page_1.html?home=true>Back to Home Page</a>
+        </div>
+    -->
+    <tr><td colspan=2 align=center>
+        <div style="font-size:small">
+            ID (Main) (Mac Address): macmacmacmacmacmacmac<br>
+            Current Boot Count:  bcountbcount<br>
+            Software Version / Build Date: softversoftversoftversoftversoftversoftver<br>
+        </div>
+    <tr><td colspan=2 align=center>
+        Peter Glen, (C) 2026 <br>
+    <tr><td colspan=2 align=center>
+</table>
+
+</form>
+</body>
+</html>
+

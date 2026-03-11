@@ -1,0 +1,35 @@
+include(mac/general.mac)
+include(mac/cntlines.mac)
+<tr> <td height=8>
+
+    <table align=center border=0 width=100% frame=void>
+    <tr><td colspan=3 width=100%>
+        <tr bgcolor=#aaffaa><td align=center>
+            <div style="font-size:large" align=center>
+                <b> Analog Sensor Calibration:&nbsp </b>
+            </div>
+    </table>
+    <tr><td colspan=3 align=center>
+        &nbsp; The measured analog values are accurate to +-1%. The calibration values below
+        can improve this by filling in values that are acquired via empirical observation.
+        The configuration values are interpreted as % deviation in the +-5 % range. If larger
+        values entered, the calibration clips it to +-5%;
+
+    <table align=center border=0 width=100% frame=void>
+        <tr> <td height=8>
+        <tr bgcolor=#bbbbbb>
+            <th>Input
+            <th> Input Name
+            <th> Low <br>Threshold (+-%)
+            <th> Hight <br>Threshold (+-%)
+            <th> EndPoint<br>Multiplier (+-%)
+
+        <tr><td>
+
+        CALLINE(1, `#eeeeee', xxxxxxxxxx,  yyyyyyyyyy, zzzzzzzzzz)
+        CALLINE(2, `#dddddd', xxxxxxxxxx,  yyyyyyyyyy, zzzzzzzzzz)
+        CALLINE(3, `#eeeeee', xxxxxxxxxx,  yyyyyyyyyy, zzzzzzzzzz)
+        CALLINE(4, `#dddddd', xxxxxxxxxx,  yyyyyyyyyy, zzzzzzzzzz)
+
+    </table>
+

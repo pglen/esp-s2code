@@ -1,0 +1,42 @@
+include(mac/cntlines.mac)
+    <tr> <td height=8>
+    <table align=center border=0 width=100% frame=void>
+    <tr><td colspan=2 width=100%>
+        <tr bgcolor=#aaffaa><td align=center>
+            <div style="font-size:large" align=center>
+                <b>Counter Friendly Names:</b><br>
+            </div>
+    </table>
+
+    <tr> <td>
+    &nbsp; &nbsp; &nbsp; The counters can be named to reflect the device it is connected to.
+    The name can be 24 characters long. Please avoid foreign characters and punctuation marks.<br>
+    An example of a name could be "Crane 2 Motor 1"
+
+    <tr> <td height=8>
+
+    <table align=center border=0 width=100% frame=void>
+
+    <tr bgcolor=#bbbbbb>
+        <th align=center> Input Number
+        <th align=center> Name
+        <th align=center> Friendly Counter Input Name
+
+        CNTNLINE(1, `#eeeeee')
+        CNTNLINE(2, `#dddddd')
+        CNTNLINE(3, `#eeeeee')
+        CNTNLINE(4, `#dddddd')
+        CNTNLINE(5, `#eeeeee')
+        CNTNLINE(6, `#dddddd')
+        CNTNLINE(7, `#eeeeee')
+        CNTNLINE(8, `#dddddd')
+
+    </table>
+
+    <tr> <td colspan=3 align=center>
+    <hr>
+    <tr><td colspan=3 align=center>
+    <input type=submit name=config value='Save Counter Input Names'>
+    <tr> <td  align=center>
+    <tr> <td  align=center>
+    Note: All Submit Buttons save data for the whole page.

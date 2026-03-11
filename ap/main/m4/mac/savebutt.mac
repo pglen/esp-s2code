@@ -1,0 +1,3 @@
+    <tr> <td colspan=3 align=center>
+    <input type=submit name=config value='Save Configuration'>
+    <tr> <td colspan=3 align=center>

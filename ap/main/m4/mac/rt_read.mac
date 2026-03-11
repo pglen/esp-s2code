@@ -1,0 +1,79 @@
+include(mac/general.mac)
+include(mac/cntlines.mac)
+
+<tr><td>
+    <table align=center border=0 width=100% >
+        <tr bgcolor=#aaffaa><td align=center colspan=3>
+            <div style="font-size:large" align=center>
+                <b>Counter And Interval Readings:&nbsp  </b>
+            </div>
+        <tr> <td>
+        <tr><td>
+            &nbsp; The current activation counter readings
+            and activation time lengths seen by the device.
+            This is updated regularly in a cycle. Please make note
+            that viewing this REAL TIME the page automatic update
+            consumes extra data.
+    </table>
+
+    <table align=center border=0 width=100% cellpadding=2 id=tabx>
+        <tr>
+            <th  align=center style="padding:4"> Input
+            <th  align=center style="padding:4"> Name
+            <th  align=center style="padding:4"> Maint. Counts
+            <th  align=center style="padding:4"> Maint. Hours
+
+        SLINE(1, `#eeeeee', 3333333333, 444444444)
+        SLINE(2, `#dddddd', 3333333333, 444444444)
+        SLINE(3, `#eeeeee', 3333333333, 444444444)
+        SLINE(4, `#dddddd', 3333333333, 444444444)
+        SLINE(5, `#eeeeee', 3333333333, 444444444)
+        SLINE(6, `#dddddd', 3333333333, 444444444)
+        SLINE(7, `#eeeeee', 3333333333, 444444444)
+        SLINE(8, `#dddddd', 3333333333, 444444444)
+    </table>
+
+    <table align=center border=0 width=100% >
+        <tr bgcolor=#aaffaa><td align=center colspan=3>
+            <div style="font-size:large" align=center>
+                <b>Analog Input Readings:&nbsp  </b>
+            </div>
+        <tr> <td>
+        <tr><td>
+            &nbsp; The current analog input readings as seen by the device.
+            Out of range results are displayed as OOR;
+            These fields are updated regularly in a cycle.
+    </table>
+
+    <table align=center border=0 width=100% frame=void>
+        <tr> <td height=8>
+        <tr bgcolor=#bbbbbb>
+            <th> &nbsp
+            <th> &nbsp  Input Name
+            <th> &nbsp; Volts
+            <th> &nbsp; Percent (to 10V)
+
+        ALINE(1, `#eeeeee', bbbbbbb, ccccccc)
+        ALINE(2, `#dddddd', eeeeeee, qqqqqqq)
+        ALINE(3, `#eeeeee', hhhhhhh, kkkkkkk)
+        ALINE(4, `#dddddd', ooooooo, ppppppp)
+    </table>
+
+    <table align=center border=0 width=100% >
+        <tr bgcolor=#aaffaa><td align=center colspan=3>
+            <div style="font-size:large" align=center>
+                <b>Temperature Sensor Readings:&nbsp  </b>
+            </div>
+        <tr> <td>
+        <tr><td>
+            &nbsp; The current temperature readings as seen by the device.
+            The temperature reading is updated regularly in a cycle.
+            When invalid temperature is detected the reading changes to 'SENSOR?'.
+    </table>
+
+    <table align=center border=0 width=100% frame=void>
+        <tr>
+            RTLINE(1, `#dddddd',  uuuuuuuuuuuuuu)
+            RTLINE(2, `#eeeeee',  vvvvvvvvvvvvvv)
+    </table>
+

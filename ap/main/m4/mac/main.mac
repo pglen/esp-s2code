@@ -1,0 +1,139 @@
+<script async>
+
+    //console.log("Start program");
+    //alert("start");
+
+    const isNumeric = (str) => Number.isFinite(+str);
+
+    const truncateString = (str, num) => {
+          if (str.length > num) {
+            return str.slice(0, num) + "...";
+          } else {
+            return str;
+          }
+        };
+
+    // re - write in javascript
+    function chksum(strx) {
+        //console.log("chksum() strx='%s'", strx);
+        let ret = 0;
+        for(aa = 0; aa < strx.length; aa++)
+            {
+            nn = strx.charCodeAt(aa);
+            //console.log(nn);
+            qq = nn << 7 | nn;
+            qq = qq & 0xffff;
+            ret += qq + 10000;
+            ret = ret & 0xffff;
+            ret ^= 0x5aa5;
+            ret = ret & 0xffff;
+            }
+        //console.log("sum ret=%s", ret.toString(16));
+        return(ret);
+    }
+
+     async function pressed_sub() {
+        // Check parameters
+        const textInput = document.getElementById('txt');
+        if (textInput.value == "")
+            {
+            //console.log("Empty string. Not Submitting");
+            alert("Cannot submit empty message.");
+            textInput.focus();
+            return;
+            }
+        const chanInput = document.getElementById('chan');
+        if (!isNumeric(chanInput.value))
+            {
+            alert("Cannot submit a non number for channel " + chanInput.value);
+            textInput.focus();
+            return;
+            }
+        const formData = new FormData(myform);
+        const plainFormData = Object.fromEntries(formData.entries());
+        plainFormData['text'] = truncateString(plainFormData['text'], 125);
+        const num = chksum(plainFormData['text']);
+        plainFormData['hash'] = num.toString(16);
+        //plainFormData['answer'] = "Awaiting ...";
+        const jsonString = JSON.stringify(plainFormData);
+
+        //console.log("Submitting '%s'", jsonString);
+        const response = await fetch("post.html", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: jsonString
+                })
+        const data = await response.text();
+        // Fill in current state
+        //console.log("Data from await: '%s'", data);
+        const textOutput = document.getElementById('current');
+        if(data) {
+            textOutput.innerHTML = data;
+        }
+        //textInput.value = "";
+
+        textInput.disabled = true;
+        textInput.focus();
+        textInput.style.cursor = "wait";
+    }
+
+    function pressed_send() {
+        //const mForm = document.getElementById('myform')
+        //mForm.submit()
+        pressed_sub();
+    }
+
+window.addEventListener("keydown", onKeyDown, true);
+window.addEventListener("keyup", onKeyUp, true);
+
+ctrl = 0;
+function onKeyDown(e){
+    //console.log("Dn " + e.key);
+    if(e.key == "Enter" && ctrl == 1)
+        {
+        const textIn = document.getElementById('txt');
+        //console.log("Ctrl-Enter: '%s'", textIn.value )
+        e.preventDefault();
+        pressed_send();
+        }
+    if(e.key == "Control")
+        {
+        ctrl = 1
+        }
+    else
+        {
+        ctrl = 0
+        }
+  }
+function onKeyUp(e){
+    //console.log("Up " + e.key);
+    if(e.key == "Control")
+        {
+        ctrl = 0
+        }
+  }
+</script>
+
+<table align=center border=0 width=100% padding=10>
+
+    <tr><td class=mydiv>  Sent / Received: <td>
+        <div class=mytext id=hist>Nothing received yet ... <br></div>
+
+    <tr><td class=mydiv>
+        Channel:
+        <td><input type=text name=chan id=chan value="0">
+        <td>
+    <tr><td class=mydiv>
+        Send:
+        <td>
+        <textarea autofocus name=text rows=4 cols=64 id=txt></textarea>
+        <td align=center> Ctrl-Enter to submit <br>
+            <input type=button value=Send onclick=pressed_send()><br>
+            <div id=status></div>
+
+    <tr><td class=mydiv>
+        Send Status:
+        <td>
+        <div class=mytext width=90% id=current> Idle <br></div>
+
+</table>

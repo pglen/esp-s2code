@@ -1,0 +1,157 @@
+dnl pmclite.mac macro file
+dnl  Macros here ... so no include needed
+define(RELTIME,`
+<tr bgcolor=#eeeeee>
+    <td colspan=6>
+    &nbsp;  &nbsp; <b>Outputs $1 and $2:</b><br>
+    <tr><td>
+    <tr>
+    <td width=10%>
+    <td colspan=1>  &nbsp;Timeout $1: <input type=text name=tme_$1 size=4 value="xxxxxx"> sec
+    <td colspan=1>  &nbsp;Timeout $2: <input type=text name=tme_$2 size=4 value="xxxxxx"> sec
+')dnl
+dnl
+define(RETRIG,`
+<tr bgcolor=#eeeeee>
+        <td colspan=6>
+        &nbsp;  &nbsp; <b>Outputs $1 and $2:</b><br>
+        <tr><td>
+        <tr>
+        <td width=10%>
+        <td colspan=1>  &nbsp;Enable Re-trigger $1: <input type=checkbox name=trig_$1 checked>
+        <td colspan=1>  &nbsp;Enable Re-trigger $2: <input type=checkbox name=trig_$2 checked>
+        <tr><td>
+')dnl
+dnl
+define(RELRAD,`
+<table width=100% >
+    <tr bgcolor=#eeeeee>
+        <td colspan=6>
+        &nbsp;  &nbsp; <b>Outputs $1 and $2:</b><br>
+    <tr><td>
+    <tr>
+        <td> &nbsp; &nbsp;  &nbsp;
+        <td><input type=radio name=$3 id=$4_1 value=1 checked> Momentary
+        <td><input type=radio name=$3 id=$4_2 value=2 checked> Toggle
+        <td><input type=radio name=$3 id=$4_3 value=3 checked> Interlock
+        <tr>
+        <td> &nbsp; &nbsp;  &nbsp;
+        <td><input type=radio name=$3 id=$4_4 value=4 checked> Pri. Interlock
+        <td><input type=radio name=$3 id=$4_5 value=5 checked> 1on / 1off
+        <td><input type=radio name=$3 id=$4_6 value=6 checked> 2on / 2off
+        <tr>
+        <td> &nbsp; &nbsp;  &nbsp;
+        <td><input type=radio name=$3 id=$4_7 value=7 checked> Delayed Timed-Off
+        <td><input type=radio name=$3 id=$4_8 value=8 checked> Delayed Hold Timed-Off
+        <td><input type=radio name=$3 id=$4_9 value=9 checked> Delayed Time-On
+        <tr>
+        <td> &nbsp; &nbsp;  &nbsp;
+        <td><input type=radio name=$3 id=$4_10  value=10 checked> Delayed Hold Timed-On
+        <td><input type=radio name=$3 id=$4_11 value=11 checked> Disabled
+        <tr><td>
+</table>
+')dnl
+<tr><td>
+    <table align=center border=0 width=100% frame=void>
+        <tr><td>
+        <tr bgcolor=#cccccc>
+            <td align=center colspan=2>
+            <div style="font-size:large" align=center>
+                <b>Receiver Configuration: &nbsp  </b>
+            </div>
+        <tr> <td colspan=2>
+        <tr><td colspan=2 style="text-align:justify;">
+        &nbsp; &nbsp; The IOCOMX transceiver controls momentary switches by default.
+        The control may be configured to respond in different manners, one pair/group at the time. The grouping
+        is maintained in pairs, for instance <b>group one</b> is Input one and Input two -- with: Relay one and Relay two.
+        The following modes are available: <br>
+        &nbsp; &nbsp;   <b>a.) Momentary</b>: when a Button is pressed, the
+        corresponding Relay is closed, when the Button is released, the Relay opens. <b>b.) Toggle</b>: when a
+        Button is pressed the Relay closes, when a Button is pressed again, Relay opens. <b>c.) Interlock</b>:
+        Only one of the group outputs are active at any one time; if both Inputs are present, no output is on.
+        <b>d.) Pri. Interlock</b>: (Priority interlock) Only one of the group outputs are active at any one time,
+        if a second Input becomes active, the output which is already active has priority and stays on.
+        <b>e.) 1on1off</b>: Button 1 of the group turns the Relay on, Button 2 of the group turns the Relay off.
+        <b>f.) 2on2off</b>: Button one and two pressed together turns on Relay 1 and Relay 2; Button one
+        and two pressed together again turns the Relay off. <b>g.) On Timed Off</b>:
+        The Buttons turn the corresponding Relay on, and after a set amount
+        of time, the Relay automatically turns off. The delay time can be specified below, individually
+        on a per Input basis. <b>h.) On Hold Timed Off</b>: The Button turns the corresponding Relay on,
+        and on Button release, the hold timer starts, which holds the Relay for a specified amount of time.
+        after which, the Relay automatically turns off. <b>i.) Timed ON</b>: When a button is pressed,
+        a timer starts. When the timer is expired, the corresponding Relay will close.
+        <b>j.) Hold Timed On</b>: Button is pressed, and then, when released a timer starts. After
+        the timer is expired, the corresponding Relay will close. <b>k.) Disabled</b>: The corresponding
+        group's Relays will never activate;  To see more, look at the on-device <a href=page_8.html>manual page</a>.
+        <tr><td>
+        <table align=center border=0 width=100% frame=void>
+            <tr><td>
+            <tr bgcolor=#cccccc>
+                <td align=center colspan=2>
+                <div style="font-size:large" align=center>
+                    <b>Receiver Logic Selection: &nbsp  </b>
+                </div>
+            <tr><td colspan=2 align=center>
+
+            <tr><td colspan=2 align=center>
+
+                RELRAD(1, 2, `namex', `idx')
+                RELRAD(3, 4, `namey', `idy')
+        </table>
+
+        <tr><td align=center><Input type=submit name=config value='Save Configuration'>
+
+        <tr><td>
+         <table width=100%>
+            <tr><td>
+            <tr bgcolor=#cccccc>
+                <td align=center colspan=5>
+                <div style="font-size:large" align=center>
+                    <b>Timed-Off / Timed-On Timings: &nbsp  </b>
+                </div>
+
+            <tr> <td>
+            <tr><td colspan=5 style="text-align:justify;">
+            &nbsp; &nbsp; If the IOCOMX transceiver group is set to TimedOff mode,
+            these are the corresponding timing values on a per output basis.
+            Time is specified in seconds; for example the value 90 will specify
+            one an a half minutes. The smallest delay is one second, there is no
+            limit placed on the largest delay.
+            <tr> <td>
+            RELTIME(1, 2, `txtx')
+            RELTIME(3, 4, `txty')
+            <tr><td>
+        </table>
+
+            <tr><td colspan=2 align=center>
+                <Input type=submit name=config value='Save Configuration'>
+
+        <tr><td>
+
+         <table width=100%>
+            <tr><td>
+            <tr bgcolor=#cccccc>
+                <td align=center colspan=5>
+                <div style="font-size:large" align=center>
+                    <b>Timed-Off Timed-ON retrigger: &nbsp  </b>
+                </div>
+
+            <tr> <td>
+            <tr><td colspan=5 style="text-align:justify;">
+            &nbsp; &nbsp; If a group is set to 'Delayed Timed On' or 'Delayed Timed Off' mode,
+            the individual Inputs can be configured to re-trigger.
+            This way the timing of the timer can be extended during the hold interval.
+            When the Output's box is checked, the timing delay of the Output is
+            <b>expanded</b> like a new timer cycle is started. The re-Trigger mode defaults to OFF,
+            the timer is unaffected by successive button presses.
+            <tr><td>
+
+            RETRIG(1, 2, `trigx')
+            RETRIG(3, 4, `trigy')
+
+        </table>
+
+        <tr><td colspan=2 align=center>
+                <Input type=submit name=config value='Save Configuration'>
+    </table>
+

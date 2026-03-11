@@ -1,0 +1,101 @@
+<table width=100%>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The IOCOMX transceiver (transmitter / receiver) is a long range
+    pier to pier communcation device.
+    In the paragraphs below, a quick description of the
+    device's configuration and operation is detailed.
+
+    <tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Communcation</b>
+        </div>
+
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The IOCOMX is ready to communicate out of the box; Just plug
+    it in to any USB, and connect to its web page. One may connect with any
+    standard browser, a phone, tablet, computer, or any other browser capable
+    device. Once connected, use the provided text box to send a message.
+    The message should show up on the other device, configured to the same channel.
+
+    <tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Quick Setup, Channel configuration</b>
+        </div>
+
+    <tr><td   style="text-align:justify;">
+    &nbsp; &nbsp; The IOCOMX system comes set to channel zero from the manufacturer.
+    Should a different channel be needed, the process extremely simple: just
+    enter a new channel number in the channel configuration box. The channel number
+    can be from 0 to 65535. Both the receiver and transmitter has to be on the same channel.
+
+    <tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Channel Safety</b>
+        </div>
+    <tr><td   style="text-align:justify;">
+        Because the device comes configured at channel 0, it is meant to be
+        a test channel for initial communication test. It is recommended to
+        change the channel after successfully testing communication.
+
+    <tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Pairing Safety</b>
+        </div>
+
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; Channel safety measures:
+    <ul> <li>Both the receiver and transmitter has to be on the same channel.
+
+    <li>Both the receiver and transmitter has to have
+    tha same LORA parmeters. </ul>
+
+    &nbsp; &nbsp; If one encounters any difficulty during the pairing process, a long press reset on the
+    receiver will clear all pairing data, and allows a fresh start. Note that after long press reset, all
+    the other devices that where paired to this receiver need to be re-paired.
+
+    <tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Quick Setup, Enable Configuration</b>
+        </div>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The IOCOMX system starts up in transmit / receive mode on channel 0.
+    One may connect to the device's web page to use it and to configure it.
+    If no communication activity occurs in one minute, the device will
+    terminate the configuration mode, and resume in communication mode.
+
+<tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Features, Encryption and Checksum:</b>
+        </div>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The IOCOMX system communicates with an unencrypted data stream.
+    However, the data is protected with a checksum. Data cannot be falsified
+    by external sources, as the IOCOMX will reject packets with an invalid
+    checksum. If one desires extra secrecy, there are plenty of applications
+    that serve this purpose on the browser / text entry level. However, tweaking
+    the LORA parameters may serve as a good substitute, as guessing the correct
+    LORA parameters can be as challenging as breaking encryption.
+
+<tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Distance expectations:</b>
+        </div>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The IOCOMX system utilizes a SEMTEC LORA device. The LORA
+     device's specification suggest an 8 kilometer line of sight range.
+     Under ideal conditions, this can be measured and proven with this
+     implementation, and it delivers according to specification. Using
+     the device in a non line of sight configuration the range is
+     significantly less. For instance using in highrise building area, the
+     range can be as little as 500 meters.
+
+    <br>
+
+</table>

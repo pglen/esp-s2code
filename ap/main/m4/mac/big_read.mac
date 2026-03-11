@@ -1,0 +1,41 @@
+include(mac/general.mac)
+include(mac/cntlines.mac)
+
+    <table align=center border=0 width=100% >
+        <tr bgcolor=#aaffaa><td align=center colspan=3>
+            <div style="font-size:large" align=center>
+                <b>Relays Status:&nbsp  </b>
+            </div>
+        <tr> <td>
+        <tr><td>
+    </table>
+    <table align=center border=0 width=100% frame=void cellspacing=10, cellpadding=4>
+        <tr bgcolor=#eeeeee>
+        <th> Relay 1
+        <th> Relay 2
+        <th> Relay 3
+        <th> Relay 4
+        <!-- RELAYLINE(1, `#ffaa00', ON) -->
+        RELAYLINE(2, `#bbbbbb', OFF)
+    </table>
+
+    <table align=center border=0 width=100% >
+        <tr bgcolor=#aaffaa><td align=center colspan=3>
+            <div style="font-size:large" align=center>
+                <b>Analog Input Readings:&nbsp  </b>
+            </div>
+    </table>
+
+<!--border: 5px outset red;
+  background-color: lightblue;-->
+
+<table align=center border=0 width=100% frame=void>
+    <tr> <td height=8>
+    <tr bgcolor=#bbbbbb>
+    BIGLINE(1, `#eeeeee', 00.000)
+    BIGLINE(2, `#dddddd', 00.000)
+    BIGLINE(3, `#eeeeee', 00.000)
+    BIGLINE(4, `#dddddd', 00.000)
+
+</table>
+

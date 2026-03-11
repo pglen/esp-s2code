@@ -1,0 +1,75 @@
+<script async>
+    //console.log("Start LORA\n");
+
+    const isNumeric2 = (str) => Number.isFinite(+str);
+
+    function check_lims(data, validx, lower, upper) {
+
+        valx = data.get(validx)
+
+        if (!isNumeric2(valx))
+            {
+            alert("Field: " + validx + " must be a number.")
+            return;
+            }
+        //console.log("value: %s", valx);
+        if (valx < lower || valx > upper)
+            {
+            alert("Number out of range for:  " + validx + " value = " + valx)
+            return;
+            }
+        }
+
+    function save_lora() {
+        //console.log("Save LORA\n");
+        const formData = new FormData(myform);
+        console.log("Data", formData);
+        check_lims(formData, "spread", 1, 12);
+        check_lims(formData, "bwidth", 10, 500);
+        check_lims(formData, "txfreq", 433.05, 434.79);
+    }
+</script>
+
+<table width=100%>
+
+    <tr><td colspan=2 align=center height=12>
+    The following fields determine the LORA transmit / receive configuration.
+    These configurations must match between the sender and receiver units.
+    The parameters are range contained. The frequency parameter is a floating
+    point number multiplied by megahertz.
+    The bandwidth parameter is a floating point number multiplied by kilohertz.
+
+    <tr><td colspan=2 align=center>
+        <table align=center border=0 width=100%  frame=void>
+            <tr><td colspan=3 width=100%>
+                    <tr bgcolor=#eeeeee><td align=center>
+                    <div style="font-size:large" align=center>
+                    <b>LORA parameters:</b><br>
+                    </div>
+        </table>
+        <tr><td>
+        <tr> <td align=right>
+            LORA Spread Factor: (1 - 12)  &nbsp<td width=50%><input name=spread type=text value=>
+        <tr><td align=right>
+            LORA Bandwidth: (10 - 500) &nbsp<td><input name=bwidth type=text  value=>
+    <tr><td>
+    <tr><td colspan=2 align=right>
+        <table align=center border=0 width=100%  frame=void>
+            <tr><td colspan=3 width=100%>
+                    <tr bgcolor=#eeeeee><td align=center>
+                    <div style="font-size:large" align=center>
+                    <b>Optional (advanced) LORA parameters:</b><br>
+                    </div>
+        </table>
+    <tr><td>
+    <tr> <td align=right>
+        LORA TX power (1-12):  &nbsp<td><input name=txpower type=text value=>
+    <tr> <td align=right>
+        LORA Frequency: (433.05 - 434.79) &nbsp<td><input name=txfreq type=text value=>
+    <tr><td>
+
+    <tr> <td colspan=3 align=center>
+    <input type=button onclick=save_lora() name=confbutt value='Save Configuration'>
+    <tr> <td colspan=3 align=center>
+
+</table>

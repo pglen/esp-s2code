@@ -1,0 +1,24 @@
+<tr><td>
+    <table align=center border=0 width=100% frame=void>
+        <tr><td>
+        <tr bgcolor=#eeeeee>
+            <td align=center colspan=2>
+            <div style="font-size:large" align=center>
+                <b>General Configuration: &nbsp  </b>
+            </div>
+        <tr> <td colspan=2>
+        <tr> <td colspan=2>
+        &nbsp; &nbsp; This name is provided to give the device an identifier. It can be any name,
+         a stock number or the name of the device it controls. This name does not
+         participate in any network parameter or communication process,
+         it is simply to identify this handheld.
+
+        <tr> <td align=center colspan=2>
+        <tr><td align=right width=50%>
+                Device Name: &nbsp;
+            <td> <input type=text name=iocomname value="sssssssssssssssssssssssssssssss">
+        <tr> <td>
+        <tr> <td colspan=2 align=center>
+            <input type=submit name=config value='Save Configuration'>
+    </table>
+dnl

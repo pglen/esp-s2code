@@ -1,0 +1,117 @@
+<script async>
+
+window.addEventListener('load', function()
+{
+    //startTime();
+
+    var xhr = null;
+    //var xhr2 = null;
+
+    getXmlHttpRequestObject = function()
+    {
+        if(!xhr)
+        {
+            // Create a new XMLHttpRequest object
+            xhr = new XMLHttpRequest();
+        }
+        return xhr;
+    };
+    //getXmlHttpRequestObject2 = function()
+    //{
+    //    if(!xhr2)
+    //    {
+    //        // Create a new XMLHttpRequest object
+    //        xhr2 = new XMLHttpRequest();
+    //    }
+    //    return xhr2;
+    //};
+
+    updateLiveData = function()
+    {
+        var url = 'live.html'
+        var xhr3 = getXmlHttpRequestObject();
+        xhr3.onreadystatechange = evenHandler;
+        xhr3.open("GET", url, true);
+        xhr3.send(null);
+    };
+    updateLiveData();
+
+    let sentx = "";
+
+    function evenHandler()
+    {
+        //console.log("Answer %d %d '%s' ",
+        //        xhr.readyState, xhr.status, xhr.responseText);
+
+        // Check response is ready or not
+        if(xhr.readyState == 4 && xhr.status == 200)
+            {
+            const jsObject = JSON.parse(xhr.responseText);
+            const statInput = document.getElementById('current');
+            statInput.innerHTML = jsObject.strx;
+
+            //console.log("Answer %d %d '%s' ",
+            //        xhr.readyState, xhr.status, xhr.responseText);
+
+            // re-enable text control
+            if(jsObject.strx == "Done")
+                {
+                const textInput = document.getElementById('txt');
+                textInput.disabled = false;
+                textInput.value = "";
+                textInput.focus();
+                textInput.style.cursor = "auto";
+                }
+            else if (jsObject.strx == "Timeout")
+                {
+                const textInput = document.getElementById('txt');
+                textInput.disabled = false;
+                textInput.focus();
+                }
+            sentx = "";
+            for(aa = 0; aa < 10; aa++)
+                {
+                let curr = "hist_" + aa;
+                if (jsObject[curr])
+                    {
+                    //console.log("sent %d %s = '%s' ",
+                    //                        xhr.status, curr, jsObject[curr]);
+                    const myObject = JSON.parse(jsObject[curr]);
+                    sentx += "[" + myObject.hash + "] (" + myObject.chan + ") "
+                    let sentx2 = "";
+                    if(myObject.reply)
+                        {
+                        sentx2 = "<font color=blue>" + myObject.reply + "</font>";
+                        }
+                    else
+                        {
+                        sentx2 = myObject.text
+                        }
+                    sentx2 = sentx2.replace(/\\n/g, "<br>");
+                    //sentx2 = sentx2.split("\\n").join("<br>");
+                    sentx += sentx2 + "<br>";
+                    }
+                else
+                    {
+                    break;
+                    }
+                }
+            if (jsObject.sent)
+                {
+                console.log("sent %d '%d' ", xhr.status, jsObject.sent);
+                }
+            if (jsObject.update)
+                {
+                //console.log("update %d '%d' ", xhr.status, jsObject.update);
+                const histInput = document.getElementById('hist');
+                histInput.innerHTML = sentx;
+                }
+
+            // Update the live data every xx msec
+            setTimeout(updateLiveData, 1000);
+            }
+    }
+});
+
+</script>
+

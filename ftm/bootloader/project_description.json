@@ -1,0 +1,20 @@
+{
+    "project_name":       "bootloader",
+    "project_path":       "/home/peterglen/esp/esp-idf.4.3/components/bootloader/subproject",
+    "build_dir":          "/akostar/esp32-s2/esp-s2code/ftm/bootloader",
+    "config_file":        "/akostar/esp32-s2/esp-s2code/ftm/sdkconfig",
+    "config_defaults":    "",
+    "app_elf":            "bootloader.elf",
+    "app_bin":            "bootloader.bin",
+    "git_revision":       "v4.3-dev-1720-g494a124d9",
+    "target":             "esp32",
+    "phy_data_partition": "",
+    "monitor_baud" :      "115200",
+    "monitor_toolprefix": "xtensa-esp32-elf-",
+    "config_environment" : {
+        "COMPONENT_KCONFIGS" : "/home/peterglen/esp/esp-idf.4.3/components/efuse/Kconfig;/home/peterglen/esp/esp-idf.4.3/components/esp32/Kconfig;/home/peterglen/esp/esp-idf.4.3/components/esp_common/Kconfig;/home/peterglen/esp/esp-idf.4.3/components/log/Kconfig;/home/peterglen/esp/esp-idf.4.3/components/spi_flash/Kconfig",
+        "COMPONENT_KCONFIGS_PROJBUILD" : "/home/peterglen/esp/esp-idf.4.3/components/bootloader/Kconfig.projbuild;/home/peterglen/esp/esp-idf.4.3/components/esptool_py/Kconfig.projbuild;/home/peterglen/esp/esp-idf.4.3/components/partition_table/Kconfig.projbuild"
+    },
+    "build_components" : [ "bootloader", "bootloader_support", "efuse", "esp32", "esp_common", "esp_hw_support", "esp_rom", "esptool_py", "hal", "log", "main", "micro-ecc", "partition_table", "soc", "spi_flash", "xtensa", "" ],
+    "build_component_paths" : [ "/home/peterglen/esp/esp-idf.4.3/components/bootloader", "/home/peterglen/esp/esp-idf.4.3/components/bootloader_support", "/home/peterglen/esp/esp-idf.4.3/components/efuse", "/home/peterglen/esp/esp-idf.4.3/components/esp32", "/home/peterglen/esp/esp-idf.4.3/components/esp_common", "/home/peterglen/esp/esp-idf.4.3/components/esp_hw_support", "/home/peterglen/esp/esp-idf.4.3/components/esp_rom", "/home/peterglen/esp/esp-idf.4.3/components/esptool_py", "/home/peterglen/esp/esp-idf.4.3/components/hal", "/home/peterglen/esp/esp-idf.4.3/components/log", "/home/peterglen/esp/esp-idf.4.3/components/bootloader/subproject/main", "/home/peterglen/esp/esp-idf.4.3/components/bootloader/subproject/components/micro-ecc", "/home/peterglen/esp/esp-idf.4.3/components/partition_table", "/home/peterglen/esp/esp-idf.4.3/components/soc", "/home/peterglen/esp/esp-idf.4.3/components/spi_flash", "/home/peterglen/esp/esp-idf.4.3/components/xtensa", "" ]
+}

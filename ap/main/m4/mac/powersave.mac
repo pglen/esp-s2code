@@ -1,0 +1,41 @@
+<tr><td>
+    <table align=center border=0 width=100% frame=void>
+        <tr><td>
+        <tr bgcolor=#cccccc>
+            <td align=center colspan=2>
+            <div style="font-size:large" align=center>
+                <b>Transmit Power Configuration: &nbsp  </b>
+            </div>
+        <tr> <td colspan=2>
+        <tr><td colspan=2>
+        &nbsp; &nbsp; The IOCOM4 battery powered transmitter can save battery life by reducing transmission power.
+        The power can be set in seven steps, from Low to High, Left to Right. This setting can be also used
+        to limit the maximum range the transmitter is effective.
+
+        <tr><td colspan=2 align=center>
+            <table width=100%>
+                <tr align=center>
+                    <td>Low
+                    <td>Medium
+                    <td>High
+            </table>
+        <tr><td colspan=2 align=center>
+
+        <tr><td colspan=2 align=center>
+            <table width=100%>
+                <tr align=center>
+                    <td><input type=radio name=power value=2   id=2p  checked>   2dBm &nbsp;
+                    <td><input type=radio name=power value=5   id=5p  checked>   5dBm &nbsp;
+                    <td><input type=radio name=power value=7   id=7p  checked>   7dBm &nbsp;
+                    <td><input type=radio name=power value=11  id=11p checked > 11dBm &nbsp;
+                    <td><input type=radio name=power value=14  id=14p checked > 14dBm &nbsp;
+                    <td><input type=radio name=power value=16  id=16p checked > 16dBm &nbsp;
+                    <td><input type=radio name=power value=20  id=20p checked > 20dBm &nbsp;
+            </table>
+
+        <tr><td colspan=2 align=center>
+
+        <tr><td colspan=2 align=center>
+            <input type=submit name=config value='Save Configuration'>
+    </table>
+

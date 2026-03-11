@@ -1,0 +1,27 @@
+ <table width=100%>
+
+     <tr> <td>
+        <table align=center border=0 width=100% frame=void>
+        <tr><td colspan=3 width=100%>
+            <tr bgcolor=#aaffaa><td align=center>
+                <div style="font-size:large" align=center>
+                    <b> Temperature Sensor Readings: &nbsp </b>
+                </div>
+        </table>
+
+        <tr><td colspan=3 align=center>
+            &nbsp; The temperature sensor readings at page load. Accurate to
+            less than +-0.5 &#8451;. The useful range of the sensor is from
+            -55 &#8451; to +125 &#8451;
+             If you would like to monitor the temperature in Real Time please see the
+             <a href=page_2.html?home=true>Quick status</a> page.
+
+        <table align=center border=0 width=100% frame=void>
+            <tr> <td height=8>
+            RTLINE(1, `#eeeeee', uuuuuuuuuuuuuu)
+            RTLINE(2, `#dddddd', vvvvvvvvvvvvvv)
+        </table>
+
+        <tr><td> <center><a href=page_1.html>Refresh page for updated values</a></center>
+
+</table>

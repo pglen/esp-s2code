@@ -1,0 +1,42 @@
+<script async>
+// Rev 2 - Thu 11.Feb.2021 work by Id or by Name
+// Rev 3 - Mon 22.Feb.2021 prompt for total
+function bpressed(whatx, promptx)
+{
+    //console.log("1");
+    if(promptx != 0)
+        {
+        if (confirm(
+"This is a Total Count / Duration value.\\n\\n\\
+  Press 'OK' to Zero this counter or\\n\\
+  Press 'Cancel' to leave it unchanged.\\n\\
+"))
+            {
+            //console.log("You pressed OK!");
+            }
+        else
+            {
+            //console.log ("You pressed Cancel!");
+            return;
+            }
+        }
+    //console.log("2");
+    //console.log("pressed button " + whatx);
+
+    ddd = document.getElementById(whatx);
+    if(!ddd)
+        ddd = document.getElementsByName(whatx);
+
+    if(ddd)
+        {
+        //console.log("got element " + ddd[0]);
+        //ddd.innerHTML = "0";
+        ddd[0].value = "0"
+        }
+    else
+        {
+        console.log("bpressed -- NO such control", whatx);
+        }
+}
+</script>
+
