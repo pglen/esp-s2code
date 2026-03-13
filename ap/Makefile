@@ -4,6 +4,9 @@ all:
 	./convpages.sh && ./genpages.sh
 	idf.py build flash monitor
 
+target:
+	idf.py set-target esp32s2
+
 convert:
 	./convpages.sh && ./genpages.sh
 

@@ -24,8 +24,8 @@
 
 #include "esp_system.h"
 //#include "esp_spi_flash.h"
-#include "driver/gpio.h"
-#include "driver/rtc_io.h"
+//#include "driver/gpio.h"
+//#include "driver/rtc_io.h"
 
 #include "nvs_flash.h"
 #include "esp_event.h"
@@ -48,7 +48,7 @@
 
 // Back link
 
-#include "../transmitter/main/a2d.h"
+//#include "../transmitter/main/a2d.h"
 
 static char *TAG = "IO4_sere";
 
@@ -80,8 +80,8 @@ char    *gl_pass = "\x17\x4d\xe1\xfc\xdf\x72\xb0\xb2\x8a\xd1\xb3\x60\x30\x71\xb4
 //    printf("Encoded pass:\n");
 //    dump_str2(u_pass, u_len);
 
-static xQueueHandle submit_queue;
-static xQueueHandle recv_queue;
+static QueueHandle_t submit_queue;
+static QueueHandle_t recv_queue;
 
 static SemaphoreHandle_t iSemaphore  = NULL;
 
@@ -302,16 +302,16 @@ static  void trans_task (void* arg)
             if (esp_timer_get_time() - last_trans  >= gl_repeat * 1000 || gl_presscnt != last)
                 {
                 //printf("transmit: %d ms mask: %d (0x%d)\n", get_ms(), mask, mask);
-                send_trans(mask, gl_repeat, V2DV(gl_volts[0]));
+                //send_trans(mask, gl_repeat, V2DV(gl_volts[0]));
                 last_trans = esp_timer_get_time();
                 if(was_any_pressed)
                     {
                     //printf("volts: %.2f\n", gl_volts[0]);
 
-                    if(gl_volts[0] > 0 && gl_volts[0] < DV2V(BATT_ELBOW) && gl_iam_battery)
-                        ls3.led_ontime = 20,  ls3.led_cycletime = 50, ls3.led_cyclecnt = 3;
-                    else
-                        ls4.led_ontime = 40,  ls4.led_cycletime = 200, ls4.led_cyclecnt = 1;
+                    //if(gl_volts[0] > 0 && gl_volts[0] < DV2V(BATT_ELBOW) && gl_iam_battery)
+                    //    ls3.led_ontime = 20,  ls3.led_cycletime = 50, ls3.led_cyclecnt = 3;
+                    //else
+                    //    ls4.led_ontime = 40,  ls4.led_cycletime = 200, ls4.led_cyclecnt = 1;
                     }
                 last = gl_presscnt;
                 }
@@ -331,10 +331,10 @@ static  void trans_task (void* arg)
                 if(last != gl_presscnt)
                     {
                     //printf("%d ms broke out of final burst.\n", get_ms());
-                    send_trans(0, gl_repeat, V2DV(gl_volts[0]));
+                    //send_trans(0, gl_repeat, V2DV(gl_volts[0]));
                     break;
                     }
-                send_trans(0, gl_repeat, V2DV(gl_volts[0]));
+                //send_trans(0, gl_repeat, V2DV(gl_volts[0]));
                 //printf("%lld final burst.\n", esp_timer_get_time());
                 partial_delay(gl_repeat / portTICK_PERIOD_MS);
                 }

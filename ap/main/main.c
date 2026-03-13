@@ -32,12 +32,15 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include "esp_heap_caps.h"
+#include "driver/gpio.h"
 
 #include "cJSON.h"
 
 #include "../common/protocol.h"
 #include "../common/utils.h"
 #include "../common/common.h"
+#include "../common/wifi.h"
+#include "../common/nvs.h"
 
 char    *gl_sentptr = NULL;
 int     gl_update = 0;
@@ -56,11 +59,6 @@ static SemaphoreHandle_t iSemaphore  = NULL;
 static SemaphoreHandle_t hSemaphore  = NULL;
 
 char      gl_statx[64] = "";
-
-#define EXAMPLE_ESP_WIFI_SSID      CONFIG_ESP_WIFI_SSID
-#define EXAMPLE_ESP_WIFI_PASS      CONFIG_ESP_WIFI_PASSWORD
-#define EXAMPLE_ESP_WIFI_CHANNEL   CONFIG_ESP_WIFI_CHANNEL
-#define EXAMPLE_MAX_STA_CONN       CONFIG_ESP_MAX_STA_CONN
 
 #if CONFIG_ESP_GTK_REKEYING_ENABLE
 #define EXAMPLE_GTK_REKEY_INTERVAL CONFIG_ESP_GTK_REKEY_INTERVAL
@@ -87,6 +85,9 @@ char *softstr   = "softversoftversoftversoftversoftversoftver";
 char *macstr    = "macmacmacmacmacmacmac";
 char *comstr    = "comstatcomstatcomstatcomstatcomstat";
 char *bcstr     = "bcountbcount";
+char *netstr    = "hnamehnamehnamehnamehnamehnamehname";
+char *passstr   = "pass1pass1pass1pass1pass1pass1";
+char *pass2str  = "pass2pass2pass2pass2pass2pass2";
 
 // Shuffle a string to 16 bit unique ID
 
@@ -104,6 +105,35 @@ int16_t chksum(const char *str, int len)
         }
     //printf("sum ret %x\n", ret);
     return(ret);
+}
+
+void    read_nvs_vars()
+{
+    nvs_handle my_handle;
+
+    esp_err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
+    if (err != ESP_OK)
+        {
+        printf("Error (%d) opening NVS handle.", err);
+        return;
+        }
+    unsigned int olen2 = sizeof(gl_netname);
+    err = nvs_get_str(my_handle, "netname", gl_netname, &olen2);
+    if (err != ESP_OK)
+        {
+        //if (verbose)
+        //    ESP_LOGI(TAG, "Warn (%d) reading NVS agv", err);
+        //printf("Default host config\n");
+        }
+    unsigned int olen3 = sizeof(gl_netpass);
+    err = nvs_get_str(my_handle, "netpass", gl_netpass, &olen3);
+    if (err != ESP_OK)
+        {
+        //if (verbose)
+        //    ESP_LOGI(TAG, "Warn (%d) reading NVS agv", err);
+        //printf("Default pass config\n");
+        }
+    nvs_close(my_handle);
 }
 
 #if CONFIG_EXAMPLE_ENABLE_HTTPS_USER_CALLBACK
@@ -317,6 +347,10 @@ static esp_err_t settings_get_handler(httpd_req_t *req)
 
     char *status = "";
     subst_str(resp_str, statstr, status);
+    subst_str(resp_str, netstr, gl_netname);
+    subst_str(resp_str, passstr, "");
+    subst_str(resp_str, pass2str, "");
+    subst_str(resp_str, rebostr, "");
 
     subst_footer(resp_str);
 
@@ -343,9 +377,19 @@ static esp_err_t settings_post_handler(httpd_req_t *req)
         }
     httpd_req_recv(req, buff, req->content_len);
     buff[req->content_len] = '\0';
-    printf("pass post '%s'\n", buff);
-
+    printf("settings post cJSON '%s'\n", buff);
+    cJSON *root2 = cJSON_Parse(buff);
     free(buff);
+
+    char *strxh = cJSON_GetObjectItem(root2, "apname")->valuestring;
+    char *strxp = cJSON_GetObjectItem(root2, "appass")->valuestring;
+
+    printf("Host / Pass %s %s \n", strxh, strxp);
+
+    submit_nvs_str("netname", strxh);
+    submit_nvs_str("netpass", strxp);
+
+    cJSON_Delete(root2);
 
     char* resp_str = malloc(strlen(settings_html) + 2);
     if(!resp_str)
@@ -354,6 +398,8 @@ static esp_err_t settings_post_handler(httpd_req_t *req)
 
     char *status = "";
     subst_str(resp_str, statstr, status);
+    subst_str(resp_str, rebostr,
+                "Reboot and reconnect device for settings to take effect.");
 
     subst_footer(resp_str);
 
@@ -461,7 +507,6 @@ static esp_err_t live_get_handler(httpd_req_t *req)
     //cJSON *root2 = cJSON_Parse(sys_info);
     //char *strx2 = cJSON_GetObjectItem(root2, "strx")->valuestring;
     //printf("json strx2: '%s'\n", strx2);
-    //free(strx2);
     //cJSON_Delete(root2);
 
     free((void *)sys_info);
@@ -687,11 +732,11 @@ void wifi_init_softap(void)
 
     wifi_config_t wifi_config = {
         .ap = {
-            .ssid = EXAMPLE_ESP_WIFI_SSID,
-            .ssid_len = strlen(EXAMPLE_ESP_WIFI_SSID),
-            .channel = EXAMPLE_ESP_WIFI_CHANNEL,
-            .password = EXAMPLE_ESP_WIFI_PASS,
-            .max_connection = EXAMPLE_MAX_STA_CONN,
+             //.password = CONFIG_EXAMPLE_WIFI_PASSWORD,
+             //.ssid = CONFIG_EXAMPLE_WIFI_SSID,
+             //.ssid_len = strlen(CONFIG_EXAMPLE_WIFI_SSID),
+            .channel = CONFIG_ESP_WIFI_CHANNEL,
+            .max_connection = CONFIG_ESP_MAX_STA_CONN,
 #ifdef CONFIG_ESP_WIFI_SOFTAP_SAE_SUPPORT
             .authmode = WIFI_AUTH_WPA3_PSK,
             .sae_pwe_h2e = WPA3_SAE_PWE_BOTH,
@@ -710,9 +755,21 @@ void wifi_init_softap(void)
             .gtk_rekey_interval = EXAMPLE_GTK_REKEY_INTERVAL,
         },
     };
-    if (strlen(EXAMPLE_ESP_WIFI_PASS) == 0) {
+    if (strlen(CONFIG_EXAMPLE_WIFI_PASSWORD) == 0) {
         wifi_config.ap.authmode = WIFI_AUTH_OPEN;
     }
+
+    GET_MAC(self_mac);
+    sprintf(gl_netname, "LoraWiFi-%X%X", self_mac[4], self_mac[5] );
+    sprintf(gl_netpass, "%s", "12345678");
+
+    read_nvs_vars();
+
+    memcpy(wifi_config.ap.ssid, gl_netname, sizeof(gl_netname));
+    memcpy(wifi_config.ap.password, gl_netpass, sizeof(gl_netpass));
+
+    printf("Wifi Name '%s' -> '%s'\n",
+                    wifi_config.ap.ssid, wifi_config.ap.password);
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
@@ -721,7 +778,7 @@ void wifi_init_softap(void)
     //ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
     //         EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS, EXAMPLE_ESP_WIFI_CHANNEL);
     ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s channel:%d",
-             EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_CHANNEL);
+             CONFIG_EXAMPLE_WIFI_SSID, CONFIG_ESP_WIFI_CHANNEL);
 }
 
 static  void recv_task (void* arg)
@@ -803,11 +860,32 @@ void app_main(void)
     //Initialize NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-      ESP_ERROR_CHECK(nvs_flash_erase());
-      ret = nvs_flash_init();
-    }
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+        }
     ESP_ERROR_CHECK(ret);
-    ESP_LOGI(TAG, "ESP_WIFI_MODE_AP");
+
+    // See if button held, clear flash
+    gpio_num_t gpio_num = 1;
+    gpio_input_enable(gpio_num);
+    gpio_pullup_en(gpio_num);
+    int lev = gpio_get_level(gpio_num);
+    //printf("GPIO level %d %d\n", gpio_num, lev);
+    if(lev == 0)
+        {
+        printf("Clearing nvram ...\n");
+        //nvs_flash_erase();
+        //ret = nvs_flash_init();
+        nvs_handle my_handle;
+        esp_err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
+        if (err == ESP_OK)
+            {
+            nvs_erase_key(my_handle, "netname");
+            nvs_erase_key(my_handle, "netpass");
+            nvs_close(my_handle);
+            }
+        }
+    //ESP_LOGI(TAG, "ESP_WIFI_MODE_AP");
     wifi_init_softap();
     printf("Entering main loop ... mem = %ld\n", esp_get_free_heap_size());
 
@@ -815,6 +893,7 @@ void app_main(void)
     CREATE_SEMA(hSemaphore);
     xTaskCreate(&trans_task, "trans_task", 3048, NULL, 15, NULL);
     xTaskCreate(&recv_task, "recv_task", 3048, NULL, 15, NULL);
+    //get_nvs_info();
     while(1)
         {
         vTaskDelay(4000 / portTICK_PERIOD_MS);

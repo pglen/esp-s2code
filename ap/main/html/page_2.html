@@ -468,40 +468,41 @@ textarea {
 
 <script async>
 
-    //console.log("Start LORA");
-
-    const isNumeric2 = (str) => Number.isFinite(+str);
-
-    function check_lims(data, validx, lower, upper) {
-
-        valx = data.get(validx)
-
-        if (!isNumeric2(valx))
-            {
-            alert("Field: " + validx + " must be a number.")
-            return;
-            }
-
-        //console.log("value: %s", valx);
-        if (valx < lower || valx > upper)
-            {
-            alert("Number out of range for:  " + validx + " value = " + valx)
-            return;
-            }
-        }
+    function containsPunctuation(str) {
+    // Regex to match a variety of common punctuation marks anywhere in the string
+    const punctuationRegex = /[!"#$%&'()*,\./:;<=>?@[\\\]^`{|}~]/;
+    return punctuationRegex.test(str);
+    }
     async function save_wifi() {
         //console.log("Save WIFI");
         const formData = new FormData(myform);
-        console.log("formData", formData);
+        //console.log("formData", formData);
+        if(containsPunctuation(formData.get("apname")))
+            {
+            alert("Wifi hostname cannot contain punctuation.")
+            return;
+            }
         if(formData.get("appass") != formData.get("appass2"))
             {
             alert("Wifi passes must match.")
             return;
             }
+        if(formData.get("appass").length < 8)
+            {
+            alert("Wifi pass must be 8 letters or longer.")
+            return;
+            }
         const plainFormData = Object.fromEntries(formData.entries());
         const jsonString = JSON.stringify(plainFormData);
         //console.log("Submitting: '%s'", jsonString);
-        document.getElementById("myform").submit();
+        //document.getElementById("myform").submit();
+
+        const response = await fetch("page_2.html", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: jsonString
+                })
+        const data = await response.text();
     }
 </script>
 
@@ -522,17 +523,17 @@ textarea {
                     <b>New Web Login Credentials:</b><br>
                     </div>
         </table>
-
         <tr><td>
         <tr> <td align=right>
-    Station name:  &nbsp<td width=50%><input id=apname name=apname type=text value=sssssssssssssssssssssssssssssss>
+    Station name:  &nbsp<td width=50%><input id=apname name=apname type=text
+                        value=hnamehnamehnamehnamehnamehnamehname>
         <tr><td align=right>
-    Station password:  &nbsp<td><input name=appass type=password  value=sssssssssssssssssssssssssssssss>
+    Station password:  &nbsp<td><input name=appass type=password
+                        value=pass1pass1pass1pass1pass1pass1>
         <tr><td align=right>
-    Repeat password:  &nbsp<td><input name=appass2 type=password value=sssssssssssssssssssssssssssssss>
-
+    Repeat password:  &nbsp<td><input name=appass2 type=password
+                        value=pass2pass2pass2pass2pass2pass2>
     <tr><td>
-
     <tr> <td colspan=3 align=center>
     <input type=button onclick=save_wifi() name=netbutt value='Save Configuration'>
     <tr> <td colspan=3 align=center>

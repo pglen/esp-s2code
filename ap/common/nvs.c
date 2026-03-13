@@ -26,14 +26,13 @@
 #include "esp_log.h"
 #include "esp_system.h"
 #include "esp_now.h"
-#include "esp_pm.h"
-#include "driver/gpio.h"
-#include "esp32/rom/ets_sys.h"
-#include "esp32/rom/crc.h"
-#include "driver/i2c.h"
+//#include "esp_pm.h"
+//#include "driver/gpio.h"
+//#include "esp32/rom/ets_sys.h"
+//#include "esp32/rom/crc.h"
+//#include "driver/i2c.h"
 #include "lwip/err.h"
 #include "esp_log.h"
-#include "driver/i2c.h"
 #include "nvs_flash.h"
 
 #include "nvs.h"
@@ -63,7 +62,7 @@
 //      "1849 * 100000 / (60 * 24 * 365)" -> 351.78843 years
 
 
-static char *TAG= "IO4_nvs";
+static char *TAG= "ap_nvs";
 
 #define NVS_STR_TYPE    1
 #define NVS_INT_TYPE    2
@@ -84,7 +83,9 @@ typedef struct _nvs_queue
     union payld pyl;
 }  nvs_queue;
 
-static xQueueHandle submit_queue;
+//static xQueueHandle submit_queue;
+static QueueHandle_t submit_queue;
+
 //static int64_t startx = 0, endx = 0;
 
 static void    write_nvs_int(char *name, int val)
@@ -190,7 +191,7 @@ static  void    nvs_write_worker(void *pvParameter)
                 }
             }
         // Just in case it exits
-        vTaskDelay(20 / portTICK_RATE_MS);
+        vTaskDelay(20 / portTICK_PERIOD_MS);
         }
     vTaskDelete(NULL);  // Should never happen
 }
@@ -217,7 +218,7 @@ int     submit_nvs_str(const char *name, const char *strx)
     strcpy(data, strx);
     strncpy(evt.name, name, sizeof(evt.name));
     evt.pyl.str = data;
-    if (xQueueSend(submit_queue, &evt, 1000 / portTICK_RATE_MS) != pdTRUE)
+    if (xQueueSend(submit_queue, &evt, 1000 / portTICK_PERIOD_MS) != pdTRUE)
         {
         ESP_LOGE(TAG, "Submit to queue failed.");
         free(evt.pyl.str);
@@ -241,7 +242,7 @@ int     submit_nvs_int(const char *name, int valx)
     strncpy(evt.name, name, sizeof(evt.name));
     evt.type = NVS_INT_TYPE;
     evt.pyl.val = valx;
-    if (xQueueSend(submit_queue, &evt, 1000 / portTICK_RATE_MS) != pdTRUE)
+    if (xQueueSend(submit_queue, &evt, 1000 / portTICK_PERIOD_MS) != pdTRUE)
         {
         ESP_LOGE(TAG, "Submit to queue failed.");
         ret = -2;
@@ -264,7 +265,7 @@ int     submit_nvs_int64(const char *name, int64_t valx)
     strncpy(evt.name, name, sizeof(evt.name));
     evt.type = NVS_LL_TYPE;
     evt.pyl.llval = valx;
-    if (xQueueSend(submit_queue, &evt, 3000 / portTICK_RATE_MS) != pdTRUE)
+    if (xQueueSend(submit_queue, &evt, 3000 / portTICK_PERIOD_MS) != pdTRUE)
         {
         ESP_LOGE(TAG, "Submit to queue failed.");
         ret = -2;
@@ -287,6 +288,29 @@ int     submit_nvs_float(const char *name, float valx)
     ret = submit_nvs_str(name, tmp);
 
     return ret;
+}
+
+void    get_nvs_info()
+{
+    nvs_stats_t nvs_stats;
+    esp_err_t err = nvs_get_stats(NULL, &nvs_stats);
+
+    if (err == ESP_OK) {
+        ESP_LOGI(TAG, "NVS Statistics:");
+        ESP_LOGI(TAG, "Total entries: %u", nvs_stats.total_entries);
+        ESP_LOGI(TAG, "Used entries: %u", nvs_stats.used_entries);
+        ESP_LOGI(TAG, "Free entries: %u", nvs_stats.free_entries);
+        ESP_LOGI(TAG, "Namespace count: %u", nvs_stats.namespace_count);
+
+        // Calculate the flash size based on the number of pages
+        // Each NVS page is 4096 bytes (0x1000)
+        uint32_t page_size = 4096;
+        uint32_t total_flash_size = nvs_stats.total_entries / 126 * page_size; // 126 entries per page
+        ESP_LOGI(TAG, "Total NVS flash size: %u bytes", total_flash_size);
+
+    } else {
+        ESP_LOGE(TAG, "Failed to get NVS statistics (%s)", esp_err_to_name(err));
+    }
 }
 
 // -----------------------------------------------------------------------

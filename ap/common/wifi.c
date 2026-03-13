@@ -25,8 +25,8 @@
 
 #include "esp_system.h"
 //#include "esp_spi_flash.h"
-#include "driver/gpio.h"
-#include "driver/rtc_io.h"
+//#include "driver/gpio.h"
+//#include "driver/rtc_io.h"
 
 #include "nvs_flash.h"
 #include "esp_event.h"
@@ -61,13 +61,14 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,    //)
     //printf("Wifi Event %d\n", event_id);
 
     if (event_id == WIFI_EVENT_AP_STACONNECTED) {
-        wifi_event_ap_staconnected_t* event =
-                                (wifi_event_ap_staconnected_t*) event_data;
+        //wifi_event_ap_staconnected_t* event =
+        //                          (wifi_event_ap_staconnected_t*) event_data;
         //printf("station "MACSTR" join, AID=%d\n",
         //         MAC2STR(event->mac), event->aid);
 
     } else if (event_id == WIFI_EVENT_AP_STADISCONNECTED) {
-        wifi_event_ap_stadisconnected_t* event = (wifi_event_ap_stadisconnected_t*) event_data;
+        //wifi_event_ap_stadisconnected_t* event =
+        //                            (wifi_event_ap_stadisconnected_t*) event_data;
         //printf("station "MACSTR" leave, AID=%d\n",
         //         MAC2STR(event->mac), event->aid);
     }
@@ -87,16 +88,16 @@ void    web_task(void *ptr)
     printf("Web server staring.\n");
 
     esp_wifi_disconnect();
-    vTaskDelay(200 / portTICK_RATE_MS);
+    vTaskDelay(200 / portTICK_PERIOD_MS);
 
     wifi_sleep_wake(false);
-    vTaskDelay(200 / portTICK_RATE_MS);
+    vTaskDelay(200 / portTICK_PERIOD_MS);
 
     esp_wifi_deinit();
-    vTaskDelay(200 / portTICK_RATE_MS);
+    vTaskDelay(200 / portTICK_PERIOD_MS);
 
     wifi_initial(2);
-    start_webserver();
+    //start_webserver();
 
     int cnt = 0;
     web_break_out = 0;
@@ -117,7 +118,7 @@ void    web_task(void *ptr)
 
         cnt++;
         gl_alive = 3;
-        vTaskDelay(500 / portTICK_RATE_MS);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
         }
     gl_webon = false;
 
@@ -125,14 +126,14 @@ void    web_task(void *ptr)
     //ESP_ERROR_CHECK( wifi_sleep_wake());
 
     esp_wifi_disconnect();
-    vTaskDelay(200 / portTICK_RATE_MS);
+    vTaskDelay(200 / portTICK_PERIOD_MS);
 
     wifi_sleep_wake(false);
-    vTaskDelay(200 / portTICK_RATE_MS);
+    vTaskDelay(200 / portTICK_PERIOD_MS);
 
     //ESP_ERROR_CHECK( esp_wifi_deinit());
     esp_wifi_deinit();
-    vTaskDelay(200 / portTICK_RATE_MS);
+    vTaskDelay(200 / portTICK_PERIOD_MS);
 
     if(gl_iam_battery)
         wifi_initial(0);
@@ -169,7 +170,7 @@ void    start_webpage()
     // Disable all others
     gl_stop_pair = true;
     gl_stop_listen = true;
-    vTaskDelay(200 / portTICK_RATE_MS);
+    vTaskDelay(200 / portTICK_PERIOD_MS);
 
     gl_webon = true;
     xTaskCreate(web_task, "web_task", 4024, NULL, 2, NULL);
@@ -377,7 +378,7 @@ int     wifi_sleep_wake(int wakeflag)
             woken = true;
             //gl_wifi_trans = true;
             ret = esp_wifi_start();
-            vTaskDelay(20 / portTICK_RATE_MS);
+            vTaskDelay(20 / portTICK_PERIOD_MS);
             //gl_wifi_trans = false;
             }
         }
@@ -388,7 +389,7 @@ int     wifi_sleep_wake(int wakeflag)
             woken = false;
             //gl_wifi_trans = true;
             ret = esp_wifi_stop();
-            vTaskDelay(20 / portTICK_RATE_MS);
+            vTaskDelay(20 / portTICK_PERIOD_MS);
             //gl_wifi_trans = false;
             }
         }
