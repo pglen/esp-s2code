@@ -5,6 +5,12 @@
     const punctuationRegex = /[!"#$%&'()*,\./:;<=>?@[\\\]^`{|}~]/;
     return punctuationRegex.test(str);
     }
+
+    async function save_def() {
+        const formData = new FormData(myform);
+        console.log("save_def formData", formData);
+    }
+
     async function save_wifi() {
         //console.log("Save WIFI");
         const formData = new FormData(myform);
@@ -40,36 +46,25 @@
 
 <table width=100%>
 
-    <tr><td colspan=2 align=center height=12>
-    The following fields determine the Station Name and Password of this LORANAME.
-    The device will appear on your WiFI network by this name. For safety and security,
-    the LORANAME must be configured with a password. The password needs to be at
-    least <font color=#0000bb> 8 characters</font>
-    or longer. Please avoid using space, punctuation marks and non ASCII characters.<br>
-    You may use the _ (underscore) - (minus) sign + (plus) sign.
     <tr><td colspan=2 align=center>
         <table align=center border=0 width=100%  frame=void>
             <tr><td colspan=3 width=100%>
                     <tr bgcolor=#eeeeee><td align=center>
                     <div style="font-size:large" align=center>
-                    <b>New Web Login Credentials:</b><br>
+                    <b>Defaults</b><br>
                     </div>
         </table>
         <tr><td>
         <tr> <td align=right>
-    Station name:  &nbsp<td width=50%><input id=apname name=apname type=text
-                        autofocus value=hnamehnamehnamehnamehnamehnamehname>
+    Default Channel:  &nbsp<td width=50%><input id=apname name=apname type=text
+                        autofocus value=defchandefchan>
         <tr><td align=right>
-    Station password:  &nbsp<td><input name=appass type=password
-                        value=pass1pass1pass1pass1pass1pass1>
-        <tr><td align=right>
-    Repeat password:  &nbsp<td><input name=appass2 type=password
-                        value=pass2pass2pass2pass2pass2pass2>
-    <tr><td>
-    <tr> <td> <td colspan=2>
-        <input type=button onclick=save_wifi() name=netbutt accesskey=c
-        value='Save Web Configuration'> <font style=color:#aaaaaa>(Alt+Shift+c)</font>
+
+    <!-- <tr> <td> <td colspan=2>
+        <input type=button onclick=save_def() name=chanbutt accesskey=d
+        value='Save Default Configuration'> <font style=color:#aaaaaa>(Alt+Shift+d)</font>
 
     <tr> <td colspan=3 align=center>
+    -->
 
 </table>

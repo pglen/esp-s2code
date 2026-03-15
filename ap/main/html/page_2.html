@@ -526,7 +526,7 @@ textarea {
         <tr><td>
         <tr> <td align=right>
     Station name:  &nbsp<td width=50%><input id=apname name=apname type=text
-                        value=hnamehnamehnamehnamehnamehnamehname>
+                        autofocus value=hnamehnamehnamehnamehnamehnamehname>
         <tr><td align=right>
     Station password:  &nbsp<td><input name=appass type=password
                         value=pass1pass1pass1pass1pass1pass1>
@@ -534,8 +534,10 @@ textarea {
     Repeat password:  &nbsp<td><input name=appass2 type=password
                         value=pass2pass2pass2pass2pass2pass2>
     <tr><td>
-    <tr> <td colspan=3 align=center>
-    <input type=button onclick=save_wifi() name=netbutt value='Save Configuration'>
+    <tr> <td> <td colspan=2>
+        <input type=button onclick=save_wifi() name=netbutt accesskey=c
+        value='Save Web Configuration'> <font style=color:#aaaaaa>(Alt+Shift+c)</font>
+
     <tr> <td colspan=3 align=center>
 
 </table>
@@ -547,7 +549,7 @@ textarea {
         <tr>
             <td align=center>
                 <div style="font-size:large"   align=center>
-                   <a href=page_2.html>Settings</a>
+                   <a href=page_2.html>WiFi Settings</a>
                 </div>
             <td align=center>
                  <div style="font-size:large"   align=center>

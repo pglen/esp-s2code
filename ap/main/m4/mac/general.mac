@@ -4,6 +4,7 @@ define(marker, <tr> <td height=8>MARK)dnl
 define(marker1, <font color=red> Marker ONE </font>)dnl
 define(marker2, <font color=red> Marker TWO </font>)dnl
 define(IOCOMX, LORA WiFi)dnl
+define(LORANAME, LORA WiFi)dnl
 define(COLX, `#eeeeee')dnl
 
 define(spacer, `

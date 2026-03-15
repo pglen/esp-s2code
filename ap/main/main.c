@@ -760,7 +760,7 @@ void wifi_init_softap(void)
     }
 
     GET_MAC(self_mac);
-    sprintf(gl_netname, "LoraWiFi-%X%X", self_mac[4], self_mac[5] );
+    sprintf(gl_netname, "LoraWiFi-%02X%02X", self_mac[4], self_mac[5] );
     sprintf(gl_netpass, "%s", "12345678");
 
     read_nvs_vars();

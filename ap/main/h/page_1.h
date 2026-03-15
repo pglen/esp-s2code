@@ -9,7 +9,7 @@
 
       REV   DATE            BY              DESCRIPTION
       ----  -----------     ----------      ------------------------------
-      0.00  Sat, 14-03-26   Peter Glen      Initial version.
+      0.00  Sun, 15-03-26   Peter Glen      Initial version.
 
    ======================================================================= */
 
@@ -358,7 +358,7 @@ const char index_html [] =
 "        <tr>\n"
 "            <td align=center>\n"
 "                <div style=\"font-size:large\"   align=center>\n"
-"                   <a href=page_2.html>Settings</a>\n"
+"                   <a href=page_2.html>WiFi Settings</a>\n"
 "                </div>\n"
 "            <td align=center>\n"
 "                 <div style=\"font-size:large\"   align=center>\n"

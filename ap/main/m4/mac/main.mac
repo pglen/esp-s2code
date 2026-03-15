@@ -118,10 +118,9 @@ function onKeyUp(e){
 
     <tr><td class=mydiv>  Sent / Received: <td>
         <div class=mytext id=hist>Nothing received yet ... <br></div>
-
     <tr><td class=mydiv>
-        Channel:
-        <td><input type=text name=chan id=chan value="0">
+        Trench:
+        <td><input type=text name=chan id=chan value="0"> (0-65534)
         <td>
     <tr><td class=mydiv>
         Send:

@@ -127,62 +127,76 @@ textarea {
     it in to any USB, and connect to its web page. One may connect with any
     standard browser, a phone, tablet, computer, or any other browser capable
     device. Once connected, use the provided text box to send a message.
-    The message should show up on the other device, configured to the same channel.
+    The message should show up on the other device, configured to the same trench
 
     <tr><td>
     <tr bgcolor=#eeeeee><td align=center>
         <div style="font-size:large" align=center>
-        <b>Quick Setup, Channel configuration</b>
+        <b>Quick Setup, Connecting</b>
         </div>
 
     <tr><td   style="text-align:justify;">
-    &nbsp; &nbsp; The LORA WiFi system comes set to channel zero from the manufacturer.
-    Should a different channel be needed, the process extremely simple: just
-    enter a new channel number in the channel configuration box. The channel number
-    can be from 0 to 65535. Both the receiver and transmitter has to be on the same channel.
+    &nbsp; &nbsp; Connecting to the LORA WiFi device via the web interface is easy.
+    On your Browser device (cell phone / computer etc.) connect to the WiFi
+    Station named LoraWiFi-NNNN (where NNNN is a four digit number of the device)
+    and use the password '12345678' (without the quotes).
 
     <tr><td>
     <tr bgcolor=#eeeeee><td align=center>
         <div style="font-size:large" align=center>
-        <b>Channel Safety</b>
+        <b>The Trench parameter</b>
+        </div>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The trench is a distinct communication sub entry within the
+    current transmission channel. To communicate between two devices, their trench
+    numbers must match. (Naturally, all other LORA parameters must match as well)
+    The LORA WiFi system comes set to trench zero, channel 1 from the
+    manufacturer. Should a different trench be needed, the process extremely simple: just
+    enter a new trench number in the 'Trench:' text field. The trench number
+    can be from 0 to 65534. Both the receiver and transmitter has to be on the
+    same trench.
+
+    <tr><td>
+    <tr bgcolor=#eeeeee><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Trench Safety</b>
         </div>
     <tr><td   style="text-align:justify;">
-        Because the device comes configured at channel 0, it is meant to be
-        a test channel for initial communication test. It is recommended to
-        change the channel after successfully testing communication.
+        &nbsp; &nbsp; The device comes configured at trench 0. This is
+        meant to be a test channel for initial communication. It is
+        recommended to change the trench number after successfully testing
+        communication.Both the receiver and transmitter has to have the
+        trench and the same LORA parameters.
 
     <tr><td>
     <tr bgcolor=#eeeeee><td align=center>
         <div style="font-size:large" align=center>
-        <b>Pairing Safety</b>
+        <b>Device Configuration Reset</b>
         </div>
 
-    <tr><td  style="text-align:justify;">
-    &nbsp; &nbsp; Channel safety measures:
-    <ul> <li>Both the receiver and transmitter has to be on the same channel.
-
-    <li>Both the receiver and transmitter has to have
-    tha same LORA parmeters. </ul>
-
-    &nbsp; &nbsp; If one encounters any difficulty during the pairing process, a long press reset on the
-    receiver will clear all pairing data, and allows a fresh start. Note that after long press reset, all
-    the other devices that where paired to this receiver need to be re-paired.
+    <tr><td   style="text-align:justify;">
+        &nbsp; &nbsp; If one encounters any difficulty during the pairing process,
+        the device parameters may be reset to their initial values by holding down
+        the configuration button during power up. This will reset device
+        configuration to manufacturer's defaults. (On the waterproof version hold
+        a magnet to the reed switch while powering up)
 
     <tr><td>
     <tr bgcolor=#eeeeee><td align=center>
         <div style="font-size:large" align=center>
-        <b>Quick Setup, Enable Configuration</b>
+        <b>Quick Setup, Default Configuration</b>
         </div>
     <tr><td  style="text-align:justify;">
-    &nbsp; &nbsp; The LORA WiFi system starts up in transmit / receive mode on channel 0.
-    One may connect to the device's web page to use it and to configure it.
-    If no communication activity occurs in one minute, the device will
-    terminate the configuration mode, and resume in communication mode.
+    &nbsp; &nbsp; The LORA WiFi system starts up in transmit / receive mode
+    on channel 0. One may connect to the device's web page to use it and
+    to configure it. If no communication activity occurs in one minute,
+    the device will terminate the configuration mode, and resume communication
+    mode.
 
 <tr><td>
     <tr bgcolor=#eeeeee><td align=center>
         <div style="font-size:large" align=center>
-        <b>Features, Encryption and Checksum:</b>
+        <b>Features, Encryption and Checksum</b>
         </div>
     <tr><td  style="text-align:justify;">
     &nbsp; &nbsp; The LORA WiFi system communicates with an unencrypted data stream.
@@ -191,22 +205,21 @@ textarea {
     checksum. If one desires extra secrecy, there are plenty of applications
     that serve this purpose on the browser / text entry level. However, tweaking
     the LORA parameters may serve as a good substitute, as guessing the correct
-    LORA parameters can be as challenging as breaking encryption.
+    LORA parameters and trench number can be as challenging as breaking encryption.
 
 <tr><td>
     <tr bgcolor=#eeeeee><td align=center>
         <div style="font-size:large" align=center>
-        <b>Distance expectations:</b>
+        <b>Distance expectations</b>
         </div>
     <tr><td  style="text-align:justify;">
     &nbsp; &nbsp; The LORA WiFi system utilizes a SEMTEC LORA device. The LORA
-     device's specification suggest an 8 kilometer line of sight range.
+     device's specification suggest an 8-10 kilometer (line of sight) range.
      Under ideal conditions, this can be measured and proven with this
      implementation, and it delivers according to specification. Using
-     the device in a non line of sight configuration the range is
+     the device in a non line of sight configuration, the range is
      significantly less. For instance using in highrise building area, the
      range can be as little as 500 meters.
-
     <br>
 
 </table>
@@ -219,7 +232,7 @@ textarea {
         <tr>
             <td align=center>
                 <div style="font-size:large"   align=center>
-                   <a href=page_2.html>Settings</a>
+                   <a href=page_2.html>WiFi Settings</a>
                 </div>
             <td align=center>
                  <div style="font-size:large"   align=center>

@@ -55,12 +55,14 @@ print( "Converting from:", sys.argv[1], "to:",  sys.argv[2])
 fpi = open(sys.argv[1], "r")
 fpo = open(sys.argv[2], "w")
 
-print( mystr, file=fpo )
+print(mystr, file=fpo )
 
 for aaa in fpi:
     if aaa != "\n":
-        bbb = str.replace(aaa, "\"", '\\"');
-        ccc = str.replace(bbb, "\n", "\\n");
+        ccc = str.replace(aaa, "\"", '\\"');
+        ccc = str.replace(ccc, "\n", "\\n");
+        ccc = str.replace(ccc, "\\.", "\\\\.");
+        #ccc = str.replace(ccc, "\[", "\\[");
         print("\"" + ccc + "\"", file=fpo  )
 
 print(";", file=fpo)

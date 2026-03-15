@@ -9,7 +9,7 @@
 
       REV   DATE            BY              DESCRIPTION
       ----  -----------     ----------      ------------------------------
-      0.00  Sat, 14-03-26   Peter Glen      Initial version.
+      0.00  Sun, 15-03-26   Peter Glen      Initial version.
 
    ======================================================================= */
 
@@ -446,7 +446,7 @@ const char settings_html [] =
 "<script async>\n"
 "    function containsPunctuation(str) {\n"
 "    // Regex to match a variety of common punctuation marks anywhere in the string\n"
-"    const punctuationRegex = /[!\"#$%&'()*,\./:;<=>?@[\\\]^`{|}~]/;\n"
+"    const punctuationRegex = /[!\"#$%&'()*,\\./:;<=>?@[\\\]^`{|}~]/;\n"
 "    return punctuationRegex.test(str);\n"
 "    }\n"
 "    async function save_wifi() {\n"
@@ -499,7 +499,7 @@ const char settings_html [] =
 "        <tr><td>\n"
 "        <tr> <td align=right>\n"
 "    Station name:  &nbsp<td width=50%><input id=apname name=apname type=text\n"
-"                        value=hnamehnamehnamehnamehnamehnamehname>\n"
+"                        autofocus value=hnamehnamehnamehnamehnamehnamehname>\n"
 "        <tr><td align=right>\n"
 "    Station password:  &nbsp<td><input name=appass type=password\n"
 "                        value=pass1pass1pass1pass1pass1pass1>\n"
@@ -507,8 +507,9 @@ const char settings_html [] =
 "    Repeat password:  &nbsp<td><input name=appass2 type=password\n"
 "                        value=pass2pass2pass2pass2pass2pass2>\n"
 "    <tr><td>\n"
-"    <tr> <td colspan=3 align=center>\n"
-"    <input type=button onclick=save_wifi() name=netbutt value='Save Configuration'>\n"
+"    <tr> <td> <td colspan=2>\n"
+"        <input type=button onclick=save_wifi() name=netbutt accesskey=c\n"
+"        value='Save Web Configuration'> <font style=color:#aaaaaa>(Alt+Shift+c)</font>\n"
 "    <tr> <td colspan=3 align=center>\n"
 "</table>\n"
 "<tr><td>\n"
@@ -519,7 +520,7 @@ const char settings_html [] =
 "        <tr>\n"
 "            <td align=center>\n"
 "                <div style=\"font-size:large\"   align=center>\n"
-"                   <a href=page_2.html>Settings</a>\n"
+"                   <a href=page_2.html>WiFi Settings</a>\n"
 "                </div>\n"
 "            <td align=center>\n"
 "                 <div style=\"font-size:large\"   align=center>\n"

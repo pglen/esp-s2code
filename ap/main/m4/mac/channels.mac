@@ -1,0 +1,45 @@
+<table width=100%>
+
+    <td align=center height=12>
+    The following table describes the LORA channel allocation, recommended by the
+    the manufacturer of the device. These values are not enforced, the only
+    criteria is that both the receiver and sender tuned to the same frequency.
+
+    <tr><td>
+    <tr><td> <font style=font-size:x-large>
+                <b>Common recommended platform presets:</b></font>
+    <tr><td>
+
+    <table width=80% align=center>
+        <tr align=center>
+            <td><b>LORA Channel</b>
+            <td><b>Frequency</b>   <td><b>Bandwidth (optional)</b> <td><b>Scope</b>
+        <tr align=center>
+            <td width=10% align=center>1
+            <td>433.375 MHz   <td>125 kHz  <td>Default / Mandatory
+        <tr  align=center bgcolor=#eeeeeeff>
+            <td width=10% align=center>2
+            <td>433.575 MHz   <td>125 kHz  <td>Default / Mandatory
+        <tr align=center >
+            <td width=10% align=center>3
+            <td>433.775 MHz   <td>125 kHz  <td>Optional / Extension
+        <tr  align=center bgcolor=#eeeeeeff>
+            <td width=10% align=center>4
+            <td>433.975 MHz   <td>125 kHz  <td>Optional / Extension
+        <tr align=center >
+            <td width=10% align=center>5
+            <td>434.175 MHz   <td>125 kHz  <td>Optional / Extension
+        <tr  align=center bgcolor=#eeeeeeff>
+            <td width=10% align=center>6
+            <td>434.375 MHz   <td>125 kHz  <td>Optional / Extension
+        <tr align=center >
+            <td width=10% align=center>7
+            <td>434.575 MHz   <td>125 kHz  <td>Optional / Extension
+    </table>
+
+ <tr><td>
+ <tr><td>
+The device defaults to channel 1 (433.375 MHz).<p>
+
+**Disclaimer: Regulations vary by country. Always check local spectrum regulations
+before deploying 433 MHz devices.

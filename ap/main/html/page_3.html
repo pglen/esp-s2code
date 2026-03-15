@@ -146,8 +146,9 @@ textarea {
     The following fields determine the LORA transmit / receive configuration.
     These configurations must match between the sender and receiver units.
     The parameters are range contained. The frequency parameter is a floating
-    point number multiplied by megahertz.
-    The bandwidth parameter is a floating point number multiplied by kilohertz.
+    point number multiplied by megahertz. The bandwidth parameter is a floating
+    point number multiplied by kilohertz. Please note for communication
+    stability that the lowest recommended bandwith is 20 kHz.
 
     <tr><td colspan=2 align=center>
         <table align=center border=0 width=100%  frame=void>
@@ -159,9 +160,11 @@ textarea {
         </table>
         <tr><td>
         <tr> <td align=right>
-            LORA Spread Factor: (1 - 12)  &nbsp<td width=50%><input name=spread type=text value=>
+            LORA Spread Factor: (1 - 12)  &nbsp
+            <td width=50%><input name=spread type=text value=spreadspread>
         <tr><td align=right>
-            LORA Bandwidth: (10 - 500) &nbsp<td><input name=bwidth type=text  value=>
+            LORA Bandwidth: (10 - 500) kHz &nbsp<td><input name=bwidth type=text
+            value=bandbandbandband>
     <tr><td>
     <tr><td colspan=2 align=right>
         <table align=center border=0 width=100%  frame=void>
@@ -173,16 +176,40 @@ textarea {
         </table>
     <tr><td>
     <tr> <td align=right>
-        LORA TX power (1-12):  &nbsp<td><input name=txpower type=text value=>
+        LORA TX power (1-12):  &nbsp<td><input name=txpower type=text
+            value=txpowtxpowtxpow>
     <tr> <td align=right>
-        LORA Frequency: (433.05 - 434.79) &nbsp<td><input name=txfreq type=text value=>
+        LORA Frequency: (433.05 - 434.79) MHz &nbsp<td><input name=txfreq type=text
+        value=freqfreqfreqfreqfreqfreq> <a href=channels.html >(Channel Table) </a>
     <tr><td>
 
+<tr><td colspan=2 align=center>
+        <table align=center border=0 width=100%  frame=void>
+            <tr><td colspan=3 width=100%>
+                    <tr bgcolor=#eeeeee><td align=center>
+                    <div style="font-size:large" align=center>
+                    <b>Defaults:</b><br>
+                    </div>
+        </table>
+        <tr><td>
+        <tr> <td align=right>
+    Default Trench:  &nbsp<td width=50%><input id=defchan name=defchan type=text
+                        autofocus value=defchandefchan>
+        <tr><td align=right>
+
+    <!-- <tr> <td> <td colspan=2>
+        <input type=button onclick=save_def() name=chanbutt accesskey=d
+        value='Save Default Configuration'> <font style=color:#aaaaaa>(Alt+Shift+d)</font>
+    -->
+
     <tr> <td colspan=3 align=center>
+    <tr> <td> <td>
+
     <input type=button onclick=save_lora() name=confbutt value='Save Configuration'>
     <tr> <td colspan=3 align=center>
 
 </table>
+
 <tr><td>
   <table width=100% border=0>
         <tr>
@@ -191,7 +218,7 @@ textarea {
         <tr>
             <td align=center>
                 <div style="font-size:large"   align=center>
-                   <a href=page_2.html>Settings</a>
+                   <a href=page_2.html>WiFi Settings</a>
                 </div>
             <td align=center>
                  <div style="font-size:large"   align=center>
