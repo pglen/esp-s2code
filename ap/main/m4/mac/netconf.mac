@@ -2,7 +2,8 @@
 
     function containsPunctuation(str) {
     // Regex to match a variety of common punctuation marks anywhere in the string
-    const punctuationRegex = /[!"#$%&'()*,\./:;<=>?@[\\\]^`{|}~]/;
+    //const punctuationRegex = /[!"#$%&'()*,\./:;<=>?@[\\\]^`{|}~]/;
+    const punctuationRegex = /[!"#$%&'()*,\./:;<=>?@[\\^`{|}~]/;
     return punctuationRegex.test(str);
     }
     async function save_wifi() {

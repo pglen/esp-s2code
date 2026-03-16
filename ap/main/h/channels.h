@@ -9,7 +9,7 @@
 
       REV   DATE            BY              DESCRIPTION
       ----  -----------     ----------      ------------------------------
-      0.00  Sun, 15-03-26   Peter Glen      Initial version.
+      0.00  Mon, 16-03-26   Peter Glen      Initial version.
 
    ======================================================================= */
 
@@ -17,7 +17,7 @@
 // compile time.
 // Edit the corresponding HTML file instead: main/html/channels.html
 
-const char lora_chan [] =
+const char lora_chann_html [] =
 
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">\n"
 "<html>\n"
@@ -83,7 +83,7 @@ const char lora_chan [] =
 "    /*background:yellow;\n"
 "    color:blue;\n"
 "    border-style:solid;\n"
-"    border-width:1px;\n"
+"    border-width:medium;\n"
 "    display:inline-block;\n"
 "    */\n"
 "    vertical-align:top;\n"
@@ -121,7 +121,60 @@ const char lora_chan [] =
 "            </font>\n"
 "        </div>\n"
 "    </table>\n"
-"Channel 1\n"
+"<table width=100%>\n"
+"    <td align=center height=12>\n"
+"    The following table describes the LORA channel allocation, recommended by the\n"
+"    the manufacturer of the device. These values are not enforced, the only\n"
+"    criteria is that they are between the device's lower and upper limits,\n"
+"    and both the receiver and sender is tuned to the same frequency.\n"
+"    <tr><td>\n"
+"    <tr><td> <font style=font-size:x-large>\n"
+"                <b>Common recommended platform presets:</b></font>\n"
+"    <tr><td>\n"
+"    <table width=80% align=center>\n"
+"        <tr align=center>\n"
+"            <td><b>LORA Channel</b>\n"
+"            <td><b>Frequency</b>   <td><b>Bandwidth (optional)</b> <td><b>Scope</b>\n"
+"        <tr align=center>\n"
+"            <td width=10% align=center>1\n"
+"            <td>433.375 MHz   <td>125 kHz  <td>Default / Mandatory\n"
+"        <tr  align=center bgcolor=#eeeeeeff>\n"
+"            <td width=10% align=center>2\n"
+"            <td>433.575 MHz   <td>125 kHz  <td>Default / Mandatory\n"
+"        <tr align=center >\n"
+"            <td width=10% align=center>3\n"
+"            <td>433.775 MHz   <td>125 kHz  <td>Optional / Extension\n"
+"        <tr  align=center bgcolor=#eeeeeeff>\n"
+"            <td width=10% align=center>4\n"
+"            <td>433.975 MHz   <td>125 kHz  <td>Optional / Extension\n"
+"        <tr align=center >\n"
+"            <td width=10% align=center>5\n"
+"            <td>434.175 MHz   <td>125 kHz  <td>Optional / Extension\n"
+"        <tr  align=center bgcolor=#eeeeeeff>\n"
+"            <td width=10% align=center>6\n"
+"            <td>434.375 MHz   <td>125 kHz  <td>Optional / Extension\n"
+"        <tr align=center >\n"
+"            <td width=10% align=center>7\n"
+"            <td>434.575 MHz   <td>125 kHz  <td>Optional / Extension\n"
+"    </table>\n"
+" <tr><td>\n"
+" The device frequency defaults to channel 1. (433.375 MHz).<p>\n"
+" <tr><td><font style=font-size:x-large>\n"
+"    <b>Bandwidth threshold values:</b>\n"
+" <tr><td>\n"
+"    <table width=80% align=center>\n"
+"        <tr><td>7.8kHz     10.4kHz    15.6kHz    20.8kHz\n"
+"        31.25kHz    41.7kHz    62.5kHz    125kHz    250kHz   500kHz\n"
+"    </table>\n"
+"<tr><td>\n"
+"The bandwidth configuration will obey the above thresholds, and set according\n"
+"to the limit specified on the above table. For example setting it 40kHz will\n"
+"round it down to 31.32kHz. Set it to 42kHz will round it down ro 41.4kHz.<p>\n"
+"<tr><td>\n"
+" The device bandwidth defaults to 40kHz.<p>\n"
+"**Disclaimer: While the 433MHz Band is regulated relatively uniformly across\n"
+"countries, still, the regulations vary somewhat. Always check local spectrum regulations\n"
+"before deploying 433MHz devices.<p>\n"
 "<tr><td>\n"
 "  <table width=100% border=0>\n"
 "        <tr>\n"

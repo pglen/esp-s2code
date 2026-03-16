@@ -67,7 +67,7 @@ dir, hr, menu, pre {
     /*background:yellow;
     color:blue;
     border-style:solid;
-    border-width:1px;
+    border-width:medium;
     display:inline-block;
     */
     vertical-align:top;
@@ -104,10 +104,7 @@ textarea {
 
 window.addEventListener('load', function()
 {
-    //startTime();
-
     var xhr = null;
-    //var xhr2 = null;
 
     getXmlHttpRequestObject = function()
     {
@@ -118,16 +115,6 @@ window.addEventListener('load', function()
         }
         return xhr;
     };
-    //getXmlHttpRequestObject2 = function()
-    //{
-    //    if(!xhr2)
-    //    {
-    //        // Create a new XMLHttpRequest object
-    //        xhr2 = new XMLHttpRequest();
-    //    }
-    //    return xhr2;
-    //};
-
     updateLiveData = function()
     {
         var url = 'live.html'
@@ -155,12 +142,18 @@ window.addEventListener('load', function()
             //console.log("Answer %d %d '%s' ",
             //        xhr.readyState, xhr.status, xhr.responseText);
 
-            // re-enable text control
+            //console.log("Answer: '" + jsObject.strx +
+            //                "' Update:" + jsObject.update +
+            //                        " Count: ", + jsObject.count);
+
+            // Update text control states
             if(jsObject.strx == "Done")
                 {
                 const textInput = document.getElementById('txt');
                 textInput.disabled = false;
                 textInput.value = "";
+                const cntOutput = document.getElementById('cnt');
+                cntOutput.innerHTML = ""
                 textInput.focus();
                 textInput.style.cursor = "auto";
                 }
@@ -170,33 +163,11 @@ window.addEventListener('load', function()
                 textInput.disabled = false;
                 textInput.focus();
                 }
-            sentx = "";
-            for(aa = 0; aa < 10; aa++)
+            else if (jsObject.strx == "Idle ...")
                 {
-                let curr = "hist_" + aa;
-                if (jsObject[curr])
-                    {
-                    //console.log("sent %d %s = '%s' ",
-                    //                        xhr.status, curr, jsObject[curr]);
-                    const myObject = JSON.parse(jsObject[curr]);
-                    sentx += "[" + myObject.hash + "] (" + myObject.chan + ") "
-                    let sentx2 = "";
-                    if(myObject.reply)
-                        {
-                        sentx2 = "<font color=blue>" + myObject.reply + "</font>";
-                        }
-                    else
-                        {
-                        sentx2 = myObject.text
-                        }
-                    sentx2 = sentx2.replace(/\\n/g, "<br>");
-                    //sentx2 = sentx2.split("\\n").join("<br>");
-                    sentx += sentx2 + "<br>";
-                    }
-                else
-                    {
-                    break;
-                    }
+                const textInput = document.getElementById('txt');
+                textInput.disabled = false;
+                //textInput.focus();
                 }
             if (jsObject.sent)
                 {
@@ -204,6 +175,34 @@ window.addEventListener('load', function()
                 }
             if (jsObject.update)
                 {
+                sentx = "";
+                for(aa = 0; aa < 10; aa++)
+                    {
+                    let curr = "hist_" + aa;
+                    if (jsObject[curr])
+                        {
+                        //console.log("sent %d %s = '%s' ",
+                        //                        xhr.status, curr, jsObject[curr]);
+                        const myObject = JSON.parse(jsObject[curr]);
+                        sentx += "[" + myObject.hash + "] (" + myObject.chan + ") "
+                        let sentx2 = "";
+                        if(myObject.reply)
+                            {
+                            sentx2 = "<font color=blue>" + myObject.reply + "</font>";
+                            }
+                        else
+                            {
+                            sentx2 = myObject.text
+                            }
+                        sentx2 = sentx2.replace(/\\n/g, "<br>");
+                        //sentx2 = sentx2.split("\\n").join("<br>");
+                        sentx += sentx2 + "<br>";
+                        }
+                    else
+                        {
+                        break;
+                        }
+                    }
                 //console.log("update %d '%d' ", xhr.status, jsObject.update);
                 const histInput = document.getElementById('hist');
                 histInput.innerHTML = sentx;
@@ -217,6 +216,27 @@ window.addEventListener('load', function()
 
 </script>
 
+
+<style>
+
+.container {
+  display: flex; /* Makes the container a flex container */
+  //width: 100%;
+  border-width: 0px;
+}
+
+.resdiv {
+    border-style: solid;
+    border-width: 1px;
+    display: inline-block;
+    vertical-align: top;
+    horizontal-align: right;
+    flex-grow: 1;
+    style="height: 400px;"
+    overflow: auto;
+}
+
+</style>
 
 <script async>
 
@@ -271,7 +291,11 @@ window.addEventListener('load', function()
             }
         const formData = new FormData(myform);
         const plainFormData = Object.fromEntries(formData.entries());
-        plainFormData['text'] = truncateString(plainFormData['text'], 125);
+        if(plainFormData['text'].length > 200)
+            {
+            alert("Truncating message to 200 bytes");
+            }
+        plainFormData['text'] = truncateString(plainFormData['text'], 200);
         const num = chksum(plainFormData['text']);
         plainFormData['hash'] = num.toString(16);
         //plainFormData['answer'] = "Awaiting ...";
@@ -284,17 +308,11 @@ window.addEventListener('load', function()
                 body: jsonString
                 })
         const data = await response.text();
-        // Fill in current state
         //console.log("Data from await: '%s'", data);
-        const textOutput = document.getElementById('current');
-        if(data) {
-            textOutput.innerHTML = data;
-        }
-        //textInput.value = "";
 
-        textInput.disabled = true;
-        textInput.focus();
-        textInput.style.cursor = "wait";
+        // Fill in current state
+        const textOutput = document.getElementById('current');
+        textOutput.innerHTML = data;
     }
 
     function pressed_send() {
@@ -302,6 +320,21 @@ window.addEventListener('load', function()
         //mForm.submit()
         pressed_sub();
     }
+
+function textUpdate() {
+    const textInput = document.getElementById('txt');
+    console.log('Text area content changed in real-time.' +
+                     textInput.value.length);
+    const cntOutput = document.getElementById('cnt');
+    cntOutput.innerHTML = "Count: " + textInput.value.length;
+}
+
+window.addEventListener('load', () => {
+    const textInput = document.getElementById('txt');
+    textInput.addEventListener('input', textUpdate)
+    const cntOutput = document.getElementById('cnt');
+    cntOutput.innerHTML = "Count: " + textInput.value.length;
+});
 
 window.addEventListener("keydown", onKeyDown, true);
 window.addEventListener("keyup", onKeyUp, true);
@@ -334,10 +367,12 @@ function onKeyUp(e){
   }
 </script>
 
-<table align=center border=0 width=100% padding=10>
+<table align=center width=100% padding=10>
 
-    <tr><td class=mydiv>  Sent / Received: <td>
-        <div class=mytext id=hist>Nothing received yet ... <br></div>
+    <tr><td> Sent / Received: <td colspan=2>
+        <div class="container">
+            <div class=resdiv id=hist> Nothing received yet ... &nbsp; </div>
+        </div>
     <tr><td class=mydiv>
         Trench:
         <td><input type=text name=chan id=chan value="0"> (0-65534)
@@ -346,26 +381,19 @@ function onKeyUp(e){
         Send:
         <td>
         <textarea autofocus name=text rows=4 cols=64 id=txt></textarea>
-        <td align=center> Ctrl-Enter to submit <br>
+        <td align=center>
+                          <div id=cnt>Count: 0</div>
+                          <i>Max 200 Characters</i><br>
+                          Ctrl-Enter to submit <p>
             <input type=button value=Send onclick=pressed_send()><br>
             <div id=status></div>
 
     <tr><td class=mydiv>
         Send Status:
-        <td>
-        <div class=mytext width=90% id=current> Idle <br></div>
+        <td colspan=2>
+        <div class=mytext width=90% id=current>Idle.<br></div>
 
 </table>
-
-    <tr><td>
-    <table align=center>
-        <tr><td>
-        <div style="font-size:large" align=center>
-            <font color=#0000ff>
-            comstatcomstatcomstatcomstatcomstat
-            </font>
-        </div>
-    </table>
 
 <tr><td>
   <table width=100% border=0>
@@ -399,6 +427,16 @@ function onKeyUp(e){
 
     </table>
 
+    <tr><td>
+    <table align=center>
+        <tr><td>
+        <div style="font-size:large" align=center>
+            <font color=#0000ff>
+            comstatcomstatcomstatcomstatcomstat
+            </font>
+        </div>
+    </table>
+
     <tr>
     <td colspan=2 align=center>
     <hr>
@@ -421,3 +459,4 @@ function onKeyUp(e){
 </form>
 </body>
 </html>
+

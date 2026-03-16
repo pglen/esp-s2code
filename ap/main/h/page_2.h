@@ -9,7 +9,7 @@
 
       REV   DATE            BY              DESCRIPTION
       ----  -----------     ----------      ------------------------------
-      0.00  Sun, 15-03-26   Peter Glen      Initial version.
+      0.00  Mon, 16-03-26   Peter Glen      Initial version.
 
    ======================================================================= */
 
@@ -396,7 +396,7 @@ const char settings_html [] =
 "    /*background:yellow;\n"
 "    color:blue;\n"
 "    border-style:solid;\n"
-"    border-width:1px;\n"
+"    border-width:medium;\n"
 "    display:inline-block;\n"
 "    */\n"
 "    vertical-align:top;\n"
@@ -446,7 +446,8 @@ const char settings_html [] =
 "<script async>\n"
 "    function containsPunctuation(str) {\n"
 "    // Regex to match a variety of common punctuation marks anywhere in the string\n"
-"    const punctuationRegex = /[!\"#$%&'()*,\\./:;<=>?@[\\\]^`{|}~]/;\n"
+"    //const punctuationRegex = /[!\"#$%&'()*,\\./:;<=>?@[\\\]^`{|}~]/;\n"
+"    const punctuationRegex = /[!\"#$%&'()*,\\./:;<=>?@[\\^`{|}~]/;\n"
 "    return punctuationRegex.test(str);\n"
 "    }\n"
 "    async function save_wifi() {\n"

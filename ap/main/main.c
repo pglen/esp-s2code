@@ -60,6 +60,8 @@ static SemaphoreHandle_t hSemaphore  = NULL;
 
 char      gl_statx[64] = "";
 
+#define RET_IFZERO(valx, retval) if ((valx)) == 0) return((retval));
+
 #if CONFIG_ESP_GTK_REKEYING_ENABLE
 #define EXAMPLE_GTK_REKEY_INTERVAL CONFIG_ESP_GTK_REKEY_INTERVAL
 #else
@@ -88,6 +90,17 @@ char *bcstr     = "bcountbcount";
 char *netstr    = "hnamehnamehnamehnamehnamehnamehname";
 char *passstr   = "pass1pass1pass1pass1pass1pass1";
 char *pass2str  = "pass2pass2pass2pass2pass2pass2";
+char *spreadstr = "spreadspread";
+char *bandstr   = "bandbandbandband";
+char *txpowstr  = "txpowtxpowtxpow";
+char *freqstr   = "freqfreqfreqfreqfreqfreq";
+char *chanstr   = "deftrenchdeftrench";
+
+char    gl_spread[32] = "";
+char    gl_bwidth[32] = "";
+char    gl_txpower[32] = "";
+char    gl_txfreq[32] = "";
+char    gl_deftrench[32] = "";
 
 // Shuffle a string to 16 bit unique ID
 
@@ -107,8 +120,65 @@ int16_t chksum(const char *str, int len)
     return(ret);
 }
 
+static  int pad_br(const char *ptr, int xlen, char *buffx, int maxlen)
+
+{
+    int cc = 0, dd = 0;
+    for (int bb = 0; bb < xlen; bb++)
+        {
+        if(cc >= maxlen -  5)
+            break;
+        char chh = ptr[bb];
+        buffx[cc++] = chh;
+        if(cc < xlen - 4)   // Room?
+            {
+            // Check for <br>
+            if(ptr[bb] == '<' && ptr[bb+1] == 'b' &&
+                ptr[bb+2] == 'r' && ptr[bb+3] == '>')
+                dd = 0;
+            else
+                dd++;
+            }
+        // Inject <br>
+        if(dd >= 80)
+            {
+            printf("Adding newline at %d\n", bb);
+            dd = 0;
+            //buffx[cc++] = '<';
+            //buffx[cc++] = 'b';
+            //buffx[cc++] = 'r';
+            //buffx[cc++] = '>';
+            }
+        }
+    buffx[cc++] = '\0';
+    return cc;
+}
+
+// Read var, if none, set default
+
+static void read_set_def(nvs_handle handle, char *key, char *val, int maxlen, char *defval)
+{
+    unsigned int olen = maxlen;
+    esp_err_t err = nvs_get_str(handle, key, val, &olen);
+    if (err != ESP_OK || val[0] == '\0')
+        {
+        //ESP_LOGI(TAG, "Warn (%d) reading NVS %s", err, key, defval);
+        strncpy(val, defval, maxlen);
+        err = nvs_set_str(handle, key, defval);
+        if (err != ESP_OK)
+            ESP_LOGI(TAG, "ERR (%d) writing default NVS %s", err, key, defval);
+        printf("nvs def: %s -> '%s'\n", key, val);
+        }
+    else
+        {
+        printf("nvs read: %s -> '%s'\n", key, val);
+        }
+}
+
+// Read / set default values
 void    read_nvs_vars()
 {
+    char netname[64];
     nvs_handle my_handle;
 
     esp_err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
@@ -117,22 +187,20 @@ void    read_nvs_vars()
         printf("Error (%d) opening NVS handle.", err);
         return;
         }
-    unsigned int olen2 = sizeof(gl_netname);
-    err = nvs_get_str(my_handle, "netname", gl_netname, &olen2);
-    if (err != ESP_OK)
-        {
-        //if (verbose)
-        //    ESP_LOGI(TAG, "Warn (%d) reading NVS agv", err);
-        //printf("Default host config\n");
-        }
-    unsigned int olen3 = sizeof(gl_netpass);
-    err = nvs_get_str(my_handle, "netpass", gl_netpass, &olen3);
-    if (err != ESP_OK)
-        {
-        //if (verbose)
-        //    ESP_LOGI(TAG, "Warn (%d) reading NVS agv", err);
-        //printf("Default pass config\n");
-        }
+
+    GET_MAC(self_mac);
+    snprintf(netname, sizeof(netname),
+                "LoraWiFi-%02X%02X", self_mac[4], self_mac[5]);
+
+    read_set_def(my_handle, "netname", gl_netname, sizeof(gl_netname), netname);
+    read_set_def(my_handle, "netpass", gl_netpass, sizeof(gl_netpass), "12345678");
+
+    read_set_def(my_handle, "spread",    gl_spread,    sizeof(gl_spread),   "12");
+    read_set_def(my_handle, "bwidth",    gl_bwidth,    sizeof(gl_bwidth),   "41.7");
+    read_set_def(my_handle, "txpower",   gl_txpower,   sizeof(gl_txpower),  "15");
+    read_set_def(my_handle, "txfreq",    gl_txfreq,    sizeof(gl_txfreq),   "433.375");
+    read_set_def(my_handle, "deftrench", gl_deftrench, sizeof(gl_deftrench), "0");
+
     nvs_close(my_handle);
 }
 
@@ -238,9 +306,9 @@ static  void    fill_version(char *mem)
 
 static  void    fill_comstr(char *mem)
 {
-    char vtmp[48];
-    snprintf(vtmp, sizeof(vtmp), "%s %s", PROG_VER, PROG_DATE);
-    subst_str(mem, comstr, vtmp);
+    //char vtmp[48];
+    //snprintf(vtmp, sizeof(vtmp), "%s %s", PROG_VER, PROG_DATE);
+    subst_str(mem, comstr, "");
 }
 
 static  void    fill_bcnt(char *mem)
@@ -286,15 +354,14 @@ static esp_err_t manual_get_handler(httpd_req_t *req)
 {
     gl_last_http = esp_timer_get_time();
 
-    char* resp_str = malloc(strlen(manual_html) + 2);
+    char* resp_str = xstrdup(manual_html);
     if(!resp_str)
         return ESP_FAIL;
-    strcpy(resp_str, manual_html);
 
     subst_footer(resp_str);
 
     //printf("manual.html incoming query %s\n", req->uri);
-    httpd_resp_send(req, resp_str, strlen(resp_str));
+    httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
     free(resp_str);
     return ESP_OK;
 }
@@ -311,19 +378,19 @@ static esp_err_t lora_get_handler(httpd_req_t *req)
 
 {
     gl_last_http = esp_timer_get_time();
-
-    char* resp_str = malloc(strlen(lora_html) + 2);
+    char *resp_str = xstrdup(lora_html);
     if(!resp_str)
         return ESP_FAIL;
-    strcpy(resp_str, lora_html);
 
-    char *status = "";
-    subst_str(resp_str, statstr, status);
-
+    // Send current parameters
+    subst_str(resp_str, statstr,    "");
+    subst_str(resp_str, spreadstr,  gl_spread    );
+    subst_str(resp_str, bandstr,    gl_bwidth    );
+    subst_str(resp_str, txpowstr,   gl_txpower   );
+    subst_str(resp_str, freqstr,    gl_txfreq    );
+    subst_str(resp_str, chanstr,    gl_deftrench );
     subst_footer(resp_str);
-
-    //printf("manual.html incoming query %s\n", req->uri);
-    httpd_resp_send(req, resp_str, strlen(resp_str));
+    httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
     free(resp_str);
     return ESP_OK;
 }
@@ -334,13 +401,67 @@ static httpd_uri_t lorapage = {
     .handler   = lora_get_handler,
 };
 
+static esp_err_t lora_post_handler(httpd_req_t *req)
+
+{
+    gl_last_http = esp_timer_get_time();
+
+    char    *buff = malloc(req->content_len + 1);
+    if(!buff)
+        {
+        printf("no mem for lora post buff\n");
+        httpd_resp_send(req, "no mem", HTTPD_RESP_USE_STRLEN);
+        return ESP_OK;
+        }
+    httpd_req_recv(req, buff, req->content_len);
+    buff[req->content_len] = '\0';
+    //printf("settings lora post cJSON '%s'\n", buff);
+    cJSON *root3 = cJSON_Parse(buff);
+    free(buff);
+
+    char *strxs = cJSON_GetObjectItem(root3, "spread")->valuestring;
+    char *strxb = cJSON_GetObjectItem(root3, "bwidth")->valuestring;
+    char *strxt = cJSON_GetObjectItem(root3, "txpower")->valuestring;
+    char *strxx = cJSON_GetObjectItem(root3, "txfreq")->valuestring;
+    char *strxd = cJSON_GetObjectItem(root3, "deftrench")->valuestring;
+
+    //printf("Spread / bwidth %s %s \n", strxs, strxb);
+    //printf("Txpow / txfrq / deftrench %s %s %s\n", strxt, strxx, strxd);
+
+    strncpy(gl_spread,      strxs, sizeof(gl_spread));
+    strncpy(gl_bwidth,      strxb, sizeof(gl_bwidth));
+    strncpy(gl_txpower,     strxt, sizeof(gl_txpower));
+    strncpy(gl_txfreq,      strxx, sizeof(gl_txfreq));
+    strncpy(gl_deftrench,   strxd, sizeof(gl_deftrench));
+
+    submit_nvs_str("spread",    strxs);
+    submit_nvs_str("bwidth",    strxb);
+    submit_nvs_str("txpower",   strxt);
+    submit_nvs_str("txfreq",    strxx);
+    submit_nvs_str("deftrench", strxd);
+
+    cJSON_Delete(root3);
+
+    //printf("manual.html incoming query %s\n", req->uri);
+    char *resp_str = "Data Saved";
+    httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
+
+    return ESP_OK;
+}
+
+static httpd_uri_t lorapagep = {
+    .uri       = "/page_3.html",
+    .method    = HTTP_POST,
+    .handler   = lora_post_handler,
+};
+
 #include "h/page_2.h"
 
 static esp_err_t settings_get_handler(httpd_req_t *req)
 {
     gl_last_http = esp_timer_get_time();
 
-    char* resp_str = malloc(strlen(settings_html) + 2);
+    char* resp_str = xstrdup(settings_html);
     if(!resp_str)
         return ESP_FAIL;
     strcpy(resp_str, settings_html);
@@ -355,10 +476,38 @@ static esp_err_t settings_get_handler(httpd_req_t *req)
     subst_footer(resp_str);
 
     //printf("manual.html incoming query %s\n", req->uri);
-    httpd_resp_send(req, resp_str, strlen(resp_str));
+    httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
     free(resp_str);
     return ESP_OK;
 }
+
+#include "h/channels.h"
+
+static esp_err_t channels_get_handler(httpd_req_t *req)
+{
+    gl_last_http = esp_timer_get_time();
+
+    char* resp_str = xstrdup(lora_chann_html);
+    if(!resp_str)
+        return ESP_FAIL;
+    strcpy(resp_str, lora_chann_html);
+
+    subst_str(resp_str, statstr, "");
+    subst_str(resp_str, rebostr, "");
+
+    subst_footer(resp_str);
+
+    //printf("manual.html incoming query %s\n", req->uri);
+    httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
+    free(resp_str);
+    return ESP_OK;
+}
+
+static httpd_uri_t chann = {
+    .uri       = "/channels.html",
+    .method    = HTTP_GET,
+    .handler   = channels_get_handler,
+};
 
 static httpd_uri_t setpage = {
     .uri       = "/page_2.html",
@@ -377,7 +526,7 @@ static esp_err_t settings_post_handler(httpd_req_t *req)
         }
     httpd_req_recv(req, buff, req->content_len);
     buff[req->content_len] = '\0';
-    printf("settings post cJSON '%s'\n", buff);
+    //printf("settings post cJSON '%s'\n", buff);
     cJSON *root2 = cJSON_Parse(buff);
     free(buff);
 
@@ -391,10 +540,9 @@ static esp_err_t settings_post_handler(httpd_req_t *req)
 
     cJSON_Delete(root2);
 
-    char* resp_str = malloc(strlen(settings_html) + 2);
+    char* resp_str = xstrdup(settings_html);
     if(!resp_str)
         return ESP_FAIL;
-    strcpy(resp_str, settings_html);
 
     char *status = "";
     subst_str(resp_str, statstr, status);
@@ -404,7 +552,7 @@ static esp_err_t settings_post_handler(httpd_req_t *req)
     subst_footer(resp_str);
 
     //printf("manual.html incoming query %s\n", req->uri);
-    httpd_resp_send(req, resp_str, strlen(resp_str));
+    httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
     free(resp_str);
     return ESP_OK;
 }
@@ -447,7 +595,11 @@ static  void    add_hist(const char *item)
             }
         gl_sentprog--;
         }
-    sentarr[gl_sentprog] = tmp;
+    int xlen = strlen(tmp);
+    char *buff = malloc(xlen + 10);
+    pad_br(tmp, xlen, buff, xlen + 8);
+    free(tmp);
+    sentarr[gl_sentprog] = buff;
     gl_sentprog++;
 
     GIVE_SEMA(hSemaphore);
@@ -457,31 +609,28 @@ static esp_err_t live_get_handler(httpd_req_t *req)
 {
     //printf("in Live handler.\n");
 
-    tmpx[0] = '\0';
-    if(timeout_cnt > 9 && timeout_cnt < 11)
+    if(strcmp(gl_statx, "Done") == 0)
         {
-        gl_statx[0] = '\0';
+        timeout_cnt = 0;
         }
-    if(timeout_cnt > 8 && timeout_cnt < 10)
+    //if(timeout_cnt > 9 && timeout_cnt < 11)
+    //    {
+    //    gl_statx[0] = '\0';
+    //    }
+    if(timeout_cnt >= 8 && timeout_cnt <= 10)
         {
-        //snprintf(tmpx, sizeof(tmpx), "%d %s", timeout_cnt, "Timeout");
         snprintf(tmpx, sizeof(tmpx), "%s", "Timeout");
         }
-    if(gl_statx[0])
+    if(gl_statx[0] == '\0' || strcmp(gl_statx, "Idle ...") != 0)
         {
         timeout_cnt++;
-
-        //snprintf(tmpx, sizeof(tmpx), "%d %s", timeout_cnt, gl_statx);
-        snprintf(tmpx, sizeof(tmpx), "%s", gl_statx);
         }
-    //httpd_resp_set_type(req, "text/html");
-    //httpd_resp_send(req, tmpx, HTTPD_RESP_USE_STRLEN);
-
     cJSON *root = cJSON_CreateObject();
-    cJSON_AddStringToObject(root, "strx", tmpx);
+    cJSON_AddStringToObject(root, "strx", gl_statx);
     cJSON_AddNumberToObject(root, "count", timeout_cnt);
     cJSON_AddNumberToObject(root, "update", gl_update);
-    if(gl_update) {
+    if(gl_update)
+        {
         gl_update = 0;
         if(gl_sentptr)
             {
@@ -491,14 +640,13 @@ static esp_err_t live_get_handler(httpd_req_t *req)
             }
         for(int aa = 0; aa < gl_sentprog; aa++)
             {
-            char curr[12]; curr[0] = '\0';
-            snprintf(curr, sizeof(curr), "hist_%d", aa);
+            char curr[12]; snprintf(curr, sizeof(curr), "hist_%d", aa);
+            // Wrap to 80
             cJSON_AddStringToObject(root, curr, sentarr[aa]);
             }
         }
     const char *sys_info = cJSON_Print(root);
     cJSON_Delete(root);
-
     //printf("Sending: '%s'\n", sys_info);
     httpd_resp_set_type(req, "application/json");
     httpd_resp_sendstr(req, sys_info);
@@ -528,7 +676,6 @@ static esp_err_t root_get_handler(httpd_req_t *req)
     httpd_resp_set_type(req, "text/html");
     httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
     free(resp_str);
-
     return ESP_OK;
 }
 
@@ -540,7 +687,6 @@ static esp_err_t root_icon_handler(httpd_req_t *req)
     printf("Icon handler. '%s'\n", req->uri);
     httpd_resp_set_type(req, "image/x-icon");
     httpd_resp_send(req, iconx, HTTPD_RESP_USE_STRLEN);
-
     return ESP_OK;
 }
 
@@ -564,16 +710,16 @@ static esp_err_t post_post_handler(httpd_req_t *req)
         }
     httpd_req_recv(req, buff, req->content_len);
     buff[req->content_len] = '\0';
-    printf("JSON buff'%s'\n", buff);
+    //printf("JSON buff'%s'\n", buff);
 
     // Check hash
     cJSON *root2 = cJSON_Parse(buff);
     free(buff);
 
-    char *strx2 = cJSON_GetObjectItem(root2, "text")->valuestring;
+    //char *strx2 = cJSON_GetObjectItem(root2, "text")->valuestring;
     //printf("json strx2: '%s'\n", strx2);
-    int16_t sss = chksum(strx2, strlen(strx2));
-    printf("chash=%x\n", sss & 0xffff);
+    //int16_t sss = chksum(strx2, strlen(strx2));
+    //printf("chash=%x\n", sss & 0xffff);
     cJSON_AddStringToObject(root2, "reply", "");
     char *buff2 = cJSON_Print(root2);
     if(!buff2)
@@ -684,10 +830,12 @@ static void start_webservers(void)
     httpd_register_uri(&hindex);
     httpd_register_uri(&sindex);
     httpd_register_uri(&faviconx);
+    httpd_register_uri(&chann);
     httpd_register_uri(&setpage);
     httpd_register_uri(&setpagepost);
     httpd_register_uri(&manpage);
     httpd_register_uri(&lorapage);
+    httpd_register_uri(&lorapagep);
     httpd_register_uri(&postxpostx);
 }
 
@@ -759,17 +907,13 @@ void wifi_init_softap(void)
         wifi_config.ap.authmode = WIFI_AUTH_OPEN;
     }
 
-    GET_MAC(self_mac);
-    sprintf(gl_netname, "LoraWiFi-%02X%02X", self_mac[4], self_mac[5] );
-    sprintf(gl_netpass, "%s", "12345678");
-
     read_nvs_vars();
 
     memcpy(wifi_config.ap.ssid, gl_netname, sizeof(gl_netname));
     memcpy(wifi_config.ap.password, gl_netpass, sizeof(gl_netpass));
 
-    printf("Wifi Name '%s' -> '%s'\n",
-                    wifi_config.ap.ssid, wifi_config.ap.password);
+    //printf("Wifi Name '%s' -> '%s'\n",
+    //                wifi_config.ap.ssid, wifi_config.ap.password);
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
@@ -781,6 +925,10 @@ void wifi_init_softap(void)
              CONFIG_EXAMPLE_WIFI_SSID, CONFIG_ESP_WIFI_CHANNEL);
 }
 
+char *testx =   "Simulated Recv Simulated Recv Simulated Recv Simulated "
+                "Simulated Recv Simulated Recv "
+                "Recv Simulated Recv Simulated Recv: %d";
+
 static  void recv_task (void* arg)
 {
     int vnt = 0;
@@ -790,19 +938,23 @@ static  void recv_task (void* arg)
         {
         char  cstr[16], hstr[16];
         snprintf(cstr, sizeof(cstr), "%ld", ccc);
-        char  *strx = xsnprintf(
-                "Simulated Recv Simulated Recv Simulated Recv %d\n", vnt++);
+        char  *strx = xsnprintf(testx, vnt++);
         if(!strx)
             {
             printf("No mem for recv\n");
-            vTaskDelay(1000 / portTICK_PERIOD_MS);
+            vTaskDelay(100 / portTICK_PERIOD_MS);
             continue;
             }
-        cJSON *root = cJSON_CreateObject();
-        cJSON_AddStringToObject(root, "chan", cstr);
-        cJSON_AddStringToObject(root, "reply", strx);
-        int16_t sss = chksum(strx, strlen(strx));
+        int xlen = strlen(strx);
+        char *buffx = malloc(xlen + 30);
+        pad_br(strx, xlen, buffx, xlen + 26);
         free(strx);
+        cJSON *root = cJSON_CreateObject();
+        cJSON_AddStringToObject(root, "reply", buffx);
+        int16_t sss = chksum(buffx, strlen(buffx));
+        free(buffx);
+
+        cJSON_AddStringToObject(root, "chan", cstr);
         snprintf(hstr, sizeof(hstr), "%x", sss & 0xffff);
         cJSON_AddStringToObject(root, "hash", hstr);
         char *buff3 = cJSON_Print(root);
@@ -820,12 +972,11 @@ static  void recv_task (void* arg)
         gl_update = 1;
         //printf("Mem recv %ld\n", esp_get_free_heap_size());
         //printf("Integ %d\n", heap_caps_check_integrity(MALLOC_CAP_DEFAULT, true));
-        //uint32_t rrr = esp_random() % 4000;
-        //vTaskDelay(rrr / portTICK_PERIOD_MS);
-
         //heap_caps_print_single_task_stat(NULL, NULL);
 
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        //uint32_t rrr = esp_random() % 4000;
+        //vTaskDelay(rrr / portTICK_PERIOD_MS);
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
         }
 }
 
@@ -845,7 +996,7 @@ static  void trans_task (void* arg)
         snprintf(gl_statx, sizeof(gl_statx), "%s", "Done");
         gl_update = 1;
         vTaskDelay(1000 / portTICK_PERIOD_MS);
-        snprintf(gl_statx, sizeof(gl_statx), "%s", "");
+        snprintf(gl_statx, sizeof(gl_statx), "%s", "Idle ...");
         timeout_cnt = 0;
 
         //vTaskDelay(2000 / portTICK_PERIOD_MS);
@@ -882,6 +1033,12 @@ void app_main(void)
             {
             nvs_erase_key(my_handle, "netname");
             nvs_erase_key(my_handle, "netpass");
+            nvs_erase_key(my_handle, "spread");
+            nvs_erase_key(my_handle, "bwidth");
+            nvs_erase_key(my_handle, "txpower");
+            nvs_erase_key(my_handle, "txfreq");
+            nvs_erase_key(my_handle, "deftrench");
+
             nvs_close(my_handle);
             }
         }
@@ -898,8 +1055,9 @@ void app_main(void)
         {
         vTaskDelay(4000 / portTICK_PERIOD_MS);
         //printf("time: %lld\n", esp_timer_get_time());
-        //printf("Mem main: %lld ms %ld bytes\n",
-        //                    esp_timer_get_time()/1000, esp_get_free_heap_size());
+        //printf("Integ %d\n", heap_caps_check_integrity(MALLOC_CAP_DEFAULT, true));
+        printf("Mem main: %lld ms %ld bytes\n",
+                            esp_timer_get_time()/1000, esp_get_free_heap_size());
         }
 }
 

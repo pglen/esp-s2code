@@ -1,5 +1,6 @@
 <script async>
-    //console.log("Start LORA\n");
+
+    //console.log("Start LORA");
 
     const isNumeric2 = (str) => Number.isFinite(+str);
 
@@ -19,14 +20,25 @@
             return;
             }
         }
-
-    function save_lora() {
-        //console.log("Save LORA\n");
+    async function save_lora() {
+        //console.log("Save LORA");
         const formData = new FormData(myform);
         console.log("Data", formData);
-        check_lims(formData, "spread", 1, 12);
+        check_lims(formData, "spread", 6, 12);
         check_lims(formData, "bwidth", 10, 500);
         check_lims(formData, "txfreq", 433.05, 434.79);
+        check_lims(formData, "deftrench", 0, 65534);
+        const plainFormData = Object.fromEntries(formData.entries());
+        const jsonString = JSON.stringify(plainFormData);
+        //console.log("Submitting: '%s'", jsonString);
+        //document.getElementById("myform").submit();
+        const response = await fetch("page_3.html", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: jsonString
+                })
+        const data = await response.text();
+        console.log("Data from lora config: " + data)
     }
 </script>
 
@@ -37,8 +49,9 @@
     These configurations must match between the sender and receiver units.
     The parameters are range contained. The frequency parameter is a floating
     point number multiplied by megahertz. The bandwidth parameter is a floating
-    point number multiplied by kilohertz. Please note for communication
-    stability that the lowest recommended bandwith is 20 kHz.
+    point number multiplied by kilohertz. Please note: for communication
+    stability the lowest recommended bandwidth is 40+ kHz. (This is due to the
+    LORA Board's chrystal instability)
 
     <tr><td colspan=2 align=center>
         <table align=center border=0 width=100%  frame=void>
@@ -50,7 +63,7 @@
         </table>
         <tr><td>
         <tr> <td align=right>
-            LORA Spread Factor: (1 - 12)  &nbsp
+            LORA Spread Factor: (6 - 12)  &nbsp
             <td width=50%><input name=spread type=text value=spreadspread>
         <tr><td align=right>
             LORA Bandwidth: (10 - 500) kHz &nbsp<td><input name=bwidth type=text
@@ -66,7 +79,7 @@
         </table>
     <tr><td>
     <tr> <td align=right>
-        LORA TX power (1-12):  &nbsp<td><input name=txpower type=text
+        LORA TX power (1-15):  &nbsp<td><input name=txpower type=text
             value=txpowtxpowtxpow>
     <tr> <td align=right>
         LORA Frequency: (433.05 - 434.79) MHz &nbsp<td><input name=txfreq type=text
@@ -83,14 +96,9 @@
         </table>
         <tr><td>
         <tr> <td align=right>
-    Default Trench:  &nbsp<td width=50%><input id=defchan name=defchan type=text
-                        autofocus value=defchandefchan>
+    Default Trench:  &nbsp<td width=50%><input id=deftrench name=deftrench type=text
+                        autofocus value=deftrenchdeftrench>
         <tr><td align=right>
-
-    <!-- <tr> <td> <td colspan=2>
-        <input type=button onclick=save_def() name=chanbutt accesskey=d
-        value='Save Default Configuration'> <font style=color:#aaaaaa>(Alt+Shift+d)</font>
-    -->
 
     <tr> <td colspan=3 align=center>
     <tr> <td> <td>

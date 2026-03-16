@@ -3,7 +3,8 @@
     <td align=center height=12>
     The following table describes the LORA channel allocation, recommended by the
     the manufacturer of the device. These values are not enforced, the only
-    criteria is that both the receiver and sender tuned to the same frequency.
+    criteria is that they are between the device's lower and upper limits,
+    and both the receiver and sender is tuned to the same frequency.
 
     <tr><td>
     <tr><td> <font style=font-size:x-large>
@@ -38,8 +39,23 @@
     </table>
 
  <tr><td>
- <tr><td>
-The device defaults to channel 1 (433.375 MHz).<p>
+ The device frequency defaults to channel 1. (433.375 MHz).<p>
 
-**Disclaimer: Regulations vary by country. Always check local spectrum regulations
-before deploying 433 MHz devices.
+ <tr><td><font style=font-size:x-large>
+    <b>Bandwidth threshold values:</b>
+ <tr><td>
+    <table width=80% align=center>
+        <tr><td>7.8kHz     10.4kHz    15.6kHz    20.8kHz
+        31.25kHz    41.7kHz    62.5kHz    125kHz    250kHz   500kHz
+    </table>
+<tr><td>
+The bandwidth configuration will obey the above thresholds, and set according
+to the limit specified on the above table. For example setting it 40kHz will
+round it down to 31.32kHz. Set it to 42kHz will round it down ro 41.4kHz.<p>
+
+<tr><td>
+ The device bandwidth defaults to 40kHz.<p>
+
+**Disclaimer: While the 433MHz Band is regulated relatively uniformly across
+countries, still, the regulations vary somewhat. Always check local spectrum regulations
+before deploying 433MHz devices.<p>

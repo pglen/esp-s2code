@@ -2,10 +2,7 @@
 
 window.addEventListener('load', function()
 {
-    //startTime();
-
     var xhr = null;
-    //var xhr2 = null;
 
     getXmlHttpRequestObject = function()
     {
@@ -16,16 +13,6 @@ window.addEventListener('load', function()
         }
         return xhr;
     };
-    //getXmlHttpRequestObject2 = function()
-    //{
-    //    if(!xhr2)
-    //    {
-    //        // Create a new XMLHttpRequest object
-    //        xhr2 = new XMLHttpRequest();
-    //    }
-    //    return xhr2;
-    //};
-
     updateLiveData = function()
     {
         var url = 'live.html'
@@ -53,12 +40,18 @@ window.addEventListener('load', function()
             //console.log("Answer %d %d '%s' ",
             //        xhr.readyState, xhr.status, xhr.responseText);
 
-            // re-enable text control
+            //console.log("Answer: '" + jsObject.strx +
+            //                "' Update:" + jsObject.update +
+            //                        " Count: ", + jsObject.count);
+
+            // Update text control states
             if(jsObject.strx == "Done")
                 {
                 const textInput = document.getElementById('txt');
                 textInput.disabled = false;
                 textInput.value = "";
+                const cntOutput = document.getElementById('cnt');
+                cntOutput.innerHTML = ""
                 textInput.focus();
                 textInput.style.cursor = "auto";
                 }
@@ -68,33 +61,11 @@ window.addEventListener('load', function()
                 textInput.disabled = false;
                 textInput.focus();
                 }
-            sentx = "";
-            for(aa = 0; aa < 10; aa++)
+            else if (jsObject.strx == "Idle ...")
                 {
-                let curr = "hist_" + aa;
-                if (jsObject[curr])
-                    {
-                    //console.log("sent %d %s = '%s' ",
-                    //                        xhr.status, curr, jsObject[curr]);
-                    const myObject = JSON.parse(jsObject[curr]);
-                    sentx += "[" + myObject.hash + "] (" + myObject.chan + ") "
-                    let sentx2 = "";
-                    if(myObject.reply)
-                        {
-                        sentx2 = "<font color=blue>" + myObject.reply + "</font>";
-                        }
-                    else
-                        {
-                        sentx2 = myObject.text
-                        }
-                    sentx2 = sentx2.replace(/\\n/g, "<br>");
-                    //sentx2 = sentx2.split("\\n").join("<br>");
-                    sentx += sentx2 + "<br>";
-                    }
-                else
-                    {
-                    break;
-                    }
+                const textInput = document.getElementById('txt');
+                textInput.disabled = false;
+                //textInput.focus();
                 }
             if (jsObject.sent)
                 {
@@ -102,6 +73,34 @@ window.addEventListener('load', function()
                 }
             if (jsObject.update)
                 {
+                sentx = "";
+                for(aa = 0; aa < 10; aa++)
+                    {
+                    let curr = "hist_" + aa;
+                    if (jsObject[curr])
+                        {
+                        //console.log("sent %d %s = '%s' ",
+                        //                        xhr.status, curr, jsObject[curr]);
+                        const myObject = JSON.parse(jsObject[curr]);
+                        sentx += "[" + myObject.hash + "] (" + myObject.chan + ") "
+                        let sentx2 = "";
+                        if(myObject.reply)
+                            {
+                            sentx2 = "<font color=blue>" + myObject.reply + "</font>";
+                            }
+                        else
+                            {
+                            sentx2 = myObject.text
+                            }
+                        sentx2 = sentx2.replace(/\\n/g, "<br>");
+                        //sentx2 = sentx2.split("\\n").join("<br>");
+                        sentx += sentx2 + "<br>";
+                        }
+                    else
+                        {
+                        break;
+                        }
+                    }
                 //console.log("update %d '%d' ", xhr.status, jsObject.update);
                 const histInput = document.getElementById('hist');
                 histInput.innerHTML = sentx;

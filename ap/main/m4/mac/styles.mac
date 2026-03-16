@@ -54,7 +54,7 @@ dir, hr, menu, pre {
     /*background:yellow;
     color:blue;
     border-style:solid;
-    border-width:1px;
+    border-width:medium;
     display:inline-block;
     */
     vertical-align:top;

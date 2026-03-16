@@ -9,7 +9,6 @@ include(mac/banner.mac)
 include(mac/status.mac)
 include(mac/loraconf.mac)
 dnl include(mac/defconf.mac)
-dnl standard footer
+include(mac/fcc.mac)
 include(mac/lowmenu.mac)
 include(mac/foot.mac)
-

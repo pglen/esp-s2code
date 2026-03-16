@@ -9,7 +9,7 @@
 
       REV   DATE            BY              DESCRIPTION
       ----  -----------     ----------      ------------------------------
-      0.00  Sun, 15-03-26   Peter Glen      Initial version.
+      0.00  Mon, 16-03-26   Peter Glen      Initial version.
 
    ======================================================================= */
 
@@ -83,7 +83,7 @@ const char notfound_html [] =
 "    /*background:yellow;\n"
 "    color:blue;\n"
 "    border-style:solid;\n"
-"    border-width:1px;\n"
+"    border-width:medium;\n"
 "    display:inline-block;\n"
 "    */\n"
 "    vertical-align:top;\n"
