@@ -38,6 +38,3 @@ char    *xsnprintf(char *format, ...);
 int     inc_bootcount();
 
 // EOF
-
-
-
