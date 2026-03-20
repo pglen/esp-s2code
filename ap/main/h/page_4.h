@@ -1,7 +1,7 @@
 
 /* =====[ ESP32 project ]=================================================
 
-   File Name:       main/html/page_x.html
+   File Name:       main/html/page_4.html
 
    Description:     Main file
 
@@ -15,14 +15,14 @@
 
 // Page contents as header. DO NOT EDIT. Contents are overwritten at
 // compile time.
-// Edit the corresponding HTML file instead: main/html/page_x.html
+// Edit the corresponding HTML file instead: main/html/page_4.html
 
-const char notfound_html [] =
+const char config_html [] =
 
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">\n"
 "<html>\n"
 "<head>\n"
-"<title>LORAWIFI Missing Page</title>\n"
+"<title>LORA WiFi LORA Configuration Page</title>\n"
 "<meta charset=\"UTF-8\">\n"
 "<link rel='icon' href='data:;base64,iVBORw0KGgo='>\n"
 "</head>\n"
@@ -112,7 +112,7 @@ const char notfound_html [] =
 "}\n"
 "    </style>\n"
 "</style>\n"
-"<tr><td>\n"
+" <tr><td>\n"
 "    <table width=100% border=0>\n"
 "    <tr bgcolor=#eeeeee><td align=center>\n"
 "    <a href=page_1.html?home=true style=\"text-decoration: none; color: black;\">\n"
@@ -128,10 +128,63 @@ const char notfound_html [] =
 "            StatusStatusStatusStatusStatusStatusStatusStatus\n"
 "        </div>\n"
 "    </table>\n"
-"<center>\n"
-"<hr>\n"
-"<font size=6>The requested Page is Not Found</font>\n"
-"</center>\n"
+"<script async>\n"
+"    const isNumeric2 = (str) => Number.isFinite(+str);\n"
+"    function check_lims(data, validx, lower, upper) {\n"
+"        valx = data.get(validx)\n"
+"        if (!isNumeric2(valx))\n"
+"            {\n"
+"            alert(\"Field: \" + validx + \" must be a number.\")\n"
+"            return;\n"
+"            }\n"
+"        //console.log(\"value: %s\", valx);\n"
+"        if (valx < lower || valx > upper)\n"
+"            {\n"
+"            alert(\"Number out of range for:  \" + validx + \" value = \" + valx)\n"
+"            return;\n"
+"            }\n"
+"        }\n"
+"    async function save_conf() {\n"
+"        //console.log(\"Save conf\");\n"
+"        const formData = new FormData(myform);\n"
+"        console.log(\"Data\", formData);\n"
+"        check_lims(formData, \"deftrench\", 0, 65534);\n"
+"        const plainFormData = Object.fromEntries(formData.entries());\n"
+"        const jsonString = JSON.stringify(plainFormData);\n"
+"        //console.log(\"Submitting: '%s'\", jsonString);\n"
+"        //document.getElementById(\"myform\").submit();\n"
+"        const response = await fetch(\"page_4.html\", {\n"
+"                method: 'POST',\n"
+"                headers: { 'Content-Type': 'application/json' },\n"
+"                body: jsonString\n"
+"                })\n"
+"        const data = await response.text();\n"
+"        //console.log(\"Data from main config: \" + data)\n"
+"        const confButt = document.getElementById('confbutt');\n"
+"        //console.log(\"butt:\", confButt)\n"
+"        confButt.value = data;\n"
+"    }\n"
+"</script>\n"
+"<table align=center width=100% padding=10>\n"
+"    <tr><td colspan=2>\n"
+"    &nbsp; &nbsp; The trench is a communication conduit, ranging from 0 to 65634. Devices\n"
+"    with the same trench number can send messages to each other. Receiving\n"
+"    a message with a wrong trench number is discarded. On this screen one may\n"
+"    configure which trench number is loaded by default.\n"
+"    <tr> <td align=right>\n"
+"    Default Trench: (0-65534) &nbsp<td width=50%><input id=deftrench name=deftrench type=text\n"
+"                        autofocus value=deftrenchdeftrench>\n"
+"        <tr><td align=right>\n"
+"    <tr> <td colspan=3 align=center>\n"
+"    <hr>\n"
+"    <tr><td><td>\n"
+"    <input type=button onclick=save_conf() id=confbutt name=confbutt\n"
+"                                                value='Save Configuration'>\n"
+"    <tr> <td colspan=3 align=center>\n"
+"</table>\n"
+"<center><code>\n"
+"            | WiFi FCC-ID: 2AC7Z-ESPS2MINI1 | LoRA FCC-ID: 2BCKU-RA0212 |\n"
+"    </code>\n"
 "<tr><td>\n"
 "  <table width=100% border=0>\n"
 "        <tr>\n"

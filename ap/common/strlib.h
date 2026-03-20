@@ -13,6 +13,8 @@
 
    ======================================================================= */
 
+#define    MEM_STEP     48      // Alloc this much more
+
 typedef struct _xStr
 {
     char sentinel1[4];
@@ -29,12 +31,18 @@ void    xstr_copy(xStr *sss, const char *str);
 void    xstr_dup(xStr *sss, const xStr *str2);
 xStr    *xstr_fromstr(const char *str);
 void    xstr_cat(xStr *sss, const xStr *str2);
+void    xstr_catchar(xStr *sss, const char chh);
 void    xstr_destroy(xStr *sss);
 xStr    *xstr_sprintf(char *format, ...);
 int     xstr_len(xStr *sss);
 char    *xstr_ptr(xStr *sss);
+xStr    *xstr_hexdump(xStr *sss);
+xStr    *xstr_randstr(int len);
 int     xstr_strstr(xStr *sss, const xStr *str2, int offs);
+void    xstr_substr(xStr *sss, const xStr *str2, const xStr *str3, int offs);
+void    xstr_slice(xStr *sss, int beg, int end);
+void    xstr_catstr(xStr *sss, const char *str);
 void    xstr_dumplist();
-
+void    xstr_padbr(xStr *sss, char *buffx, char *pad, int freq);
 
 // EOF

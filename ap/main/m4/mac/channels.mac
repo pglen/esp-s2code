@@ -1,10 +1,13 @@
 <table width=100%>
 
-    <td align=center height=12>
-    The following table describes the LORA channel allocation, recommended by the
-    the manufacturer of the device. These values are not enforced, the only
-    criteria is that they are between the device's lower and upper limits,
-    and both the receiver and sender is tuned to the same frequency.
+    <td align=justify height=12>
+    &nbsp; &nbsp; The following table describes the LORA 433 MHz channel allocation,
+    recommended by the manufacturer of the device and international standard bodies.
+    In the IOCOMX product, these values are not enforced, they can be set to
+    arbitrary values. The only criteria is that they are between the
+    device's lower and upper frequency limits.
+    Please note that both the receiver and sender has to be tuned to the
+    same frequency to communicate.
 
     <tr><td>
     <tr><td> <font style=font-size:x-large>
@@ -39,7 +42,7 @@
     </table>
 
  <tr><td>
- The device frequency defaults to channel 1. (433.375 MHz).<p>
+ The device's frequency defaults to channel 1. (433.375 MHz).<p>
 
  <tr><td><font style=font-size:x-large>
     <b>Bandwidth threshold values:</b>

@@ -122,24 +122,27 @@ char    *xstrdup(const char *str)
 char    *xsnprintf(char *format, ...)
 
 {
-    va_list ap;
+    va_list ap, ap2;
+    printf("'%s'\n", format);
     va_start(ap, format);
+    va_copy(ap2, ap);
+    //printf(";%d;\n", va_arg(ap, int));
     int len = vsnprintf(NULL, 0, format, ap);
     va_end(ap);
 
     if(len < 0)
         return NULL;
-    char *ptr = malloc(len + 2);
+    char *ptr = malloc(len + 20);
     if(ptr == NULL)
         return NULL;
-    va_start(ap, format);
-    len = vsnprintf(ptr, len, format, ap);
-    va_end(ap);
+    len = vsnprintf(ptr, len, format, ap2);
+    va_end(ap2);
     if(len < 0)
         {
         free(ptr);
         return NULL;
         }
+    //printf("ptr: %d '%s'\n", len, ptr);
     return ptr;
 }
 
@@ -281,6 +284,29 @@ void IRAM_ATTR delayMicroseconds(uint32_t us)
             NOP();
             }
         }
+}
+
+// point to after the '?'
+
+char    *get_arg_ptr(const char *keys)
+{
+    int aa = 0; char *ret = NULL;
+    while(1)
+        {
+        char chh = keys[aa];
+        if (chh == '\0')
+            break;
+        if (chh == '?')
+            break;
+        aa++;
+        }
+    if (*keys == '\0')
+        {
+        printf("No Key in url");
+        return NULL;
+        }
+    printf("keys: '%s'\n", &keys[11]);
+    retrurn &keys[aa];
 }
 
 //////////////////////////////////////////////////////////////////////////

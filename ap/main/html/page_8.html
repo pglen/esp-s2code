@@ -87,6 +87,18 @@ textarea {
     border-color:#eeeeee;
     display:inline-block;
 }
+
+.rebootstat {
+    font-size:  16px;
+    color:      red;
+}
+
+.statstat {
+    font-size:  16px;
+    color:      blue;
+}
+    </style>
+
 </style>
 
 <tr><td>
@@ -103,10 +115,8 @@ textarea {
     <tr><td>
     <table align=center>
         <tr><td>
-        <div style="font-size:large" align=center>
-            <font color=#0000ff>
+        <div id=status class=statstat align=center>
             StatusStatusStatusStatusStatusStatusStatusStatus
-            </font>
         </div>
     </table>
 <table width=100%>
@@ -227,31 +237,37 @@ textarea {
 <tr><td>
   <table width=100% border=0>
         <tr>
-            <td align=center colspan=2 width=100%>
+            <td align=center colspan=3 width=100%>
             <hr>
         <tr>
             <td align=center>
                 <div style="font-size:large"   align=center>
-                   <a href=page_2.html>WiFi Settings</a>
+                   <a href=page_4.html> Main Settings </a>
                 </div>
+
+            <td align=center>
+                <div style="font-size:large"   align=center>
+                   <a href=page_2.html> WiFi Settings </a>
+                </div>
+
             <td align=center>
                  <div style="font-size:large"   align=center>
-                    <a href=page_3.html> LORA Parameters</a>
+                    <a href=page_3.html> LORA Parameters </a>
                 </div>
         <tr>
             <td align=center>
                 <div style="font-size:large" >
-                    <a href=page_8.html> Quick Start Manual</a>
+                    <a href=page_8.html> Quick Start Manual </a>
                 </div>
 
             <td align=center>
                 <div style="font-size:large" >
-                   <a href=page_1.html?reboot=true>Reboot Device</a>
+                   <a href=page_1.html> Back to Home Page </a>
                 </div>
-        <tr>
-            <td align=center colspan=2>
+
+           <td align=center>
                 <div style="font-size:large" >
-                   <a href=page_1.html>Back to Home Page</a>
+                   <a href=page_1.html?reboot=true>Reboot Device</a>
                 </div>
 
     </table>

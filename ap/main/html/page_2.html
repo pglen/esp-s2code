@@ -434,6 +434,18 @@ textarea {
     border-color:#eeeeee;
     display:inline-block;
 }
+
+.rebootstat {
+    font-size:  16px;
+    color:      red;
+}
+
+.statstat {
+    font-size:  16px;
+    color:      blue;
+}
+    </style>
+
 </style>
 
 <tr><td>
@@ -450,29 +462,24 @@ textarea {
     <tr><td>
     <table align=center>
         <tr><td>
-        <div style="font-size:large" align=center>
-            <font color=#0000ff>
+        <div id=status class=statstat align=center>
             StatusStatusStatusStatusStatusStatusStatusStatus
-            </font>
         </div>
     </table>
     <tr><td>
     <table align=center>
         <tr><td>
-        <div style="font-size:large" align=center>
-            <font color=#ff0000>
+        <div id=reboot class=rebootstat>
             RebootRebootRebootRebootRebootRebootRebootRebootReboot
-            </font>
         </div>
     </table>
 
 <script async>
 
-    function containsPunctuation(str) {
-    // Regex to match a variety of common punctuation marks anywhere in the string
-    //const punctuationRegex = /[!"#$%&'()*,\./:;<=>?@[\\\]^`{|}~]/;
-    const punctuationRegex = /[!"#$%&'()*,\./:;<=>?@[\\^`{|}~]/;
-    return punctuationRegex.test(str);
+    function containsPunctuation(strz) {
+        // Regex to match a variety of common punctuation marks
+        const punctuationRegex = /[!"#$%&'()*,\./:;<=>?@[\\^`{|}\\]~]/;
+        return punctuationRegex.test(strz);
     }
     async function save_wifi() {
         //console.log("Save WIFI");
@@ -504,6 +511,11 @@ textarea {
                 body: jsonString
                 })
         const data = await response.text();
+        const confButt = document.getElementById('netbutt');
+        //console.log("netbutt:", confButt)
+        confButt.value = data;
+        const confReboot = document.getElementById('reboot');
+        confReboot.innerHTML = "Please reboot device for settings to take effect.";
     }
 </script>
 
@@ -534,42 +546,55 @@ textarea {
         <tr><td align=right>
     Repeat password:  &nbsp<td><input name=appass2 type=password
                         value=pass2pass2pass2pass2pass2pass2>
-    <tr><td>
+    <tr><td colspan=3>
+    <hr>
     <tr> <td> <td colspan=2>
-        <input type=button onclick=save_wifi() name=netbutt accesskey=c
-        value='Save Web Configuration'> <font style=color:#aaaaaa>(Alt+Shift+c)</font>
+        <input type=button onclick=save_wifi() id=netbutt name=netbutt accesskey=c
+        value='Save Web Configuration'>
+                        <font style=color:#aaaaaa>(Alt+Shift+c)</font>
 
     <tr> <td colspan=3 align=center>
 
 </table>
+<center><code>
+            | WiFi FCC-ID: 2AC7Z-ESPS2MINI1 | LoRA FCC-ID: 2BCKU-RA0212 |
+    </code>
+
+
 <tr><td>
   <table width=100% border=0>
         <tr>
-            <td align=center colspan=2 width=100%>
+            <td align=center colspan=3 width=100%>
             <hr>
         <tr>
             <td align=center>
                 <div style="font-size:large"   align=center>
-                   <a href=page_2.html>WiFi Settings</a>
+                   <a href=page_4.html> Main Settings </a>
                 </div>
+
+            <td align=center>
+                <div style="font-size:large"   align=center>
+                   <a href=page_2.html> WiFi Settings </a>
+                </div>
+
             <td align=center>
                  <div style="font-size:large"   align=center>
-                    <a href=page_3.html> LORA Parameters</a>
+                    <a href=page_3.html> LORA Parameters </a>
                 </div>
         <tr>
             <td align=center>
                 <div style="font-size:large" >
-                    <a href=page_8.html> Quick Start Manual</a>
+                    <a href=page_8.html> Quick Start Manual </a>
                 </div>
 
             <td align=center>
                 <div style="font-size:large" >
-                   <a href=page_1.html?reboot=true>Reboot Device</a>
+                   <a href=page_1.html> Back to Home Page </a>
                 </div>
-        <tr>
-            <td align=center colspan=2>
+
+           <td align=center>
                 <div style="font-size:large" >
-                   <a href=page_1.html>Back to Home Page</a>
+                   <a href=page_1.html?reboot=true>Reboot Device</a>
                 </div>
 
     </table>

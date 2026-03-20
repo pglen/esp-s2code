@@ -40,8 +40,7 @@
 
 #include "strlib.h"
 
-static char *TAG= "strlib";
-
+//static char *TAG= "strlib";
 static char *sent1 = "1234";
 static char *sent2 = "5678";
 static char *xlist[12] = {NULL, };
@@ -54,15 +53,16 @@ xStr    *xstr_create(int len)
         printf("Cannot allocate struct for xStr\n");
         return NULL;
         }
-    sss->str = malloc(len + 1);
+    int capa = len + MEM_STEP;
+    sss->str = malloc(capa);
     if(!sss) {
         printf("Cannot allocate str for xStr\n");
         free(sss);
         return NULL;
         }
-    memset(sss->str, '\0', len + 1);
+    memset(sss->str, '\0', capa);
     sss->length = len;
-    sss->capacity = len;
+    sss->capacity = capa;
     memcpy(sss->sentinel1, sent1, strlen(sent1));
     memcpy(sss->sentinel2, sent2, strlen(sent2));
 
@@ -74,9 +74,7 @@ xStr    *xstr_create(int len)
         {
         if(!xlist[aa])
             {
-            //printf("Added: %p\n", sss);
-            xlist[aa] = (char*)sss;
-            filled = 1;
+            xlist[aa] = (char*)sss; filled = 1;
             break;
             }
         }
@@ -98,13 +96,14 @@ void    xstr_copy(xStr *sss, const char *str)
     if (sss->capacity <= xlen)
         {
         free(sss->str);
-        sss->str = malloc(xlen + 1);
+        int capa = xlen + MEM_STEP;
+        sss->str = malloc(capa);
         if(!sss->str)
             {
             printf("xstr_copy() alloc error\n");
             return;
             }
-        sss->capacity = xlen;
+        sss->capacity = capa;
         }
     memcpy(sss->str, str, xlen);
     sss->str[xlen] = '\0';
@@ -126,10 +125,10 @@ xStr    *xstr_fromstr(const char *str)
 
 void    xstr_cat(xStr *sss, const xStr *str2)
 {
-    int xlen = strlen(str2->str);
-    if (sss->capacity <= sss->length + xlen)
+    if (sss->capacity <= sss->length + str2->length)
         {
-        char *ppp = malloc(sss->length + xlen + 1);
+        int capa = sss->length + str2->length + MEM_STEP;
+        char *ppp = malloc(capa);
         if(!ppp)
             {
             printf("xstr_cat() alloc error\n");
@@ -139,20 +138,190 @@ void    xstr_cat(xStr *sss, const xStr *str2)
         ppp[sss->length] = '\0';
         free(sss->str);
         sss->str = ppp;
-        sss->capacity = sss->length + xlen;
+        sss->capacity = capa;
         }
-    memcpy(sss->str + sss->length, str2->str, xlen);
+    memcpy(sss->str + sss->length, str2->str, str2->length);
+    sss->str[sss->length + str2->length] = '\0';
+    sss->length = sss->length + str2->length;
+}
+
+void    xstr_slice(xStr *sss, int beg, int end)
+
+{
+    if(beg >= sss->length)
+        {
+        printf("Invalid beg slice: %d\n", beg);
+        return;
+        }
+    if(end >= sss->length)
+        {
+        printf("Invalid end slice: %d\n", end);
+        return;
+        }
+    if(beg > end)
+        {
+        printf("Invalid slices: %d > %d\n", beg, end);
+        return;
+        }
+    int size = end - beg;
+    memcpy(sss->str, &sss->str[beg], size);
+    sss->str[size] = '\0';
+    sss->length = size;
+}
+
+void    xstr_catchar(xStr *sss, const char chh)
+{
+    if (sss->capacity <= sss->length + 1)
+        {
+        int capa = sss->length + 1 + MEM_STEP;
+        char *ppp = malloc(capa);
+        if(!ppp)
+            {
+            printf("xstr_cat() alloc error\n");
+            return;
+            }
+        memcpy(ppp, sss->str, sss->length);
+        ppp[sss->length] = '\0';
+        free(sss->str);
+        sss->str = ppp;
+        sss->capacity = capa;
+        }
+    sss->str[sss->length] = chh;
+    sss->str[sss->length + 1] = '\0';
+    sss->length = sss->length + 1;
+}
+
+void    xstr_catstr(xStr *sss, const char *str)
+{
+    int xlen = strlen(str);
+    if (sss->capacity <= sss->length + xlen)
+        {
+        int capa = sss->length + xlen + MEM_STEP;
+        char *ppp = malloc(capa);
+        if(!ppp)
+            {
+            printf("xstr_catstr() alloc error\n");
+            return;
+            }
+        memcpy(ppp, sss->str, sss->length);
+        ppp[sss->length] = '\0';
+        free(sss->str);
+        sss->str = ppp;
+        sss->capacity = capa;
+        }
+    memcpy(&sss->str[sss->length], str, xlen);
     sss->str[sss->length + xlen] = '\0';
     sss->length = sss->length + xlen;
+}
+
+void    xstr_substr(xStr *sss, const xStr *str2, const xStr *str3, int offs)
+{
+    int prog = offs;  xStr *res = xstr_create(0);
+
+    //printf("substr() '%s' -> '%s' with '%s' offs: %d\n",
+    //                                        sss->str, str2->str, str3->str, offs);
+    while(1)
+        {
+        if(prog >= sss->length)
+            break;
+
+        int found = 1;
+        for(int aa = 0; aa < str2->length; aa++)
+            {
+            if(prog + aa >= sss->length) {
+                //printf("beyond access prog %d aa %d\n", prog, aa);
+                found = 0; break;
+                }
+            if(sss->str[prog + aa] != str2->str[aa]) {
+                found = 0; break;
+                }
+            }
+        if(found)
+            {
+            // subst
+            xstr_cat(res, str3);
+            prog += str2->length - 1;
+            }
+        else
+            {
+            xstr_catchar(res, sss->str[prog]);
+            }
+        prog++;
+        }
+    // reassign, remove old
+    //printf("res: %s\n", res->str);
+    free(sss->str);
+    sss->str = res->str;
+    sss->length = res->length;
+    res->str = NULL;
+    xstr_destroy(res);
+}
+
+xStr    *xstr_randstr(int len)
+{
+    xStr *res = xstr_create(0);
+
+    for(int aa = 0; aa < len; aa++)
+        {
+        char chh = rand() & 0xff;
+        xstr_catchar(res, chh);
+        }
+    return res;
+}
+
+xStr *xstr_hexdump(xStr *sss)
+
+{
+    int aa = 0;
+    char dd[24];  dd[0] = '\0';
+    char ss[24]; char cc[3];
+    char *trailer =  "  | ";
+
+    xStr *res = xstr_create(0);
+    for(aa = 0; aa < sss->length; aa++)
+        {
+        if((aa % 16) == 0)
+            {
+            snprintf(ss, sizeof(ss), "0x%-3x ", aa);
+            xstr_catstr(res, ss);
+            }
+        char chh = sss->str[aa];
+        snprintf(ss, sizeof(ss), "%02x ", chh & 0xff);
+        snprintf(cc, sizeof(cc), "%c", isprint(chh) ? chh : '.');
+        strcat(dd, cc);
+        if((aa % 16) == 15)
+            {
+            xstr_catstr(res, trailer);
+            xstr_catstr(res, dd);
+            xstr_catstr(res, trailer);
+            dd[0] = '\0';
+            snprintf(ss, sizeof(ss), "\n");
+            }
+        xstr_catstr(res, ss);
+        }
+    // Padd it at the end, if needed
+    if(aa % 16)
+        {
+        for(int bb = 0; bb < 15 - (aa % 16); bb++)
+            xstr_catstr(res, "   ");
+        xstr_catstr(res, trailer);
+        xstr_catstr(res, dd);
+        for(int bb = 0; bb < 15 - (aa % 16); bb++)
+            xstr_catstr(res, " ");
+        xstr_catstr(res, " ");
+        xstr_catstr(res, trailer);
+        xstr_catstr(res, "\n");
+        }
+    return res;
 }
 
 // return -1 for no match, offset for match
 
 int     xstr_strstr(xStr *sss, const xStr *str2, int offs)
 {
-    int ret = -1;
-    int prog = offs;
+    int ret = -1, prog = offs;
 
+    //printf("strstr() '%s' -> '%s' offs: %d\n", sss->str, str2->str, offs);
     while(1)
         {
         if(prog >= sss->length)
@@ -162,6 +331,7 @@ int     xstr_strstr(xStr *sss, const xStr *str2, int offs)
             {
             if(prog + aa >= sss->length)
                 {
+                //printf("beyond access prog %d aa %d\n", prog, aa);
                 found = 0;
                 break;
                 }
@@ -229,7 +399,6 @@ xStr    *xstr_sprintf(char *format, ...)
     va_start(ap, format);
     int len = vsnprintf(NULL, 0, format, ap);
     va_end(ap);
-
     if(len < 0)
         return NULL;
     xStr *sss = xstr_create(len);
@@ -268,7 +437,8 @@ void    xstr_destroy(xStr *sss)
     if(ret2) {
         printf("Bad sentinel2\n");
         }
-    free(sss->str);
+    if(sss->str)
+        free(sss->str);
     // Remove from to xlist
     for(int aa = 0; aa < sizeof(xlist) / sizeof(char*); aa++)
         {
@@ -291,5 +461,72 @@ void    xstr_dumplist()
             //printf("%p %s\n", xlist[aa], ((xStr*)xlist[aa])->str);
         }
 }
+
+// pad buffx at regular freq.
+
+void    xstr_padbr(xStr *sss, char *buffx, char *pad, int freq)
+
+{
+    //printf("xstr_padbr() [%s] '%s' '%s' %d\n", sss->str, buffx, pad, freq);
+    int dd = 0, xlen = strlen(buffx), padlen = strlen(pad);
+    for (int bb = 0; bb < xlen; bb++)
+        {
+        char chh = buffx[bb];
+        xstr_catchar(sss, chh);
+        // Check for pad
+        if(bb + padlen < xlen && strncmp(&buffx[bb], pad, padlen) == 0)
+            {
+            //printf("match: '%4s' org: '%s'\n", &buffx[bb], pad);
+            dd = -padlen + 1;
+            }
+        else
+            {
+            dd++;
+            }
+        // Inject <br>
+        if(dd >= freq)
+            {
+            //printf("Add at %d\n", bb);
+            dd = 0;
+            xstr_catstr(sss, pad);
+            }
+        }
+}
+
+#if 0
+void    preprocess_string(char* str)
+
+{
+    char *p, *q;
+
+    for (p = q = str; *p != 0; p++)
+    {
+        if (*(p) == '%' && *(p + 1) != 0 && *(p + 2) != 0)
+        {
+            // quoted hex
+            uint8_t a;
+            p++;
+            if (*p <= '9')
+                a = *p - '0';
+            else
+                a = toupper(*p) - 'A' + 10;
+            a <<= 4;
+            p++;
+            if (*p <= '9')
+                a += *p - '0';
+            else
+                a += toupper(*p) - 'A' + 10;
+            *q++ = a;
+        }
+        else if (*(p) == '+') {
+            *q++ = ' ';
+        } else {
+            *q++ = *p;
+        }
+    }
+    *q = '\0';
+}
+
+#endif
 
 // EOF

@@ -1,9 +1,7 @@
     <tr><td>
     <table align=center>
         <tr><td>
-        <div style="font-size:large" align=center>
-            <font color=#0000ff>
+        <div id=status class=statstat align=center>
             StatusStatusStatusStatusStatusStatusStatusStatus
-            </font>
         </div>
     </table>

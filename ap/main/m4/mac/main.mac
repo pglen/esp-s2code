@@ -13,8 +13,8 @@
     vertical-align: top;
     horizontal-align: right;
     flex-grow: 1;
-    style="height: 400px;"
     overflow: auto;
+    height: 300px;
 }
 
 </style>
@@ -104,8 +104,8 @@
 
 function textUpdate() {
     const textInput = document.getElementById('txt');
-    console.log('Text area content changed in real-time.' +
-                     textInput.value.length);
+    //console.log('Text area content changed in real-time.' +
+    //                 textInput.value.length);
     const cntOutput = document.getElementById('cnt');
     cntOutput.innerHTML = "Count: " + textInput.value.length;
 }
@@ -156,7 +156,7 @@ function onKeyUp(e){
         </div>
     <tr><td class=mydiv>
         Trench:
-        <td><input type=text name=chan id=chan value="0"> (0-65534)
+        <td><input type=text name=chan id=chan value=trenchtrenchtrench> (0-65534)
         <td>
     <tr><td class=mydiv>
         Send:

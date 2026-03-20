@@ -23,7 +23,7 @@
     async function save_lora() {
         //console.log("Save LORA");
         const formData = new FormData(myform);
-        console.log("Data", formData);
+        //console.log("Data", formData);
         check_lims(formData, "spread", 6, 12);
         check_lims(formData, "bwidth", 10, 500);
         check_lims(formData, "txfreq", 433.05, 434.79);
@@ -39,6 +39,9 @@
                 })
         const data = await response.text();
         console.log("Data from lora config: " + data)
+        const confButt = document.getElementById('confbutt');
+        //console.log("butt:", confButt)
+        confButt.value = data;
     }
 </script>
 
@@ -84,26 +87,11 @@
     <tr> <td align=right>
         LORA Frequency: (433.05 - 434.79) MHz &nbsp<td><input name=txfreq type=text
         value=freqfreqfreqfreqfreqfreq> <a href=channels.html >(Channel Table) </a>
-    <tr><td>
-
-<tr><td colspan=2 align=center>
-        <table align=center border=0 width=100%  frame=void>
-            <tr><td colspan=3 width=100%>
-                    <tr bgcolor=#eeeeee><td align=center>
-                    <div style="font-size:large" align=center>
-                    <b>Defaults:</b><br>
-                    </div>
-        </table>
-        <tr><td>
-        <tr> <td align=right>
-    Default Trench:  &nbsp<td width=50%><input id=deftrench name=deftrench type=text
-                        autofocus value=deftrenchdeftrench>
-        <tr><td align=right>
-
-    <tr> <td colspan=3 align=center>
-    <tr> <td> <td>
-
-    <input type=button onclick=save_lora() name=confbutt value='Save Configuration'>
+    <tr><td colspan=3>
+    <hr>
+    <tr><td><td>
+    <input type=button onclick=save_lora() id=confbutt name=confbutt
+                                            value='Save LORA Configuration'>
     <tr> <td colspan=3 align=center>
 
 </table>

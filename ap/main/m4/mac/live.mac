@@ -69,12 +69,12 @@ window.addEventListener('load', function()
                 }
             if (jsObject.sent)
                 {
-                console.log("sent %d '%d' ", xhr.status, jsObject.sent);
+                //console.log("sent %d '%d' ", xhr.status, jsObject.sent);
                 }
             if (jsObject.update)
                 {
                 sentx = "";
-                for(aa = 0; aa < 10; aa++)
+                for(aa = 0; aa < jsObject.maxcnt; aa++)
                     {
                     let curr = "hist_" + aa;
                     if (jsObject[curr])
@@ -82,18 +82,15 @@ window.addEventListener('load', function()
                         //console.log("sent %d %s = '%s' ",
                         //                        xhr.status, curr, jsObject[curr]);
                         const myObject = JSON.parse(jsObject[curr]);
-                        sentx += "[" + myObject.hash + "] (" + myObject.chan + ") "
-                        let sentx2 = "";
+                        sentx2 = "[" + myObject.hash + "] (" + myObject.chan + ") "
                         if(myObject.reply)
                             {
-                            sentx2 = "<font color=blue>" + myObject.reply + "</font>";
+                            sentx2 += "<font color=blue>" + myObject.reply + "</font>";
                             }
                         else
                             {
-                            sentx2 = myObject.text
+                            sentx2 += myObject.text
                             }
-                        sentx2 = sentx2.replace(/\\n/g, "<br>");
-                        //sentx2 = sentx2.split("\\n").join("<br>");
                         sentx += sentx2 + "<br>";
                         }
                     else
@@ -104,8 +101,8 @@ window.addEventListener('load', function()
                 //console.log("update %d '%d' ", xhr.status, jsObject.update);
                 const histInput = document.getElementById('hist');
                 histInput.innerHTML = sentx;
+                histInput.scrollTop = histInput.scrollHeight;
                 }
-
             // Update the live data every xx msec
             setTimeout(updateLiveData, 1000);
             }

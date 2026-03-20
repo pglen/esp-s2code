@@ -87,6 +87,18 @@ textarea {
     border-color:#eeeeee;
     display:inline-block;
 }
+
+.rebootstat {
+    font-size:  16px;
+    color:      red;
+}
+
+.statstat {
+    font-size:  16px;
+    color:      blue;
+}
+    </style>
+
 </style>
 
 <tr><td>
@@ -171,12 +183,12 @@ window.addEventListener('load', function()
                 }
             if (jsObject.sent)
                 {
-                console.log("sent %d '%d' ", xhr.status, jsObject.sent);
+                //console.log("sent %d '%d' ", xhr.status, jsObject.sent);
                 }
             if (jsObject.update)
                 {
                 sentx = "";
-                for(aa = 0; aa < 10; aa++)
+                for(aa = 0; aa < jsObject.maxcnt; aa++)
                     {
                     let curr = "hist_" + aa;
                     if (jsObject[curr])
@@ -184,18 +196,15 @@ window.addEventListener('load', function()
                         //console.log("sent %d %s = '%s' ",
                         //                        xhr.status, curr, jsObject[curr]);
                         const myObject = JSON.parse(jsObject[curr]);
-                        sentx += "[" + myObject.hash + "] (" + myObject.chan + ") "
-                        let sentx2 = "";
+                        sentx2 = "[" + myObject.hash + "] (" + myObject.chan + ") "
                         if(myObject.reply)
                             {
-                            sentx2 = "<font color=blue>" + myObject.reply + "</font>";
+                            sentx2 += "<font color=blue>" + myObject.reply + "</font>";
                             }
                         else
                             {
-                            sentx2 = myObject.text
+                            sentx2 += myObject.text
                             }
-                        sentx2 = sentx2.replace(/\\n/g, "<br>");
-                        //sentx2 = sentx2.split("\\n").join("<br>");
                         sentx += sentx2 + "<br>";
                         }
                     else
@@ -206,8 +215,8 @@ window.addEventListener('load', function()
                 //console.log("update %d '%d' ", xhr.status, jsObject.update);
                 const histInput = document.getElementById('hist');
                 histInput.innerHTML = sentx;
+                histInput.scrollTop = histInput.scrollHeight;
                 }
-
             // Update the live data every xx msec
             setTimeout(updateLiveData, 1000);
             }
@@ -232,8 +241,8 @@ window.addEventListener('load', function()
     vertical-align: top;
     horizontal-align: right;
     flex-grow: 1;
-    style="height: 400px;"
     overflow: auto;
+    height: 300px;
 }
 
 </style>
@@ -323,8 +332,8 @@ window.addEventListener('load', function()
 
 function textUpdate() {
     const textInput = document.getElementById('txt');
-    console.log('Text area content changed in real-time.' +
-                     textInput.value.length);
+    //console.log('Text area content changed in real-time.' +
+    //                 textInput.value.length);
     const cntOutput = document.getElementById('cnt');
     cntOutput.innerHTML = "Count: " + textInput.value.length;
 }
@@ -375,7 +384,7 @@ function onKeyUp(e){
         </div>
     <tr><td class=mydiv>
         Trench:
-        <td><input type=text name=chan id=chan value="0"> (0-65534)
+        <td><input type=text name=chan id=chan value=trenchtrenchtrench> (0-65534)
         <td>
     <tr><td class=mydiv>
         Send:
@@ -398,31 +407,37 @@ function onKeyUp(e){
 <tr><td>
   <table width=100% border=0>
         <tr>
-            <td align=center colspan=2 width=100%>
+            <td align=center colspan=3 width=100%>
             <hr>
         <tr>
             <td align=center>
                 <div style="font-size:large"   align=center>
-                   <a href=page_2.html>WiFi Settings</a>
+                   <a href=page_4.html> Main Settings </a>
                 </div>
+
+            <td align=center>
+                <div style="font-size:large"   align=center>
+                   <a href=page_2.html> WiFi Settings </a>
+                </div>
+
             <td align=center>
                  <div style="font-size:large"   align=center>
-                    <a href=page_3.html> LORA Parameters</a>
+                    <a href=page_3.html> LORA Parameters </a>
                 </div>
         <tr>
             <td align=center>
                 <div style="font-size:large" >
-                    <a href=page_8.html> Quick Start Manual</a>
+                    <a href=page_8.html> Quick Start Manual </a>
                 </div>
 
             <td align=center>
                 <div style="font-size:large" >
-                   <a href=page_1.html?reboot=true>Reboot Device</a>
+                   <a href=page_1.html> Back to Home Page </a>
                 </div>
-        <tr>
-            <td align=center colspan=2>
+
+           <td align=center>
                 <div style="font-size:large" >
-                   <a href=page_1.html>Back to Home Page</a>
+                   <a href=page_1.html?reboot=true>Reboot Device</a>
                 </div>
 
     </table>

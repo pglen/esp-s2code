@@ -19,6 +19,7 @@ convert page_1   index_html
 convert page_8   manual_html
 convert page_2   settings_html
 convert page_3   lora_html
+convert page_4   config_html
 convert channels lora_chann_html
 
 #echo Done.

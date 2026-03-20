@@ -87,6 +87,18 @@ textarea {
     border-color:#eeeeee;
     display:inline-block;
 }
+
+.rebootstat {
+    font-size:  16px;
+    color:      red;
+}
+
+.statstat {
+    font-size:  16px;
+    color:      blue;
+}
+    </style>
+
 </style>
  <tr><td>
     <table width=100% border=0>
@@ -102,19 +114,20 @@ textarea {
     <tr><td>
     <table align=center>
         <tr><td>
-        <div style="font-size:large" align=center>
-            <font color=#0000ff>
+        <div id=status class=statstat align=center>
             StatusStatusStatusStatusStatusStatusStatusStatus
-            </font>
         </div>
     </table>
 <table width=100%>
 
-    <td align=center height=12>
-    The following table describes the LORA channel allocation, recommended by the
-    the manufacturer of the device. These values are not enforced, the only
-    criteria is that they are between the device's lower and upper limits,
-    and both the receiver and sender is tuned to the same frequency.
+    <td align=justify height=12>
+    &nbsp; &nbsp; The following table describes the LORA 433 MHz channel allocation,
+    recommended by the manufacturer of the device and international standard bodies.
+    In the LORA WiFi product, these values are not enforced, they can be set to
+    arbitrary values. The only criteria is that they are between the
+    device's lower and upper frequency limits.
+    Please note that both the receiver and sender has to be tuned to the
+    same frequency to communicate.
 
     <tr><td>
     <tr><td> <font style=font-size:x-large>
@@ -149,7 +162,7 @@ textarea {
     </table>
 
  <tr><td>
- The device frequency defaults to channel 1. (433.375 MHz).<p>
+ The device's frequency defaults to channel 1. (433.375 MHz).<p>
 
  <tr><td><font style=font-size:x-large>
     <b>Bandwidth threshold values:</b>
@@ -173,31 +186,37 @@ before deploying 433MHz devices.<p>
 <tr><td>
   <table width=100% border=0>
         <tr>
-            <td align=center colspan=2 width=100%>
+            <td align=center colspan=3 width=100%>
             <hr>
         <tr>
             <td align=center>
                 <div style="font-size:large"   align=center>
-                   <a href=page_2.html>WiFi Settings</a>
+                   <a href=page_4.html> Main Settings </a>
                 </div>
+
+            <td align=center>
+                <div style="font-size:large"   align=center>
+                   <a href=page_2.html> WiFi Settings </a>
+                </div>
+
             <td align=center>
                  <div style="font-size:large"   align=center>
-                    <a href=page_3.html> LORA Parameters</a>
+                    <a href=page_3.html> LORA Parameters </a>
                 </div>
         <tr>
             <td align=center>
                 <div style="font-size:large" >
-                    <a href=page_8.html> Quick Start Manual</a>
+                    <a href=page_8.html> Quick Start Manual </a>
                 </div>
 
             <td align=center>
                 <div style="font-size:large" >
-                   <a href=page_1.html?reboot=true>Reboot Device</a>
+                   <a href=page_1.html> Back to Home Page </a>
                 </div>
-        <tr>
-            <td align=center colspan=2>
+
+           <td align=center>
                 <div style="font-size:large" >
-                   <a href=page_1.html>Back to Home Page</a>
+                   <a href=page_1.html?reboot=true>Reboot Device</a>
                 </div>
 
     </table>

@@ -74,4 +74,16 @@ textarea {
     border-color:#eeeeee;
     display:inline-block;
 }
+
+.rebootstat {
+    font-size:  16px;
+    color:      red;
+}
+
+.statstat {
+    font-size:  16px;
+    color:      blue;
+}
+    </style>
+
 </style>

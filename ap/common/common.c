@@ -137,43 +137,6 @@ int     get_ms()
     return (int)(esp_timer_get_time() / 1000LL);
 }
 
-#if 0
-void    preprocess_string(char* str)
-
-{
-    char *p, *q;
-
-    for (p = q = str; *p != 0; p++)
-    {
-        if (*(p) == '%' && *(p + 1) != 0 && *(p + 2) != 0)
-        {
-            // quoted hex
-            uint8_t a;
-            p++;
-            if (*p <= '9')
-                a = *p - '0';
-            else
-                a = toupper(*p) - 'A' + 10;
-            a <<= 4;
-            p++;
-            if (*p <= '9')
-                a += *p - '0';
-            else
-                a += toupper(*p) - 'A' + 10;
-            *q++ = a;
-        }
-        else if (*(p) == '+') {
-            *q++ = ' ';
-        } else {
-            *q++ = *p;
-        }
-    }
-    *q = '\0';
-}
-
-#endif
-
-
 Led_Script      ls1 = {0,}, ls2 = {0,}, ls3 = {0,}, ls4 = {0,};
 Led_Script      *ls_arr[] = { &ls1, &ls2, &ls3, &ls4 };
 
