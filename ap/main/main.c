@@ -28,11 +28,15 @@
 #include "esp_log.h"
 #include "esp_system.h"
 #include "nvs_flash.h"
+#include "linenoise/linenoise.h"
+#include "argtable3/argtable3.h"
+#include "esp_console.h"
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include "esp_heap_caps.h"
 #include "driver/gpio.h"
+#include "led_strip.h"
 
 #include "cJSON.h"
 
@@ -42,6 +46,12 @@
 #include "../common/wifi.h"
 #include "../common/nvs.h"
 #include "../common/strlib.h"
+
+#include "lora.h"
+
+
+static const char *TAG = "lorawifi";
+#include "../packets.c"
 
 char    *gl_sentptr = NULL;
 int     gl_update = 0;
@@ -70,7 +80,6 @@ char      gl_statx[64] = "";
 #define EXAMPLE_GTK_REKEY_INTERVAL 0
 #endif
 
-static const char *TAG = "lorawifi";
 
 static httpd_handle_t gl_serverx = NULL;
 static httpd_handle_t gl_server = NULL;
@@ -104,24 +113,6 @@ char    gl_bwidth[32] = "";
 char    gl_txpower[32] = "";
 char    gl_txfreq[32] = "";
 char    gl_deftrench[32] = "";
-
-// Shuffle a string to 16 bit unique ID
-
-int16_t chksum(const char *str, int len)
-
-{
-    //printf("str '%s'\n", str);
-    uint16_t ret = 0;
-    for(int aa = 0; aa < len; aa++)
-        {
-        uint16_t nn = (uint16_t)str[aa];
-        uint16_t qq = nn << 7 | nn;
-        ret += qq + 10000;
-        ret ^= 0x5aa5;
-        }
-    //printf("sum ret %x\n", ret);
-    return(ret);
-}
 
 //static  int pad_br(const char *ptr, int xlen, char *buffx, int maxlen)
 //
@@ -709,14 +700,15 @@ static esp_err_t home_get_handler(httpd_req_t *req)
         return ESP_OK;
         }
     // see if reboot requested
-    printf("home req: %s", req->uri);
+    //printf("home req: %s", req->uri);
     char *kkk = get_arg_ptr(req->uri);
     if (kkk)
         {
         char buff2[24], buffu2[24];
         httpd_query_key_value(kkk, "reboot", buff2, sizeof(buff2));
         unescape_url(buff2, buffu2, sizeof(buffu2) );
-        printf("reboot: '%s'\n", buffu2);
+        //printf("reboot: '%s'\n", buffu2);
+        delayed_reboot(500);
         }
     subst_str(resp_str, trenchstr, gl_deftrench);
     subst_footer(resp_str);
@@ -1005,7 +997,7 @@ static  void recv_sim_task (void* arg)
         xstr_destroy(ttt);
         cJSON *root = cJSON_CreateObject();
         cJSON_AddStringToObject(root, "reply", sss->str);
-        int16_t sumx = chksum(sss->str, sss->length);
+        int16_t sumx = lora_chksum(sss->str, sss->length);
         xstr_destroy(sss);
         //printf("Chash %x\n", sumx & 0xffff);
         snprintf(hstr, sizeof(hstr), "%x", sumx & 0xffff);
@@ -1037,6 +1029,9 @@ static  void recv_sim_task (void* arg)
 
 static  void trans_task (void* arg)
 {
+
+    //lora_hw_init(); // Initialize the LoRa module (pins configured in menuconfig)
+
     while(true)
         {
         //printf("Before semaphore release cycle.\n");

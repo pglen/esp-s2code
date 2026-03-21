@@ -38,7 +38,7 @@
                 body: jsonString
                 })
         const data = await response.text();
-        console.log("Data from lora config: " + data)
+        //console.log("Data from lora config: " + data)
         const confButt = document.getElementById('confbutt');
         //console.log("butt:", confButt)
         confButt.value = data;

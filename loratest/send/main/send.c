@@ -19,7 +19,6 @@
 #include "esp_timer.h"
 #include "esp_console.h"
 
-
 int cntS = 0;
 int cntR = 0;
 

@@ -267,46 +267,6 @@ void    print_chipinfo()
     // (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Delayed reboot task
-
-static void    delayed_reboot_task(void *parm)
-
-{
-    ESP_LOGE(TAG, "Delayed reboot ...");
-
-    esp_wifi_disconnect();
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-
-    ESP_ERROR_CHECK(esp_wifi_stop());
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-
-    ESP_ERROR_CHECK(esp_wifi_deinit());
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-
-    vTaskDelay((int)parm / portTICK_PERIOD_MS);
-
-    ESP_LOGE(TAG, "... rebooting ... ");
-    esp_restart();
-    while(1==1)
-        ;
-    vTaskDelete(NULL);
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Delayed reboot
-
-void    delayed_reboot(int wait_ms)
-
-{
-    //ESP_LOGE(TAG, "Rebooting ... ");
-
-    // Disconnect everybody: (automatic)
-    xTaskCreate(&delayed_reboot_task, "reboot_task", 3024,
-                                (void*)wait_ms, 5, NULL);
-    vTaskDelay(20 / portTICK_PERIOD_MS);
-}
-
 // -----------------------------------------------------------------------
 
 void    print_wake_cause(int waker, char *context)

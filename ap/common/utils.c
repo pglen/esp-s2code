@@ -41,6 +41,23 @@
 
 static char *TAG= "IO4_utils";
 
+// Shuffle a string to 16 bit unique ID
+
+//int16_t chksum(const char *str, int len)
+//{
+//    //printf("str '%s'\n", str);
+//    uint16_t ret = 0;
+//    for(int aa = 0; aa < len; aa++)
+//        {
+//        uint16_t nn = (uint16_t)str[aa];
+//        uint16_t qq = nn << 7 | nn;
+//        ret += qq + 10000;
+//        ret ^= 0x5aa5;
+//        }
+//    //printf("sum ret %x\n", ret);
+//    return(ret);
+//}
+
 //////////////////////////////////////////////////////////////////////////
 //
 // Parse list of names into buffers. List terminated with NULL.
@@ -290,7 +307,7 @@ void IRAM_ATTR delayMicroseconds(uint32_t us)
 
 char    *get_arg_ptr(const char *keys)
 {
-    int aa = 0; char *ret = NULL;
+    int aa = 0;
     while(1)
         {
         char chh = keys[aa];
@@ -300,13 +317,52 @@ char    *get_arg_ptr(const char *keys)
             break;
         aa++;
         }
-    if (*keys == '\0')
+    if (keys[aa] == '\0')
         {
-        printf("No Key in url");
+        //printf("No Key in url");
         return NULL;
         }
-    printf("keys: '%s'\n", &keys[11]);
-    retrurn &keys[aa];
+    //printf("keys: '%s'\n", &keys[aa+1]);
+    return (char*)&keys[aa+1];
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Delayed reboot task
+
+static void    delayed_reboot_task(void *parm)
+
+{
+    ESP_LOGI(TAG, "Delayed reboot ...");
+
+    esp_wifi_disconnect();
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+
+    ESP_ERROR_CHECK(esp_wifi_stop());
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+
+    ESP_ERROR_CHECK(esp_wifi_deinit());
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+
+    vTaskDelay((int)parm / portTICK_PERIOD_MS);
+
+    ESP_LOGI(TAG, "... rebooting ... ");
+    esp_restart();
+    while(1==1)
+        ;
+    vTaskDelete(NULL);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Delayed reboot
+
+void    delayed_reboot(int wait_ms)
+
+{
+    ESP_LOGI(TAG, "Rebooting ... ");
+    // Disconnect everybody: (automatic)
+    xTaskCreate(&delayed_reboot_task, "reboot_task", 3024,
+                                (void*)wait_ms, 5, NULL);
+    vTaskDelay(20 / portTICK_PERIOD_MS);
 }
 
 //////////////////////////////////////////////////////////////////////////

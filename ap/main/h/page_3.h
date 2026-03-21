@@ -9,7 +9,7 @@
 
       REV   DATE            BY              DESCRIPTION
       ----  -----------     ----------      ------------------------------
-      0.00  Fri, 20-03-26   Peter Glen      Initial version.
+      0.00  Sat, 21-03-26   Peter Glen      Initial version.
 
    ======================================================================= */
 
@@ -163,7 +163,7 @@ const char lora_html [] =
 "                body: jsonString\n"
 "                })\n"
 "        const data = await response.text();\n"
-"        console.log(\"Data from lora config: \" + data)\n"
+"        //console.log(\"Data from lora config: \" + data)\n"
 "        const confButt = document.getElementById('confbutt');\n"
 "        //console.log(\"butt:\", confButt)\n"
 "        confButt.value = data;\n"

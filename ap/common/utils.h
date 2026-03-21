@@ -29,12 +29,10 @@ int     parse_post(const char *buf, const char *names[], char *mems[], int xlen)
 int     unescape_url(char *str, char *strout, int lims);
 void    cut_tailspace(char* str);
 double  atofx(const  unsigned char *s);
-
+//int16_t chksum(const char *str, int len);
 char    *get_arg_ptr(const char *keys);
-
 int     dec_str(char *str, int len, char *key, int klen, char *out, int olen);
 int     enc_str(char *str, int len, char *key, int klen, char *out, int olen);
-
 char    *time2str(int64_t ttt);
 char    *xsnprintf(char *format, ...);
 int     inc_bootcount();
