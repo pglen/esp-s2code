@@ -1,0 +1,34 @@
+include(mac/general.mac)
+include(mac/cntlines.mac)
+
+    <tr> <td height=8>
+        <table align=center border=0 width=100% frame=void>
+        <tr><td colspan=3 width=100%>
+            <tr bgcolor=#aaffaa><td align=center>
+                <div style="font-size:large" align=center>
+                    <b> Temperature Sensor Alert:&nbsp </b>
+                </div>
+        </table>
+        <tr><td colspan=3 align=center>
+            &nbsp; The temperature sensor triggers an alert, and the trigger treshold
+            can be set here. The alert normally triggers when the temperature
+            exceeds the threshold value. The reverse alert triggers when the temperature falls
+            below a certain value. This may be used for freeze warning or refrigeration
+            monitoring. <br>
+            &nbsp; The temperature alarm's settable range is from -50 &#8451; to +120 &#8451;
+
+        <table align=center border=0 width=100% frame=void>
+            <tr> <td height=8>
+            <tr bgcolor=#bbbbbb>
+                <th> Input
+                <th> Input name
+                <th> Temperature <br>Value &#8451
+                <th> Enable Alert
+                <th> Reverse Alert
+            <tr><td>
+            TEMPALERT(1, `#eeeeee', xxxxxxxxxx, checked, checked)
+            TEMPALERT(2, `#dddddd', xxxxxxxxxx, checked, checked)
+
+        </table>
+
+

@@ -1,0 +1,89 @@
+<style>
+.container {
+	text-align: left;
+	border: 1px solid green;
+	padding: 5px;
+    }
+.container table {
+	border: 1px solid red;
+    margin: 0 auto;
+    }
+.chris {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      45px;
+    font-style:     bold;
+    }
+.chris2  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      45px;
+    font-style:     bold;
+    display:        inline-block;
+    }
+.chris2a  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      25px;
+    font-style:     bold;
+    display:        inline-block;
+    }
+.chris2b  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      25px;
+    font-style:     bold;
+    }
+.chris2c  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      25px;
+    font-style:     bold;
+    }
+.chris3  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      16px;
+    }
+.myDiv {
+  font-size: 100px;
+  text-align: center;
+}
+
+html, address, blockquote, body, dd, div, dl, dt, fieldset,
+form, h1, h2, h3, h4, h5, h6, noframes, ol, p, ul, center,
+dir, hr, menu, pre {
+    font-family:    Arial, Helvetica, sans-serif;
+    }
+
+.mydiv {
+    /*background:yellow;
+    color:blue;
+    border-style:solid;
+    border-width:medium;
+    display:inline-block;
+    */
+    vertical-align:top;
+    horizontal-align:right;
+}
+textarea {
+    border-color:#eeeeee;
+    width:90%;
+}
+
+.mytext {
+    /*background:yellow;
+    color:blue;*/
+    width:100%;
+    border-style:solid;
+    border-width:1px;
+    border-color:#eeeeee;
+    display:inline-block;
+}
+
+.rebootstat {
+    font-size:  16px;
+    color:      red;
+}
+
+.statstat {
+    font-size:  16px;
+    color:      blue;
+}
+    </style>
+
+</style>

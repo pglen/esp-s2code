@@ -1,0 +1,50 @@
+include(mac/general.mac)
+include(mac/cntlines.mac)
+
+include(mac/rscript.mac)
+
+<form>
+    <input type="hidden" id="custId" name="custId" value="">
+
+    <table align=center border=0 width=100% >
+        <tr bgcolor=#aaffaa><td align=center colspan=3>
+            <div style="font-size:large" align=center>
+                <b>Relay Control:&nbsp  </b>
+            </div>
+        <tr> <td>
+        <tr><td>
+            &nbsp; The relays can be operated from the buttons below. This facility is provided for testing,
+            and has no bearing on the normal operation of the alarm functions. The relay operations from this
+            page are not logged. Press the "Restore Relay States" button to set the relays to their
+            currently evaluated device status.
+    </table>
+    <table border=0 width=100%  cellspacing=4, cellpadding=4>
+
+        <tr align=center>
+        RELAYOPX(1,`#00cc88', On)
+        RELAYOPX(2,`#00cc88', On)
+        RELAYOPX(3,`#00cc88', On)
+        RELAYOPX(4,`#00cc88', On)
+
+        <tr  align=center>
+            <th>Relay 1
+            <th>Relay 2
+            <th>Relay 3
+            <th>Relay 4
+
+        <tr  align=center>
+        RELAYOPX(5,`#ffaa88', Off)
+        RELAYOPX(6,`#ffaa88', Off)
+        RELAYOPX(7,`#ffaa88', Off)
+        RELAYOPX(8,`#ffaa88', Off)
+
+    </table>
+    <tr><td align=center>
+    <hr>
+    <tr><td align=center>
+    <input type=submit name=reeval value='Testing Complete, Restore Relay States'>
+
+</form>
+
+
+

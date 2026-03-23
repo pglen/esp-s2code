@@ -1,0 +1,37 @@
+<tr><td>
+  <table width=100% border=0>
+        <tr>
+            <td align=center colspan=3 width=100%>
+            <hr>
+        <tr>
+            <td align=center>
+                <div style="font-size:large"   align=center>
+                   <a href=page_4.html> Main Settings </a>
+                </div>
+
+            <td align=center>
+                <div style="font-size:large"   align=center>
+                   <a href=page_2.html> WiFi Settings </a>
+                </div>
+
+            <td align=center>
+                 <div style="font-size:large"   align=center>
+                    <a href=page_3.html> LORA Parameters </a>
+                </div>
+        <tr>
+            <td align=center>
+                <div style="font-size:large" >
+                    <a href=page_8.html> Quick Start Manual </a>
+                </div>
+
+            <td align=center>
+                <div style="font-size:large" >
+                   <a href=page_1.html> Back to Home Page </a>
+                </div>
+
+           <td align=center>
+                <div style="font-size:large" >
+                   <a href=page_1.html?reboot=true>Reboot Device</a>
+                </div>
+
+    </table>

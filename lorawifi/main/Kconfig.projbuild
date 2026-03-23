@@ -1,0 +1,28 @@
+menu "Lora WiFi Configuration"
+
+    config ESP_MAX_STA_CONN
+        int "Maximum STA connections"
+        default 4
+        help
+            Max number of the STA can connect to AP.
+
+    config ESP_WIFI_CHANNEL
+        int "Default Wifi Channel"
+        default 0
+        help
+            Chanel the Wifi subsystem is listening on
+
+    config ESP_GTK_REKEYING_ENABLE
+        bool "Enable GTK Rekeying"
+        default y
+        help
+            Flag to enable GTK rekeying.
+
+    config ESP_GTK_REKEY_INTERVAL
+        int "GTK rekey interval"
+        depends on ESP_GTK_REKEYING_ENABLE
+        range 60 65535
+        default 600
+        help
+            GTK rekeying interval in seconds.
+endmenu

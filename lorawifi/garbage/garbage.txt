@@ -1,0 +1,52 @@
+static esp_err_t post_get_handler(httpd_req_t *req)
+{
+//    // point to after the '?'
+//    int aa = 0; const char *keys = req->uri;
+//    while(1)
+//        {
+//        char chh = req->uri[aa];
+//        if (chh == '\0')
+//            {
+//            keys = &req->uri[aa]; break;
+//            }
+//        if (chh == '?')
+//            {
+//            keys = &req->uri[aa+1]; break;
+//            }
+//        aa++;
+//        }
+//    if (*keys == '\0')
+//        {
+//        printf("No Key in url");
+//        return 0;
+//        }
+//    //printf("keys: '%s'\n", keys);
+//    httpd_query_key_value(keys, "txt", buff, sizeof(buff));
+//    unescape_url(buff, buffu, sizeof(buffu) );
+//    printf("text: '%s'\n", buffu);
+//    //
+//    httpd_query_key_value(keys, "dest", buff2, sizeof(buff2));
+//    unescape_url(buff2, buffu2, sizeof(buffu2) );
+//    printf("dest: '%s'\n", buffu2);
+//
+//    char *gl_sent = malloc(128);
+//    if(!gl_sent)
+//        {
+//        printf("no mem for: '%s'\n", buffu);
+//        httpd_resp_send(req, "no mem", HTTPD_RESP_USE_STRLEN);
+//        return ESP_OK;
+//        }
+//    gl_sent[0] = '\0';
+//    strncat(gl_sent, "<div style=\"color:blue\">", 127);
+//    strncat(gl_sent, buffu, 127);
+//    strncat(gl_sent, "</div><p>Answer ....<p>", 127);
+//
+//    timeout_cnt = 0;
+//    GIVE_SEMA(iSemaphore);
+//
+//    //printf("Mem3 %ld\n", esp_get_free_heap_size());
+//    httpd_resp_send(req, "Finished", 0);
+//
+    return ESP_OK;
+}
+

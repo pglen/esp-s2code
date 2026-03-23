@@ -1,0 +1,229 @@
+dnl Macro abbriviations for table lines
+dnl
+define(CNTRLINE,`<tr bgcolor=$2> <td align=center>$1
+    <td  align=center>
+        Counter Input $1 &nbsp; &nbsp;
+    <td  align=center>
+        <input type=text name=cres_$1a value=1111111111 size=6><br>
+    <input type=button value=Reset onclick=bpressed("cres_$1a",0)>
+    <td align=center>
+        <input type=text name=cres_$1b value=2222222222 size=6><br>
+    <input type=button value=Reset onclick=bpressed("cres_$1b",1)>
+    <td  align=center>
+        <input type=text name=cres_$1c value=33333333.3333 size=6><br>
+    <input type=button value=Reset onclick=bpressed("cres_$1c",0)>
+    <td  align=center>
+        <input type=text name=cres_$1d value=44444444.4444 size=6><br>
+    <input type=button value=Reset onclick=bpressed("cres_$1d",1)>
+')dnl
+dnl
+define(CNTNLINE,`<tr bgcolor=$2> <td align=center>$1
+    <td  align=center>
+        Counter Input $1 &nbsp; &nbsp;
+    <td  align=center>
+        <input type=text name=cname_$1 value=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa size=12><br>
+')dnl
+dnl
+define(CNTALINE,`<tr bgcolor=$2> <td align=center>$1
+    <td  align=center>
+        Analog Input $1 &nbsp; &nbsp;
+    <td  align=center>
+        <input type=text name=aname_$1 value=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa size=12><br>
+')dnl
+dnl
+define(TMPNLINE,`<tr bgcolor=$2> <td align=center>$1
+    <td  align=center>
+        Temperature Sensor $1 &nbsp;
+    <td  align=center>
+        <input type=text name=tname_$1 value=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa size=12><br>
+')dnl
+dnl
+define(RLINE,`<tr bgcolor=$2 name=rinp_$1>
+    <td align=center> $1
+    <td align=center>Counter Input $1 &nbsp; &nbsp;
+    <td align=center> $3
+    <td align=center> $4
+    <td align=center> $5
+    <td align=center> $6
+')dnl
+dnl
+define(TLINE,`<tr bgcolor=$2 name=tinp_$1>
+    <td align=center id=aa_$1> $1
+    <td align=center id=bb_$1> Counter Input $1 &nbsp; &nbsp;
+    <td align=center id=cc_$1> $3
+    <td align=center id=dd_$1> $4
+    <td align=center id=ee_$1> $5
+    <td align=center id=ff_$1> $6
+')dnl
+define(TRLINE,`<tr bgcolor=$2 name=tinp_$1>
+    <td align=center> Relay $1
+    <td align=center><input id=trli_$1a name=trli_$1a type=checkbox checked>
+    <td align=center><input id=trli_$1b name=trli_$1b type=checkbox checked>
+')dnl
+define(SLINE,`<tr bgcolor=$2 name=sinp_$1>
+    <td align=center id=$1a> $1
+    <td align=center id=$1b>Counter Input $1 &nbsp; &nbsp; &nbsp; &nbsp;
+    <td align=center id=$1c> $3
+    <td align=center id=$1d> $4
+')dnl
+define(ALINE,`<tr bgcolor=$2 align=center name=ainp_$1>
+    <td  align=center> &nbsp; $1
+    <td  align=center id=$1g>Analog Input $1 &nbsp; &nbsp;
+    <td  align=center id=$1i> &nbsp; $3
+    <td  align=center id=$1j> &nbsp; $4
+')dnl
+define(RTLINE,`<tr bgcolor=$2 align=center name=tread_$1>
+    <td  width=50% align=center>Temperature Sensor $1 &nbsp;
+    <td id=tab_$1 name=tab_$1> &nbsp; $3
+')dnl
+define(TEMPLINE,`<tr bgcolor=$2 align=center name=ainp_$1>
+    <td  align=center id=$1g>Analog Input $1 &nbsp; &nbsp;
+    <td  align=center id=$1h> &nbsp; $3
+    <td  align=center id=$1i> &nbsp; $4
+    <td  align=center id=$1j> &nbsp; $5
+')dnl
+define(TEMPALERT,`<tr bgcolor=$2 align=center name=taa_$1>
+    <td  align=center> $1
+    <td  align=right>Temperature Sensor $1 &nbsp;
+    <td> <input name=tab_$1 type=text value=$3 size=12>
+    <td ><input name=tac_$1 type=checkbox checked>
+    <td ><input name=tad_$1 type=checkbox checked>
+')dnl
+dnl
+define(RELLINE,`<tr bgcolor=$2 align=center name=ainp_$1>
+    <td  align=center> Relay $1
+    <td  align=center> <input type=checkbox id=xrel_$1a name=xrel_$1a checked>
+    <td  align=center> <input type=checkbox id=xrel_$1b name=xrel_$1b checked>
+    <td  align=center> <input type=checkbox id=xrel_$1c name=xrel_$1c checked>
+    <td  align=center> <input type=checkbox id=xrel_$1d name=xrel_$1d checked>
+    <td  align=center> <input type=checkbox id=xrel_$1e name=xrel_$1e checked>
+    <td  align=center> <input type=checkbox id=xrel_$1f name=xrel_$1f checked>
+    <td  align=center> <input type=checkbox id=xrel_$1g name=xrel_$1g checked>
+    <td  align=center> <input type=checkbox id=xrel_$1h name=xrel_$1h checked>
+')dnl
+dnl
+define(DURALINE,`<tr bgcolor=$2 align=center name=dainp_$1>
+    <td  align=center> Relay $1
+    <td  align=center> <input type=checkbox id=drel_$1a name=drel_$1a checked>
+    <td  align=center> <input type=checkbox id=drel_$1b name=drel_$1b checked>
+    <td  align=center> <input type=checkbox id=drel_$1c name=drel_$1c checked>
+    <td  align=center> <input type=checkbox id=drel_$1d name=drel_$1d checked>
+    <td  align=center> <input type=checkbox id=drel_$1e name=drel_$1e checked>
+    <td  align=center> <input type=checkbox id=drel_$1f name=drel_$1f checked>
+    <td  align=center> <input type=checkbox id=drel_$1g name=drel_$1g checked>
+    <td  align=center> <input type=checkbox id=drel_$1h name=drel_$1h checked>
+')dnl
+dnl
+define(ANALINE,`<tr bgcolor=$2 align=center name=ainp_$1>
+    <td  align=center> Relay $1
+    <td  align=center> <input type=checkbox id=anal_$1a name=anal_$1a checked>
+    <td  align=center> <input type=checkbox id=anal_$1b name=anal_$1b checked>
+    <td  align=center> <input type=checkbox id=anal_$1c name=anal_$1c checked>
+    <td  align=center> <input type=checkbox id=anal_$1d name=anal_$1d checked>
+')dnl
+dnl
+define(ALARMLINE,`<tr bgcolor=$2> <td align=center>$1
+    <td align=center>&nbsp; &nbsp; &nbsp; Input $1 &nbsp; &nbsp;
+    <td align=center>
+        <input type=text name=alerta_$1 value=$3 size=8>
+    <td align=center> <input type=checkbox name=cba_$1 $4>
+    <td align=center>
+        <input type=text name=alertb_$1 value=$5 size=8>
+    <td align=center> <input type=checkbox name=cbb_$1 $6>
+')dnl
+dnl
+define(ANAXLINE,`<tr bgcolor=$2>
+                <td align=center>$1
+                <td align=center id=anab_$1>Analog Input $1 &nbsp; &nbsp;
+                <td align=center> <input  type=text name=thres_$1 value=$3 size=6>
+                <td align=center> <input name=anac_$1 type=checkbox $4>
+                <td align=center> <input name=anad_$1 type=checkbox $5>
+')dnl
+define(ANACLINE,`<tr bgcolor=$2>
+                <td align=center>$1
+                <td align=center id=anab_$1>Analog Input $1 &nbsp; &nbsp;
+                <td align=center><input type=text name=hist_$1 value=$3 size=6>
+                <td align=center><input type=text name=filt_$1 value=$4 size=6>
+')dnl
+define(CALLINE,`<tr bgcolor=$2>
+                <td align=center>$1
+                <td align=center id=anab_$1>Analog Input $1 &nbsp;  &nbsp;
+                <td align=center><input  type=text name=lowv_$1 value=$3 size=6>
+                <td align=center><input  type=text name=high_$1 value=$4 size=6>
+                <td align=center><input  type=text name=clip_$1 value=$5 size=6>
+')dnl
+dnl
+define(RELAYLINE,`<tr align=center>
+    <td id=rel_1 bgcolor=$2> $3
+    <td id=rel_2 bgcolor=$2> $3
+    <td id=rel_3 bgcolor=$2> $3
+    <td id=rel_4 bgcolor=$2> $3
+')dnl
+dnl
+define(BIGLINE,`<tr bgcolor=$2 align=center name=ainp_$1>
+    <td  align=center >
+    <div id=$1i class=myDiv>&nbsp; $3 V</div>
+')dnl
+dnl
+define(RELAYOPX,`<td>
+     <table width=100% cellpadding=18>
+        <tr align=center>
+            <td width=30%>
+            <td id=relop_$1 bgcolor=$2 style="border-radius:28px">
+            <div> $3 </div>
+            <td width=30%>
+    </table>
+')
+dnl
+define(BAR,`
+    <td bgcolor=$2>
+    <table width=100%  cellspacing=0 callpadding=0 border=1>
+       <tr>
+        <td id=bar1_$1 bgcolor=#00ff00 width=25%> &nbsp;
+        <td id=bar2_$1 bgcolor=#006600 width=25%> &nbsp;
+    <!--     <td id=bar3_$1 bgcolor=#ffff00 width=1%> &nbsp;   -->
+        <td id=bar4_$1 bgcolor=#666600 width=30%> &nbsp;
+    <!--      <td id=bar5_$1 bgcolor=#ff0000 width=0%> &nbsp;  -->
+        <td id=bar6_$1 bgcolor=#660000 width=10%> &nbsp;
+    </table>
+')
+dnl
+define(NEWBAR,`
+    <td width=40%>
+    <div class=myProgress id="myProgress_$1">  &nbsp;
+        <div class="Fill">  </div>
+        <div class="myBar"  id=barG_$1_$2> </div>
+        <div class="myBarY" id=barY_$1_$2> </div>
+        <div class="myBarR" id=barR_$1_$2> </div>
+    </div>
+')
+dnl
+define(BARLINE,`
+    <tr align=center>
+        <td align=right>$3:
+        NEWBAR($6, $3, `#dddddd',)
+        <td width=3%>
+        <td align=right>$4:
+        NEWBAR($6, $4, `#dddddd')
+    <tr align=center>
+        <td>
+        <td>
+            <table align=center>
+                <tr><td align=center>
+                    <div class="myPer" id=perx_$6_$3>
+                    Counter Input $3 &nbsp; &nbsp; </div>
+                    <div class="myPer" id=perc_$6_$3> -- 0 % </div>
+            </table>
+        <td>
+        <td>
+        <td>
+            <table align=center>
+                <tr><td align=center>
+                    <div class="myPer" id=perx_$6_$4>
+                    Counter Input $4 &nbsp; &nbsp; </div>
+                    <div class="myPer" id=perc_$6_$4> -- 0 % </div>
+            </table>
+
+    <tr><td colspan=2 height=8>
+')
+dnl

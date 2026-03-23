@@ -1,0 +1,40 @@
+include(mac/general.mac)
+include(mac/cntlines.mac)
+dnl
+<tr><td>
+
+    <table align=center border=0 width=100% >
+        <tr bgcolor=#aaffaa><td align=center colspan=3>
+            <div style="font-size:large" align=center>
+                <b>Counter Readings:&nbsp  </b>
+            </div>
+        <tr> <td>
+        <tr><td>
+            &nbsp; The current activation counter reading as seen by the device at
+            the last page load. An ON/OFF cycle counts as one activation.
+            If you would like to monitor the switches and temperature in Real Time please see the
+             <a href=page_2.html?home=true>Quick status</a> page.
+        <tr><td height=8>
+    </table>
+
+    <table align=center border=0 width=100%>
+        <tr bgcolor=#bbbbbb>
+            <th  align=center style="padding:4"> Input
+            <th  align=center style="padding:4"> Name
+            <th  align=center style="padding:4"> Maintainance<br> Counter
+            <th  align=center style="padding:4"> Total Counts
+            <th  align=center style="padding:4"> Alert at
+            <th  align=center style="padding:4"> Alert<br> Enabled
+
+        RLINE(1, `#eeeeee', 3333333333, 444444444, 555555555, YES)
+        RLINE(2, `#dddddd', 3333333333, 444444444, 555555555, YES)
+        RLINE(3, `#eeeeee', 3333333333, 444444444, 555555555, YES)
+        RLINE(4, `#dddddd', 3333333333, 444444444, 555555555, YES)
+        RLINE(5, `#eeeeee', 3333333333, 444444444, 555555555, YES)
+        RLINE(6, `#dddddd', 3333333333, 444444444, 555555555, YES)
+        RLINE(7, `#eeeeee', 3333333333, 444444444, 555555555, YES)
+        RLINE(8, `#dddddd', 3333333333, 444444444, 555555555, YES)
+    </table>
+        <tr><td> <center><a href=page_1.html>Refresh page for updated values</a></center>
+
+dnl

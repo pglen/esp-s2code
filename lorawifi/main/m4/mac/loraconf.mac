@@ -1,0 +1,99 @@
+<script async>
+
+    //console.log("Start LORA");
+
+    const isNumeric2 = (str) => Number.isFinite(+str);
+
+    function check_lims(data, validx, lower, upper) {
+
+        valx = data.get(validx)
+
+        if (!isNumeric2(valx))
+            {
+            alert("Field: " + validx + " must be a number.")
+            return 0;
+            }
+        //console.log("value: %s", valx);
+        if (valx < lower || valx > upper)
+            {
+            alert("Number out of range for:  " + validx + " value = " + valx)
+            return 0;
+            }
+        return 1;
+        }
+    async function save_lora() {
+        //console.log("Save LORA");
+        const formData = new FormData(myform);
+        //console.log("Data", formData);
+        if(!check_lims(formData, "spread", 6, 12)) return;
+        if(!check_lims(formData, "bwidth", 10, 500)) return;
+        if(!check_lims(formData, "txfreq", 433.05, 434.79)) return;
+        if(!check_lims(formData, "deftrench", 0, 65534)) return;
+
+        const plainFormData = Object.fromEntries(formData.entries());
+        const jsonString = JSON.stringify(plainFormData);
+        //console.log("Submitting: '%s'", jsonString);
+        //document.getElementById("myform").submit();
+        const response = await fetch("page_3.html", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: jsonString
+                })
+        const data = await response.text();
+        //console.log("Data from lora config: " + data)
+        const confButt = document.getElementById('confbutt');
+        //console.log("butt:", confButt)
+        confButt.value = data;
+    }
+</script>
+
+<table width=100%>
+
+    <tr><td colspan=2 align=center height=12>
+    The following fields determine the LORA transmit / receive configuration.
+    These configurations must match between the sender and receiver units.
+    The parameters are range contained. The frequency parameter is a floating
+    point number multiplied by megahertz. The bandwidth parameter is a floating
+    point number multiplied by kilohertz. Please note: for communication
+    stability the lowest recommended bandwidth is 40+ kHz. (This is due to the
+    LORA Board's chrystal instability)
+
+    <tr><td colspan=2 align=center>
+        <table align=center border=0 width=100%  frame=void>
+            <tr><td colspan=3 width=100%>
+                    <tr bgcolor=#eeeeee><td align=center>
+                    <div style="font-size:large" align=center>
+                    <b>LORA parameters:</b><br>
+                    </div>
+        </table>
+        <tr><td>
+        <tr> <td align=right>
+            LORA Spread Factor: (6 - 12)  &nbsp
+            <td width=50%><input name=spread type=text value=spreadspread>
+        <tr><td align=right>
+            LORA Bandwidth: (10 - 500) kHz &nbsp<td><input name=bwidth type=text
+            value=bandbandbandband>
+    <tr><td>
+    <tr><td colspan=2 align=right>
+        <table align=center border=0 width=100%  frame=void>
+            <tr><td colspan=3 width=100%>
+                    <tr bgcolor=#eeeeee><td align=center>
+                    <div style="font-size:large" align=center>
+                    <b>Optional (advanced) LORA parameters:</b><br>
+                    </div>
+        </table>
+    <tr><td>
+    <tr> <td align=right>
+        LORA TX power (1-15):  &nbsp<td><input name=txpower type=text
+            value=txpowtxpowtxpow>
+    <tr> <td align=right>
+        LORA Frequency: (433.05 - 434.79) MHz &nbsp<td><input name=txfreq type=text
+        value=freqfreqfreqfreqfreqfreq> <a href=channels.html >(Channel Table) </a>
+    <tr><td colspan=3>
+    <hr>
+    <tr><td><td>
+    <input type=button onclick=save_lora() id=confbutt name=confbutt
+                                            value='Save LORA Configuration'>
+    <tr> <td colspan=3 align=center>
+
+</table>

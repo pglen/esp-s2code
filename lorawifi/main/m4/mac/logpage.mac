@@ -1,0 +1,38 @@
+<table width=100%>
+    <tr><td colspan=2 align=center>
+    The syslog may be used  monitor PMC operation, diagnose connectivity issues,
+    and keep track of events related to the PMC. During operation, the following
+    events (and more) are logged: 1.) Power On; 2.) Operational states; 3.) Switch
+    events, 3.) Error Conditions 4.) Connection from Browser Device 5.) Alarm Condition
+    <br>
+    For realtime log please monitor the 'swtable.txt' page, which may be queried
+    from a script. See script / batch file examples in the accompanying
+    documentation folder, and resulting spreadsheets.
+
+    <tr><td colspan=2 align=center>
+        <div style="font-size:large">
+            [ <a href=page_6.html?home=true>Refresh This Page</a> ] &nbsp;
+            [ <a href=page_1.html?wastest=true>Return to Home Page.</a>  ]
+        </div>
+
+        <tr><td colspan=2 height=8>
+        <tr  bgcolor=#aaffaa> <td colspan=2>
+        <table width=100% align=center border=0>
+            <tr><td align=center>
+            <div>
+            <div style="font-size:20px">
+                <b>Syslog:</b>
+            </div>
+        </table>
+
+    <tr><td colspan=2 height=12>
+
+    <tr><td colspan=2 align=center>
+        <table align=center width=100%>
+        <tr><th> Boot Count <th> Event <th> Params <th> Notes <th>Time from Boot
+        <tr><td colspan=5 align=center>
+        syslogsyslogsyslog
+        </table>
+    <tr><td colspan=2 align=center>
+
+</table>

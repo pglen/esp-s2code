@@ -26,89 +26,7 @@
 #include <ctype.h>
 #include <string.h>
 
-#define FALSE 0
-#define TRUE 1
-
-static const char *TAG = "recv";
-
-#define BLINK_GPIO CONFIG_BLINK_GPIO
-
-static uint8_t s_led_state = 0;
-
-#ifdef CONFIG_BLINK_LED_STRIP
-
-static led_strip_handle_t led_strip;
-
-static void toggle_led(int ok)
-{
-    //printf("toggle\n");
-    /* If the addressable LED is enabled */
-    if (s_led_state) {
-        if(ok)
-            led_strip_set_pixel(led_strip, 0, 0, 36, 0);
-        else
-            led_strip_set_pixel(led_strip, 0, 36, 0, 0);
-
-        /* Refresh the strip to send data */
-        led_strip_refresh(led_strip);
-    } else {
-        /* Set all LED off to clear all pixels */
-
-        if(ok)
-            led_strip_set_pixel(led_strip, 0, 0, 0, 0);
-        else
-            led_strip_set_pixel(led_strip, 0, 0, 0, 36);
-
-        led_strip_refresh(led_strip);
-        //led_strip_clear(led_strip);
-    }
-    s_led_state = ! s_led_state;
-}
-
-static void configure_led(void)
-{
-    ESP_LOGI(TAG, "Recv configured to blink addressable LED! %d", BLINK_GPIO);
-    /* LED strip initialization with the GPIO and pixels number*/
-    led_strip_config_t strip_config = {
-        .strip_gpio_num = BLINK_GPIO,
-        .max_leds = 1, // at least one LED on board
-    };
-#if CONFIG_BLINK_LED_STRIP_BACKEND_RMT
-    led_strip_rmt_config_t rmt_config = {
-        .resolution_hz = 10 * 1000 * 1000, // 10MHz
-        .flags.with_dma = false,
-    };
-    ESP_ERROR_CHECK(led_strip_new_rmt_device(&strip_config, &rmt_config, &led_strip));
-#elif CONFIG_BLINK_LED_STRIP_BACKEND_SPI
-    led_strip_spi_config_t spi_config = {
-        .spi_bus = SPI2_HOST,
-        .flags.with_dma = true,
-    };
-    ESP_ERROR_CHECK(led_strip_new_spi_device(&strip_config, &spi_config, &led_strip));
-#else
-#error "unsupported LED strip backend"
-#endif
-    /* Set all LED off to clear all pixels */
-    led_strip_clear(led_strip);
-}
-
-#elif CONFIG_BLINK_LED_GPIO
-
-static void toggle_led(void)
-{
-    /* Set the GPIO level according to the state (LOW or HIGH)*/
-    gpio_set_level(BLINK_GPIO, s_led_state);
-}
-
-static void configure_led(void)
-{
-    ESP_LOGI(TAG, "Example configured to blink GPIO LED!");
-    gpio_reset_pin(BLINK_GPIO);
-    /* Set the GPIO as a push/pull output */
-    gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
-}
-
-# endif
+//static const char *TAG = "recv";
 
 #define VT_SAVECURSOR            "\e7"  /* Save cursor and attrib */
 #define VT_RESTORECURSOR         "\e8"  /* Restore cursor pos and attribs */
@@ -140,6 +58,79 @@ void out_str(const char *strx, const char *str2)
     printf(VT_RESTORECURSOR);
 }
 
+// Shuffle a string to 16 bit unique ID
+
+int16_t lora_chksum(const char *str, int len)
+{
+    //printf("len %d str '%s'\n", len, str);
+    uint16_t ret = 0;
+    for(int aa = 0; aa < len; aa++)
+        {
+        uint16_t nn = (uint16_t)str[aa];
+        uint16_t qq = nn << 7 | nn;
+        ret += qq + 10000;
+        ret ^= 0x5aa5;
+        }
+    //printf("sum ret %d\n", ret);
+    return(ret);
+}
+
+// Store it in little endian (intel) order
+// Note: ESP32 is big andian ...
+// ... This is why we are not using structures
+
+int     assemble_packet(const char *pay, uint16_t trench, char *outstr, int maxlen)
+{
+    int prog = 0;
+    uint16_t ccc = lora_chksum(pay, strlen(pay));
+    //printf("ccc %d (0x%x)\n" , ccc, ccc);
+
+    outstr[prog] = ccc & 0xff; prog++;
+    outstr[prog] = ccc >> 8; prog++;
+
+    int lenoffs = prog;
+    outstr[prog] = 0 & 0xff; prog++;
+
+    outstr[prog] = trench & 0xff; prog++;
+    outstr[prog] = trench >> 8; prog++;
+
+    int slen = snprintf(outstr + prog, maxlen - prog, "%s", pay);
+    outstr[lenoffs] = slen & 0xff;
+    return(prog += slen);
+}
+
+// Verify is valid packet
+
+int     check_packet(const char *str, int len)
+
+{
+    uint16_t nsum = lora_chksum(str + 5, *(str+2) );
+    uint16_t org = *(str) + (*(str+1) << 8);
+    //printf("nsum %d org %d\n", nsum, org);
+    return nsum == org;
+}
+
+void  send_payload(const char * buff)
+
+{
+    char    buffer[256];   buffer[0] = '\0';
+
+    rr = 100, gg = 50, bb = 0;
+    blink_cnt = 1;
+
+    printf("Sending: %s\n", buff);
+    int slen = assemble_packet(buff, 1234, buffer, sizeof(buffer));
+    int32_t tttt = (int32_t)(esp_timer_get_time() / 1000);
+    TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
+    lora_send_packet((uint8_t *)buffer, slen);
+    //int ret = lora_read_freq_err();
+    GIVE_SEMA(sSemaphore);
+    int32_t tttt2 = (int32_t)(esp_timer_get_time() / 1000);
+    printf("Send time: %ld ms\n", tttt2-tttt);
+    blink_cnt = 2;
+    //print_freq_deviation(ret);
+}
+
 typedef struct {
     struct arg_str *arg1;
     struct arg_end *end;
@@ -147,7 +138,7 @@ typedef struct {
 
 static arg_args_t  spread_args;
 
-int spread = 12;
+//int spread = 12;
 
 static int set_spread(int argc, char **argv)
 
@@ -157,20 +148,31 @@ static int set_spread(int argc, char **argv)
     }
     if(strlen(spread_args.arg1->sval[0]) == 0)
         {
-        printf("Current spread level: %d\n", spread);
+        printf("Current spread factor: %s\n", gl_spread);
+        return 0;
+        }
+    if(spread_args.arg1->sval[0][0] == '?')
+        {
+        printf("Spread factor: 6 - 12. Default: 10\n");
         return 0;
         }
     int sss = atoi(spread_args.arg1->sval[0]);
-    spread = sss;
+    if(sss > 12 || sss < 6)
+        {
+        printf("Invalid spread factor. Kept old: %s\n", gl_spread);
+        return 0;
+        }
+    TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
+    lora_set_spreading_factor(sss);
+    GIVE_SEMA(sSemaphore);
 
-    lora_set_spreading_factor(spread);
-
-    printf("Spread set to %d\n", spread);
+    strncpy(gl_spread, spread_args.arg1->sval[0], sizeof(gl_spread));
+    submit_nvs_str("spread",    gl_spread);
+    printf("Spread set to %s\n", gl_spread);
     spread_args.arg1->sval[0] = "";
     return 0;
 }
 
-float gl_bw = 31.25E3;
 static arg_args_t  bw_args;
 
 //10.4E3 //15.6E3 //20.8E3 //31.25E3//41.7E3 //62.5E3 //125E3
@@ -183,24 +185,70 @@ static int set_bw(int argc, char **argv)
     }
     if(strlen(bw_args.arg1->sval[0]) == 0)
         {
-        printf("Current bandwidth: %.2f\n", gl_bw);
+        printf("Current bandwidth: %s\n", gl_bwidth);
         return 0;
         }
     if(bw_args.arg1->sval[0][0] == '?')
         {
         printf(
-        "Bandwidth list: 20.8E3 31.25E3 41.7E3 62.5E3 125E3 250E3 512E3\n");
+        "Bandwidth list: 10.4E3  15.6E3 20.8E3 31.25E3 41.7E3\n"
+        "                 62.5E3 125E3  250E3 512E3\n");
         return 0;
         }
     float sss = atof(bw_args.arg1->sval[0]);
-    gl_bw = (int)sss;
-    lora_set_bandwidth(gl_bw);
-    printf("Bandwith set to %.2f\n", gl_bw);
+    if(sss < 1000)
+        sss *= 1000;
+    if (sss > 500E3 || sss < 5E3)
+        {
+        printf("Invalid bandwidth. Kept old: %s\n", gl_bwidth);
+        return 0;
+        }
+    snprintf(gl_bwidth, sizeof(gl_bwidth), "%e", sss);
+    TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
+    lora_set_bandwidth(atof(gl_bwidth));
+    GIVE_SEMA(sSemaphore);
+
+    submit_nvs_str("bwidth",    gl_bwidth);
+
+    printf("Bandwith set to %s\n", gl_bwidth);
     bw_args.arg1->sval[0] = "";
     return 0;
 }
 
-float gl_fr = 433.175E6;
+static arg_args_t  pw_args;
+
+static int set_pw(int argc, char **argv)
+{
+    int nerrors = arg_parse(argc, argv, (void **) &pw_args);
+    if (nerrors != 0) {
+    }
+    if(strlen(pw_args.arg1->sval[0]) == 0)
+        {
+        printf("Current power: %s\n", gl_txpower);
+        return 0;
+        }
+    if(pw_args.arg1->sval[0][0] == '?')
+        {
+        printf("Set power level 2 ... 15\n");
+        return 0;
+        }
+    int ppp = atoi(pw_args.arg1->sval[0]);
+    if (ppp > 15 || ppp < 2)
+        {
+        printf("Invalid power level. Kept old: %s\n", gl_txpower);
+        return 0;
+        }
+    TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
+    lora_set_tx_power(ppp);
+    GIVE_SEMA(sSemaphore);
+
+    strncpy(gl_txpower, pw_args.arg1->sval[0], sizeof(gl_txpower));
+    submit_nvs_str("txpower",   gl_txpower);
+    printf("Power set to %s\n", gl_txpower);
+    pw_args.arg1->sval[0] = "";
+    return 0;
+}
+
 static arg_args_t  fr_args;
 
 static int set_fr(int argc, char **argv)
@@ -210,52 +258,57 @@ static int set_fr(int argc, char **argv)
     }
     if(strlen(bw_args.arg1->sval[0]) == 0)
         {
-        printf("Current frequency: %f\n", gl_fr);
+        printf("Current frequency: %s\n", gl_txfreq);
         return 0;
         }
     if(bw_args.arg1->sval[0][0] == '?')
         {
-        printf("Frequency: 410 - 530 Mhz (433.175E6)\n");
+        printf("Frequency: 410 - 530 Mhz (def: 433.375E6)\n");
         printf("ch1=433.175E6 ch2=433.425E6 ...\n");
-        printf("Make sure frequency is within legal limits.\n");
+        printf("Frequency is capped within legal limits.\n");
         return 0;
         }
     float sss = atof(bw_args.arg1->sval[0]);
+    // Correct it
+    if(sss < 1000000)
+        sss *= 1000000;
     if (sss > 530E6 || sss < 410E6)
         {
-        printf("Invalid frequency. Kept old: %f\n", gl_fr);
+        printf("Invalid frequency. Kept old: %s\n", gl_txfreq);
         return 0;
         }
-    gl_fr = (int)sss;
-    lora_set_bandwidth(gl_fr);
-    printf("Frequency set to %f\n", gl_fr);
-    bw_args.arg1->sval[0] = "";
+    snprintf(gl_txfreq, sizeof(gl_txfreq), "%e", sss);
+    printf("gl_txfreq: %s\n", gl_txfreq);
 
+    TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
+    lora_set_frequency(sss);
+    GIVE_SEMA(sSemaphore);
+    printf("Frequency set to %f\n", sss);
+    submit_nvs_str("txfreq",  gl_txfreq);
+
+    bw_args.arg1->sval[0] = "";
     return 0;
 }
 
-static arg_args_t  str_args;
+static arg_args_t  str_trargs;
 
-static int set_str(int argc, char **argv)
+static int set_trstr(int argc, char **argv)
 {
-    int nerrors = arg_parse(argc, argv, (void **) &bw_args);
+    int nerrors = arg_parse(argc, argv, (void **) &str_trargs);
     if (nerrors != 0) {
     }
-    if(strlen(bw_args.arg1->sval[0]) == 0)
+    if(strlen(str_trargs.arg1->sval[0]) == 0)
         {
-        printf("Current str: %s\n", payload);
+        printf("Cannot send empty string\n");
         return 0;
         }
-    if(bw_args.arg1->sval[0][0] == '?')
+    if(str_trargs.arg1->sval[0][0] == '?')
         {
         printf("Pass string");
         return 0;
         }
-    strncpy(payload, bw_args.arg1->sval[0], sizeof(payload));
-    //gl_str = strdup(bw_args.arg1->sval[0]);
-    printf("Payload: %s\n", payload);
-    bw_args.arg1->sval[0] = "";
-
+    send_payload(str_trargs.arg1->sval[0]);
+    str_trargs.arg1->sval[0] = "";
     return 0;
 }
 
@@ -289,17 +342,76 @@ static int set_verbose(int argc, char **argv)
 }
 
 static arg_args_t  de_args;
-static  int set_de(int argc, char **argv)
 
+static  int set_de(int argc, char **argv)
 {
-    printf("Setting defaults\n");
+
+    int nerrors = arg_parse(argc, argv, (void **) &de_args);
+    if (nerrors != 0) {
+    }
+    if(de_args.arg1->sval[0][0] == '?')
+        {
+        printf("Set LORA parameter to defaults\n");
+        return 0;
+        }
+    printf("Setting LORA defaults. Are you sure? y/N ... ");  fflush(stdout);
+    int ccc = getchar();
+    if(ccc != 'y' && ccc != 'Y')
+        {
+        printf("\nSetting defaults aborted on user request.\n");
+        return 0;
+        }
+    printf("\n");
+    strncpy(gl_spread,  DEF_SPREAD,  sizeof(gl_spread));
+    strncpy(gl_bwidth,  DEF_BWIDTH,  sizeof(gl_bwidth));
+    strncpy(gl_txpower, DEF_POWER,   sizeof(gl_txpower));
+    strncpy(gl_txfreq,  DEF_FREQ,    sizeof(gl_txfreq));
+    //strncpy(gl_deftren, DEF_TRENCH,  sizeof(gl_deftren));
+
+    TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
+    lora_set_frequency(atof(gl_txfreq));
+    lora_set_tx_power(atof(gl_txpower));
+    lora_set_spreading_factor(atof(gl_spread));
+    lora_set_bandwidth(atof(gl_bwidth));
+    GIVE_SEMA(sSemaphore);
+
+    submit_nvs_str("spread",    gl_spread);
+    submit_nvs_str("bwidth",    gl_bwidth);
+    submit_nvs_str("txpower",   gl_txpower);
+    submit_nvs_str("txfreq",    gl_txfreq);
+
+    //submit_nvs_str("deftrench", gl_deftren);
+    printf("Defaults set. [fr=%s bw=%s sf=%s pw=%s]\n",
+                        DEF_FREQ, DEF_BWIDTH, DEF_SPREAD, DEF_POWER);
+    de_args.arg1->sval[0] = "";
+    return 0;
+}
+
+static arg_args_t  pr_args;
+
+static  int set_pr(int argc, char **argv)
+{
+
+    int nerrors = arg_parse(argc, argv, (void **) &pr_args);
+    if (nerrors != 0) {
+    }
+    if(pr_args.arg1->sval[0][0] == '?')
+        {
+        printf("Show current and default parameters.\n");
+        return 0;
+        }
+    printf("Defaults: [fr=%s bw=%s sf=%s pw=%s]\n",
+                                    DEF_FREQ, DEF_BWIDTH, DEF_SPREAD, DEF_POWER);
+    printf("Current:  [fr=%s bw=%s sf=%s pw=%s]\n",
+                                    gl_txfreq, gl_bwidth, gl_spread, gl_txpower);
+    pr_args.arg1->sval[0] = "";
     return 0;
 }
 
 static  int reboot_dev(int argc, char **argv)
 
 {
-    printf("\033[18;24r");
+    //printf("\033[18;24r");
     printf("Rebooting ..... \n");
     //vTaskDelay((int)parm / portTICK_PERIOD_MS);
     esp_restart();
@@ -309,11 +421,16 @@ static  int reboot_dev(int argc, char **argv)
 static  int help(int argc, char **argv)
 
 {
-    printf("Commands: v (verbose) [1-10] h (help) r (reboot) s (sf) (spread) [2-12]\n");
-    printf("          b (bw) bandwidth [1-10] f (fr) frequency [410-500]\n");
-    printf("          d (de) defaults [f=433.175MHz sf=12 bw=30k] \n");
-    printf("          t (tr) transmit [hello ] \n");
-    printf("use: command ? for help on command");
+    printf("Commands: v (verbose) [1-10]; h (help); r (reboot);\n");
+    printf("          w (pw) power level [2-15]\n");
+    printf("          s (sf) spread [6-12]\n");
+    printf("          b (bw) bandwidth [5-500]\n");
+    printf("          f (fr) frequency [410.0-530.0] (Clamped to legal limits)\n");
+    printf("          d (de) defaults [fr=%s bw=%s sf=%s pw=%s] \n",
+                                    DEF_FREQ, DEF_BWIDTH, DEF_SPREAD, DEF_POWER);
+    printf("          t (tr) transmit string \n");
+    printf("          p (pr) print current and default configuration\n");
+    printf("Use: 'command ?' for help on a particular command.\n");
     return 0;
 }
                                                             \
@@ -358,17 +475,25 @@ void register_cmds(void)
     DECL_COMMANDx("bw",         "Set bandwidth", &set_bw, &bw_args);
     DECL_COMMANDx("b",          "Set bandwidth", &set_bw, &bw_args);
 
+    INIT_STRUCT(pw_args)
+    DECL_COMMANDx("pw",         "Set pow", &set_pw, &pw_args);
+    DECL_COMMANDx("w",          "", &set_pw, &pw_args);
+
     INIT_STRUCT(fr_args)
     DECL_COMMANDx("fr",         "Set frequency", &set_fr, &fr_args);
     DECL_COMMANDx("f",          "", &set_fr, &fr_args);
 
     INIT_STRUCT(de_args)
     DECL_COMMANDx("de",         "reset defaults", &set_de, &de_args);
-    DECL_COMMANDx("d",          "", &set_fr, &fr_args);
+    DECL_COMMANDx("d",          "", &set_de, &fr_args);
 
-    INIT_STRUCT(str_args)
-    DECL_COMMANDx("t",         "transmit", &set_str, &str_args);
-    DECL_COMMANDx("tr",         "transmit", &set_str, &str_args);
+    INIT_STRUCT(pr_args)
+    DECL_COMMANDx("pr",         "print config", &set_pr, &de_args);
+    DECL_COMMANDx("p",          "", &set_pr, &pr_args);
+
+    INIT_STRUCT(str_trargs)
+    DECL_COMMANDx("t",         "transmit",  &set_trstr, &str_trargs);
+    DECL_COMMANDx("tr",         "transmit", &set_trstr, &str_trargs);
 }
 
 // -----------------------------------------------------------------------
@@ -527,94 +652,29 @@ void    hexdump(const char *str, int len, char *out, int maxlen)
 
 # endif
 
-// Shuffle a string to 16 bit unique ID
-
-int16_t chksum(const char *str, int len)
-
-{
-    //printf("len %d str '%s'\n", len, str);
-    uint16_t ret = 0;
-    for(int aa = 0; aa < len; aa++)
-        {
-        uint16_t nn = (uint16_t)str[aa];
-        uint16_t qq = nn << 7 | nn;
-        ret += qq + 10000;
-        ret ^= 0x5aa5;
-        }
-    //printf("sum ret %d\n", ret);
-    return(ret);
-}
-
-typedef struct _Lora_Packet {
-    uint16_t chk;         // checksum
-    uint16_t tid;         // target ID
-    uint16_t sid;         // sender ID
-    uint8_t  ttl;         // time to live
-    uint8_t  len;         // payload len
-    uint8_t  *payload;    // payload here
-
-} Lora_Packet;
-
-// Store it in little endian (intel) order
-// Note: ESP32 is big andian ...
-// ... This is why we are not using structures
-
-int     assemble_packet(Lora_Packet *ptr, const char *pay, char *outstr, int maxlen)
-{
-    int prog = 0;
-    //pack.ttl = 4;
-    uint16_t ccc = chksum(pay, strlen(pay));
-
-    // fill in struct
-
-    outstr[prog] = ccc & 0xff; prog++;
-    outstr[prog] = ccc >> 8; prog++;
-
-    int lenoffs = prog;
-    outstr[prog] = 0 & 0xff; prog++;
-
-    int slen = snprintf(outstr + prog, maxlen - prog, "%s", pay);
-    outstr[lenoffs] = slen & 0xff;
-    return(prog += slen);
-}
-
-// Verify is valid packet
-
-int     check_packet(const char *str, int len)
-
-{
-    uint16_t nsum = chksum(str + 3, *(str+2) );
-    uint16_t org = *(str) + (*(str+1) << 8);
-    //printf("nsum %d org %d\n", nsum, org);
-    return nsum == org;
-}
-
 // Common init
 
 void init_lora_common()
 
 {
     //lora_enable_crc(); // Enable CRC check
-
-    lora_set_frequency(433.375e6); // Set the frequency
-    lora_set_tx_power(15);
+    lora_set_frequency(atofx(gl_txfreq));
+    lora_set_tx_power(atofx(gl_txpower));
     lora_set_boost(1);
-    lora_set_spreading_factor(10);
-    //lora_set_bandwidth(42.7E3);
-    lora_set_bandwidth(41.7E3);
-    //lora_set_bandwidth(31.25E3);
-    //lora_set_bandwidth(20.8E3);
+    lora_set_spreading_factor(atofx(gl_spread));
+    lora_set_bandwidth(atofx(gl_bwidth));
 }
 
 #ifdef LINUX_TEST
 
 char buff[64] = "";
 
+#if 0
 int main(int argv, char* argc[])
 
 {
     srandom(time(NULL));
-    int len = assemble_packet("hello 0123456789\n", buff, sizeof(buff));
+    int len = assemble_packet("hello 0123456789\n", 1234, buff, sizeof(buff));
 
     # ifdef  INCLUDE_DUMP
     hexdump(buff, len);
@@ -634,5 +694,7 @@ int main(int argv, char* argc[])
 
     return 0;
 }
+
+#endif
 
 #endif

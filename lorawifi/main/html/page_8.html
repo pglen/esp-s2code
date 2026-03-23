@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+<title>LORA WiFi User Manual</title>
+<meta charset="UTF-8">
+<link rel='icon' href='data:;base64,iVBORw0KGgo='>
+</head>
+<body>
+<form method=post id=myform>
+<table align=center border=0 width=800 frame=void>
+
+<style>
+.container {
+	text-align: left;
+	border: 1px solid green;
+	padding: 5px;
+    }
+.container table {
+	border: 1px solid red;
+    margin: 0 auto;
+    }
+.chris {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      45px;
+    font-style:     bold;
+    }
+.chris2  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      45px;
+    font-style:     bold;
+    display:        inline-block;
+    }
+.chris2a  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      25px;
+    font-style:     bold;
+    display:        inline-block;
+    }
+.chris2b  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      25px;
+    font-style:     bold;
+    }
+.chris2c  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      25px;
+    font-style:     bold;
+    }
+.chris3  {
+    font-family:    Arial, Helvetica, sans-serif;
+    font-size:      16px;
+    }
+.myDiv {
+  font-size: 100px;
+  text-align: center;
+}
+
+html, address, blockquote, body, dd, div, dl, dt, fieldset,
+form, h1, h2, h3, h4, h5, h6, noframes, ol, p, ul, center,
+dir, hr, menu, pre {
+    font-family:    Arial, Helvetica, sans-serif;
+    }
+
+.mydiv {
+    /*background:yellow;
+    color:blue;
+    border-style:solid;
+    border-width:medium;
+    display:inline-block;
+    */
+    vertical-align:top;
+    horizontal-align:right;
+}
+textarea {
+    border-color:#eeeeee;
+    width:90%;
+}
+
+.mytext {
+    /*background:yellow;
+    color:blue;*/
+    width:100%;
+    border-style:solid;
+    border-width:1px;
+    border-color:#eeeeee;
+    display:inline-block;
+}
+
+.rebootstat {
+    font-size:  16px;
+    color:      red;
+}
+
+.statstat {
+    font-size:  16px;
+    color:      blue;
+}
+    </style>
+
+</style>
+
+<tr><td>
+    <table width=100% border=0>
+    <tr bgcolor=#eeeeee><td align=center>
+    <a href=page_1.html?home=true style="text-decoration: none; color: black;">
+        <div class="chris" align=center>
+            LORA WiFi Transceiver
+        </div>
+    </a>
+    </table>
+
+
+    <tr><td>
+    <table align=center>
+        <tr><td>
+        <div id=status class=statstat align=center>
+            StatusStatusStatusStatusStatusStatusStatusStatus
+        </div>
+    </table>
+<table width=100%>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The LORA WiFi transceiver (transmitter / receiver) is a long range
+    pier to pier communcation device.
+    In the paragraphs below, a quick description of the
+    device's configuration and operation is detailed.
+
+    <tr><td>
+    <tr bgcolor=#eeeeee><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Communcation</b>
+        </div>
+
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The LORA WiFi is ready to communicate out of the box; Just plug
+    it in to any USB, and connect to its web page. One may connect with any
+    standard browser, a phone, tablet, computer, or any other browser capable
+    device. Once connected, use the provided text box to send a message.
+    The message should show up on the other device, configured to the same trench
+
+    <tr><td>
+    <tr bgcolor=#eeeeee><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Quick Setup, Connecting</b>
+        </div>
+
+    <tr><td   style="text-align:justify;">
+    &nbsp; &nbsp; Connecting to the LORA WiFi device via the web interface is easy.
+    On your Browser device (cell phone / computer etc.) connect to the WiFi
+    Station named LoraWiFi-NNNN (where NNNN is a four digit number of the device)
+    and use the password '12345678' (without the quotes).
+
+    <tr><td>
+    <tr bgcolor=#eeeeee><td align=center>
+        <div style="font-size:large" align=center>
+        <b>The Trench parameter</b>
+        </div>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The trench is a distinct communication sub entry within the
+    current transmission channel. To communicate between two devices, their trench
+    numbers must match. (Naturally, all other LORA parameters must match as well)
+    The LORA WiFi system comes set to trench zero, channel 1 from the
+    manufacturer. Should a different trench be needed, the process extremely simple: just
+    enter a new trench number in the 'Trench:' text field. The trench number
+    can be from 0 to 65534. Both the receiver and transmitter has to be on the
+    same trench.
+
+    <tr><td>
+    <tr bgcolor=#eeeeee><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Trench Safety</b>
+        </div>
+    <tr><td   style="text-align:justify;">
+        &nbsp; &nbsp; The device comes configured at trench 0. This is
+        meant to be a test channel for initial communication. It is
+        recommended to change the trench number after successfully testing
+        communication.Both the receiver and transmitter has to have the
+        trench and the same LORA parameters.
+
+    <tr><td>
+    <tr bgcolor=#eeeeee><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Device Configuration Reset</b>
+        </div>
+
+    <tr><td   style="text-align:justify;">
+        &nbsp; &nbsp; If one encounters any difficulty during the pairing process,
+        the device parameters may be reset to their initial values by holding down
+        the configuration button during power up. This will reset device
+        configuration to manufacturer's defaults. (On the waterproof version hold
+        a magnet to the reed switch while powering up)
+
+    <tr><td>
+    <tr bgcolor=#eeeeee><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Quick Setup, Default Configuration</b>
+        </div>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The LORA WiFi system starts up in transmit / receive mode
+    on channel 0. One may connect to the device's web page to use it and
+    to configure it. If no communication activity occurs in one minute,
+    the device will terminate the configuration mode, and resume communication
+    mode.
+
+<tr><td>
+    <tr bgcolor=#eeeeee><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Features, Encryption and Checksum</b>
+        </div>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The LORA WiFi system communicates with an unencrypted data stream.
+    However, the data is protected with a checksum. Data cannot be falsified
+    by external sources, as the LORA WiFi will reject packets with an invalid
+    checksum. If one desires extra secrecy, there are plenty of applications
+    that serve this purpose on the browser / text entry level. However, tweaking
+    the LORA parameters may serve as a good substitute, as guessing the correct
+    LORA parameters and trench number can be as challenging as breaking encryption.
+
+<tr><td>
+    <tr bgcolor=#eeeeee><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Distance expectations</b>
+        </div>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The LORA WiFi system utilizes a SEMTEC LORA device. The LORA
+     device's specification suggest an 8-10 kilometer (line of sight) range.
+     Under ideal conditions, this can be measured and proven with this
+     implementation, and it delivers according to specification. Using
+     the device in a non line of sight configuration, the range is
+     significantly less. For instance using in highrise building area, the
+     range can be as little as 500 meters.
+    <br>
+
+</table>
+
+<tr><td>
+  <table width=100% border=0>
+        <tr>
+            <td align=center colspan=3 width=100%>
+            <hr>
+        <tr>
+            <td align=center>
+                <div style="font-size:large"   align=center>
+                   <a href=page_4.html> Main Settings </a>
+                </div>
+
+            <td align=center>
+                <div style="font-size:large"   align=center>
+                   <a href=page_2.html> WiFi Settings </a>
+                </div>
+
+            <td align=center>
+                 <div style="font-size:large"   align=center>
+                    <a href=page_3.html> LORA Parameters </a>
+                </div>
+        <tr>
+            <td align=center>
+                <div style="font-size:large" >
+                    <a href=page_8.html> Quick Start Manual </a>
+                </div>
+
+            <td align=center>
+                <div style="font-size:large" >
+                   <a href=page_1.html> Back to Home Page </a>
+                </div>
+
+           <td align=center>
+                <div style="font-size:large" >
+                   <a href=page_1.html?reboot=true>Reboot Device</a>
+                </div>
+
+    </table>
+
+    <tr>
+    <td colspan=2 align=center>
+    <hr>
+    <!--<tr><td colspan=2 align=center>
+        <div style="font-size:large" align=center>
+            <a href=page_1.html?home=true>Back to Home Page</a>
+        </div>
+    -->
+    <tr><td colspan=2 align=center>
+        <div style="font-size:small">
+            ID (Main) (Mac Address): macmacmacmacmacmacmac<br>
+            Current Boot Count:  bcountbcount<br>
+            Software Version / Build Date: softversoftversoftversoftversoftversoftver<br>
+        </div>
+    <tr><td colspan=2 align=center>
+        Peter Glen, (C) 2026 <br>
+    <tr><td colspan=2 align=center>
+</table>
+
+</form>
+</body>
+</html>
+

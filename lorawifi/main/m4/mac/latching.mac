@@ -1,0 +1,75 @@
+<tr><td>
+    <table align=center border=0 width=100% frame=void>
+        <tr><td>
+        <tr bgcolor=#cccccc>
+            <td align=center colspan=2>
+            <div style="font-size:large" align=center>
+                <b>Receiver Channel Toggle: &nbsp  </b>
+            </div>
+        <tr> <td colspan=2>
+        <tr><td colspan=2 style="text-align:justify;">
+        &nbsp; &nbsp; The IOCOMX transceiver controls momentary switches by default.
+        When the checkbox below is checked, the corresponding relay operates as a toggle
+        relay; one button press to turn it on, one button press to turn it off.
+
+        <tr><td colspan=2 align=center>
+
+        <tr><td colspan=2 align=center>
+            <table width=100%>
+                <tr align=center>
+                    <td><input type=checkbox name=toggle1 value=1   id=1t  checked>   Relay 1 &nbsp;
+                    <td><input type=checkbox name=toggle2 value=2   id=2t  checked>   Relay 2  &nbsp;
+                    <td><input type=checkbox name=toggle3 value=3   id=3t  checked>   Relay 3  &nbsp;
+                    <td><input type=checkbox name=toggle4 value=4   id=4t  checked>   Relay 4  &nbsp;
+            </table>
+
+        <tr><td colspan=2 align=center>
+        <tr bgcolor=#cccccc>
+            <td align=center colspan=2>
+            <div style="font-size:large" align=center>
+                <b>Channel Exclusion: (group 1)&nbsp  </b>
+            </div>
+        <tr> <td colspan=2>
+        <tr><td colspan=2 style="text-align:justify;">
+        &nbsp; &nbsp; The transceiver allows all relays on by default.
+        When any checkbox below is checked, the corresponding relays act as mutually exclusive,
+        only one can be turned on at the time.
+
+        <tr><td colspan=2 align=center>
+
+        <tr><td colspan=2 align=center>
+            <table width=100%>
+                <tr align=center>
+                    <td><input type=checkbox name=exc1 value=1   id=1x  checked>   Relay 1  &nbsp;
+                    <td><input type=checkbox name=exc2 value=2   id=2x  checked>   Relay 2  &nbsp;
+                    <td><input type=checkbox name=exc3 value=3   id=3x  checked>   Relay 3  &nbsp;
+                    <td><input type=checkbox name=exc4 value=4   id=4x  checked>   Relay 4  &nbsp;
+            </table>
+
+        <tr><td colspan=2 align=center>
+        <tr bgcolor=#cccccc>
+            <td align=center colspan=2>
+            <div style="font-size:large" align=center>
+                <b>Channel Exclusion: (Group 2)&nbsp  </b>
+            </div>
+        <tr> <td colspan=2>
+        <tr><td colspan=2 style="text-align:justify;">
+        &nbsp; &nbsp; The transceiver allows all relays on by default.
+        When any checkbox below is checked, the corresponding relays act as mutually exclusive,
+        only one can be turned on at the time.
+
+        <tr><td colspan=2 align=center>
+
+        <tr><td colspan=2 align=center>
+            <table width=100%>
+                <tr align=center>
+                    <td><input type=checkbox name=exx1 value=1   id=1z  checked>   Relay 1  &nbsp;
+                    <td><input type=checkbox name=exx2 value=2   id=2z  checked>   Relay 2  &nbsp;
+                    <td><input type=checkbox name=exx3 value=3   id=3z  checked>   Relay 3  &nbsp;
+                    <td><input type=checkbox name=exx4 value=4   id=4z  checked>   Relay 4  &nbsp;
+            </table>
+
+        <tr><td colspan=2 align=center>
+            <input type=submit name=config value='Save Configuration'>
+    </table>
+

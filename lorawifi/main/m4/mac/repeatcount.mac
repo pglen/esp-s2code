@@ -1,0 +1,31 @@
+<tr><td>
+    <table align=center border=0 width=100% frame=void>
+        <tr><td>
+        <tr bgcolor=#cccccc>
+            <td align=center colspan=2>
+            <div style="font-size:large" align=center>
+                <b> Repeat Count for the OFF Signal: &nbsp  </b>
+            </div>
+        <tr> <td colspan=2>
+        <tr><td colspan=2>
+        &nbsp; &nbsp; When any control button is released, the transmitter transmits the 'OFF' signal
+        several times. This configuration item determines the number of times the signal is
+        repeated. It is OK to leave this setting unchanged.
+
+        <tr><td colspan=2 align=center>
+            <table width=100%>
+                <tr align=center>
+                    <td><input type=radio name=rep value=1  id=1x  checked>   1x &nbsp;
+                    <td><input type=radio name=rep value=2  id=2x  checked>   2x &nbsp;
+                    <td><input type=radio name=rep value=3  id=3x  checked>   3x &nbsp;
+                    <td><input type=radio name=rep value=5  id=5x  checked>   5x &nbsp;
+                    <td><input type=radio name=rep value=8  id=8x  checked>   8x &nbsp;
+                    <td><input type=radio name=rep value=12 id=12x checked>   12x &nbsp;
+            </table>
+
+        <tr><td colspan=2 align=center>
+
+        <tr><td colspan=2 align=center>
+            <input type=submit name=config value='Save Configuration'>
+    </table>
+

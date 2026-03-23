@@ -1,0 +1,58 @@
+<tr><td>
+    <table align=center border=0 width=100% frame=void>
+        <tr><td>
+        <tr bgcolor=#cccccc>
+            <td align=center colspan=2>
+            <div style="font-size:large" align=center>
+                <b>Timeout Configuration: &nbsp  </b>
+            </div>
+        <tr> <td colspan=2>
+        <tr><td colspan=2>
+        &nbsp; &nbsp; The IOCOM4 battery powered transmitter has been built with power saving features
+        to save battery life. To that end, there are configuration items to conserve as much power
+        as possible while retaining responsiveness and transmission solidity.<br>
+        &nbsp; &nbsp; There are two configurable sleep periods. Light sleep and deep sleep.The light sleep
+        is operational between button presses. The deep sleep mode starts when the device is not
+        operated for an extended period of time.
+
+        <tr><td>
+        <tr bgcolor=#cccccc>
+            <td align=center colspan=2>
+            <div style="font-size:large" align=center>
+                <b>Timeout, Light Sleep: &nbsp  </b>
+            </div>
+        <tr> <td colspan=2>
+        <tr><td colspan=2>
+        &nbsp; &nbsp;  The values may range from 3 sec to 20 sec, defaulting
+        to three seconds.  If in doubt, it is OK to leave these settings unchanged.<br>
+
+        <tr><td colspan=2>
+
+        <tr><td align=right width=50%>
+                Light Sleep: &nbsp;
+            <td> <input type=text name=lightsleep value="sssssssssssssssssssssssssssssss">
+
+        <tr><td colspan=2>
+        <tr><td>
+        <tr bgcolor=#cccccc>
+            <td align=center colspan=2>
+            <div style="font-size:large" align=center>
+                <b>Timeout, Deep Sleep: &nbsp  </b>
+            </div>
+        <tr> <td colspan=2>
+        <tr><td colspan=2>
+         &nbsp; &nbsp; The deep sleep time configuration ranges from half a minute to one hour,
+         defaulting to one minute. The shorter the deep sleep timeout, the more power is saved.
+         The default configuration value suits most every deployment. This settings only need
+         to be altered only if extreme power saving is required, or extreme responsiveness is
+         needed. The IOCOM4 device wakes up from both sleep modes seamlessly
+         on any press of a button. If in doubt, it is OK to leave this setting unchanged.
+
+        <tr><td align=right width=50%>
+                Deep Sleep: &nbsp;
+            <td> <input type=text name=deepsleep value="sssssssssssssssssssssssssssssss">
+        <tr> <td height=8>
+        <tr> <td colspan=2 align=center>
+            <input type=submit name=config value='Save Configuration'>
+    </table>
+

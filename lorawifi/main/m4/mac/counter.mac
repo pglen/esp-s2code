@@ -1,0 +1,53 @@
+include(mac/cntlines.mac)
+    <tr> <td height=8>
+    <table align=center border=0 width=100% frame=void>
+    <tr><td colspan=2 width=100%>
+        <tr bgcolor=#aaffaa><td align=center>
+            <div style="font-size:large" align=center>
+                <b>Alert Counter Resets / Hour Resets:</b><br>
+            </div>
+    </table>
+
+    <tr> <td>
+    &nbsp; &nbsp; &nbsp; The counters can be reset at any time. The reset action is committed
+    by pressing the "Save Counter Values' button on the bottom of the page. If alarm is set, after resetting
+    the corresponding counter will clear the alarm. The alarm queue is re evaluated, and the
+    corresponding alarms are re-issued. The on-board syslog will create
+    a record of the old count with the input number and the time offset.
+    <tr> <td height=8>
+
+    <table align=center border=0 width=100% frame=void>
+
+    <tr bgcolor=#bbbbbb>
+        <th align=center> Input
+        <th align=center> Name
+        <th align=center> Maintenance<br>Counter
+        <th align=center> Total<br>Counts
+        <th align=center> Maint.<br>Hours
+        <th align=center> Total <br>Hours
+
+        CNTRLINE(1, `#eeeeee')
+        CNTRLINE(2, `#dddddd')
+        CNTRLINE(3, `#eeeeee')
+        CNTRLINE(4, `#dddddd')
+        CNTRLINE(5, `#eeeeee')
+        CNTRLINE(6, `#dddddd')
+        CNTRLINE(7, `#eeeeee')
+        CNTRLINE(8, `#dddddd')
+
+    </table>
+
+    <tr> <td colspan=3 align=center>
+    <hr>
+    <tr><td colspan=3 align=center>
+    <input type=submit name=config value='Save Counter Values'>
+    <tr> <td  align=center>
+    <tr> <td  align=center>
+    Note: Reset button actions will take effect after page submisson.
+
+
+
+
+
+
+

@@ -1,0 +1,64 @@
+<table width=100%>
+
+    <td align=justify height=12>
+    &nbsp; &nbsp; The following table describes the LORA 433 MHz channel allocation,
+    recommended by the manufacturer of the device and international standard bodies.
+    In the IOCOMX product, these values are not enforced, they can be set to
+    arbitrary values. The only criteria is that they are between the
+    device's lower and upper frequency limits.
+    Please note that both the receiver and sender has to be tuned to the
+    same frequency to communicate.
+
+    <tr><td>
+    <tr><td> <font style=font-size:x-large>
+                <b>Common recommended platform presets:</b></font>
+    <tr><td>
+
+    <table width=80% align=center>
+        <tr align=center>
+            <td><b>LORA Channel</b>
+            <td><b>Frequency</b>   <td><b>Bandwidth (optional)</b> <td><b>Scope</b>
+        <tr align=center>
+            <td width=10% align=center>1
+            <td>433.375 MHz   <td>125 kHz  <td>Default / Mandatory
+        <tr  align=center bgcolor=#eeeeeeff>
+            <td width=10% align=center>2
+            <td>433.575 MHz   <td>125 kHz  <td>Default / Mandatory
+        <tr align=center >
+            <td width=10% align=center>3
+            <td>433.775 MHz   <td>125 kHz  <td>Optional / Extension
+        <tr  align=center bgcolor=#eeeeeeff>
+            <td width=10% align=center>4
+            <td>433.975 MHz   <td>125 kHz  <td>Optional / Extension
+        <tr align=center >
+            <td width=10% align=center>5
+            <td>434.175 MHz   <td>125 kHz  <td>Optional / Extension
+        <tr  align=center bgcolor=#eeeeeeff>
+            <td width=10% align=center>6
+            <td>434.375 MHz   <td>125 kHz  <td>Optional / Extension
+        <tr align=center >
+            <td width=10% align=center>7
+            <td>434.575 MHz   <td>125 kHz  <td>Optional / Extension
+    </table>
+
+ <tr><td>
+ The device's frequency defaults to channel 1. (433.375 MHz).<p>
+
+ <tr><td><font style=font-size:x-large>
+    <b>Bandwidth threshold values:</b>
+ <tr><td>
+    <table width=80% align=center>
+        <tr><td>7.8kHz     10.4kHz    15.6kHz    20.8kHz
+        31.25kHz    41.7kHz    62.5kHz    125kHz    250kHz   500kHz
+    </table>
+<tr><td>
+The bandwidth configuration will obey the above thresholds, and set according
+to the limit specified on the above table. For example setting it 40kHz will
+round it down to 31.32kHz. Set it to 42kHz will round it down ro 41.4kHz.<p>
+
+<tr><td>
+ The device bandwidth defaults to 40kHz.<p>
+
+**Disclaimer: While the 433MHz Band is regulated relatively uniformly across
+countries, still, the regulations vary somewhat. Always check local spectrum regulations
+before deploying 433MHz devices.<p>

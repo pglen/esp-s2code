@@ -1,0 +1,64 @@
+<script async>
+
+    const isNumeric2 = (str) => Number.isFinite(+str);
+
+    function check_lims(data, validx, lower, upper) {
+
+        valx = data.get(validx)
+
+        if (!isNumeric2(valx))
+            {
+            alert("Field: " + validx + " must be a number.")
+            return;
+            }
+        //console.log("value: %s", valx);
+        if (valx < lower || valx > upper)
+            {
+            alert("Number out of range for:  " + validx + " value = " + valx)
+            return;
+            }
+        }
+
+    async function save_conf() {
+        //console.log("Save conf");
+        const formData = new FormData(myform);
+        console.log("Data", formData);
+        check_lims(formData, "deftrench", 0, 65534);
+        const plainFormData = Object.fromEntries(formData.entries());
+        const jsonString = JSON.stringify(plainFormData);
+        //console.log("Submitting: '%s'", jsonString);
+        //document.getElementById("myform").submit();
+        const response = await fetch("page_4.html", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: jsonString
+                })
+        const data = await response.text();
+        //console.log("Data from main config: " + data)
+        const confButt = document.getElementById('confbutt');
+        //console.log("butt:", confButt)
+        confButt.value = data;
+    }
+</script>
+
+<table align=center width=100% padding=10>
+
+    <tr><td colspan=2>
+    &nbsp; &nbsp; The trench is a communication conduit, ranging from 0 to 65634. Devices
+    with the same trench number can send messages to each other. Receiving
+    a message with a wrong trench number is discarded. On this screen one may
+    configure which trench number is loaded by default.
+
+    <tr> <td align=right>
+    Default Trench: (0-65534) &nbsp<td width=50%><input id=deftrench name=deftrench type=text
+                        autofocus value=deftrenchdeftrench>
+        <tr><td align=right>
+
+    <tr> <td colspan=3 align=center>
+    <hr>
+    <tr><td><td>
+    <input type=button onclick=save_conf() id=confbutt name=confbutt
+                                                value='Save Configuration'>
+    <tr> <td colspan=3 align=center>
+
+</table>

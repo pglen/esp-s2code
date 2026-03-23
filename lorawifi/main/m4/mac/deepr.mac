@@ -1,0 +1,25 @@
+        <tr><td>
+        <table align=center border=0 width=100% frame=void>
+            <tr><td colspan=2 align=center>
+                The deep reset function will erase all settings, and the  will
+                assume manufacturer's defaults. **Door Zone and Site Code will be reset
+                to zero; the name of the AGV function will default to 'AGV-XXXX',
+                the name of the PMC WiFi function will default to '-XXXX',
+                and the login credentials will be reset to '12345678'. (XXXX stands for
+                last 4 digits of the device Mac address) This action has the same effect as
+                long pressing (10+sec) the 's setup button.
+                <hr>
+
+            <tr><td colspan=2 align=center>
+                 <tr><td colspan=2>
+                        <div style="font-size:large"   align=center>
+                            <a href=page_1.html?deepreset=true>Deep Reset </a> <br>
+
+                            <font color=#ff0000 size=-1>
+                                **Read Warning Above
+                            </font>
+                        </div>
+                <hr>
+        </table>
+
+

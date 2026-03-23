@@ -1,0 +1,113 @@
+<script async>
+
+window.addEventListener('load', function()
+{
+    var xhr = null;
+
+    getXmlHttpRequestObject = function()
+    {
+        if(!xhr)
+        {
+            // Create a new XMLHttpRequest object
+            xhr = new XMLHttpRequest();
+        }
+        return xhr;
+    };
+    updateLiveData = function()
+    {
+        var url = 'live.html'
+        var xhr3 = getXmlHttpRequestObject();
+        xhr3.onreadystatechange = evenHandler;
+        xhr3.open("GET", url, true);
+        xhr3.send(null);
+    };
+    updateLiveData();
+
+    let sentx = "";
+
+    function evenHandler()
+    {
+        //console.log("Answer %d %d '%s' ",
+        //        xhr.readyState, xhr.status, xhr.responseText);
+
+        // Check response is ready or not
+        if(xhr.readyState == 4 && xhr.status == 200)
+            {
+            const jsObject = JSON.parse(xhr.responseText);
+            const statInput = document.getElementById('current');
+            statInput.innerHTML = jsObject.strx;
+
+            //console.log("Answer %d %d '%s' ",
+            //        xhr.readyState, xhr.status, xhr.responseText);
+
+            //console.log("Answer: '" + jsObject.strx +
+            //                "' Update:" + jsObject.update +
+            //                        " Count: ", + jsObject.count);
+
+            // Update text control states
+            if(jsObject.strx == "Done")
+                {
+                const textInput = document.getElementById('txt');
+                textInput.disabled = false;
+                textInput.value = "";
+                const cntOutput = document.getElementById('cnt');
+                cntOutput.innerHTML = "Count: 0"
+                textInput.focus();
+                textInput.style.cursor = "auto";
+                }
+            else if (jsObject.strx == "Timeout")
+                {
+                const textInput = document.getElementById('txt');
+                textInput.disabled = false;
+                textInput.focus();
+                }
+            else if (jsObject.strx == "Idle ...")
+                {
+                const textInput = document.getElementById('txt');
+                textInput.disabled = false;
+                //textInput.focus();
+                }
+            if (jsObject.sent)
+                {
+                //console.log("sent %d '%d' ", xhr.status, jsObject.sent);
+                }
+            if (jsObject.update)
+                {
+                sentx = "";
+                for(aa = 0; aa < jsObject.maxcnt; aa++)
+                    {
+                    let curr = "hist_" + aa;
+                    if (jsObject[curr])
+                        {
+                        //console.log("sent %d %s = '%s' ",
+                        //                        xhr.status, curr, jsObject[curr]);
+                        const myObject = JSON.parse(jsObject[curr]);
+                        sentx2 = "[" + myObject.hash + "] (" + myObject.chan + ") "
+                        if(myObject.reply)
+                            {
+                            sentx2 += "<font color=blue>" + myObject.reply + "</font>";
+                            }
+                        else
+                            {
+                            sentx2 += myObject.text
+                            }
+                        sentx += sentx2 + "<br>";
+                        }
+                    else
+                        {
+                        break;
+                        }
+                    }
+                //console.log("update %d '%d' ", xhr.status, jsObject.update);
+                const histInput = document.getElementById('hist');
+                histInput.innerHTML = sentx;
+                histInput.scrollTop = histInput.scrollHeight;
+                }
+            // Update the live data every xx msec
+            setTimeout(updateLiveData, 1000);
+            }
+    }
+});
+
+</script>
+

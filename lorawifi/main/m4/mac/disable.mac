@@ -1,0 +1,33 @@
+<tr> <td>
+    <table align=center border=0 width=100% frame=void>
+    <tr><td colspan=3 width=100%>
+        <!-- <tr bgcolor=#aaffaa><td align=center>-->
+        <tr bgcolor=#aaffaa><td align=center>
+            <div style="font-size:large" align=center>
+                <b>Disable Alert: &nbsp  </b>
+            </div>
+    </table>
+
+    <table align=center border=0 width=100% frame=void>
+        <tr> <td colspan=3>
+        &nbsp; &nbsp; There are several ways to disable the alert: 1.) Reset the
+        appropriate counter. 2.) Allow the temperature to reach below trigger levels;
+        3.) Adjust the analog input below threshold. 4.) Disable the alarm with the
+        checkbox below. <br>
+        &nbsp; The preferred method is to reset the condition that caused the alert.
+        If that is not feasible and/or practical, the alert can be disabled
+        by checking the checkbox below;<br>
+        &nbsp;  If this box is checked, all the alert relays are
+        disabled on <b>every</b> alert condition. Please note, no further alarms will
+        occur. It is the user's responsibility to re-enable this when the condition
+        of the alarm is cleared. Any change to this setting is registered to the
+        on-board syslog.
+
+        <tr> <td  align=right>
+            Disable alert: &nbsp;
+            <td align=left><input type=checkbox name=dis_ala checked>
+            &nbsp; &nbsp; &nbsp; **<font color=red> See warning above</font>
+        <tr> <td>
+        <tr> <td  align=center colspan=2>
+            <input type=submit name=config value='Confirm Enable/Disable'>
+    </table>

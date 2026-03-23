@@ -1,0 +1,41 @@
+include(mac/general.mac)
+include(mac/cntlines.mac)
+<table width=100%>
+        <tr> <td height=8>
+        <table align=center border=0 width=100% frame=void>
+        <tr><td colspan=3 width=100%>
+            <tr bgcolor=#aaffaa><td align=center>
+                <div style="font-size:large" align=center>
+                    <b> Analog Input Readings: &nbsp </b>
+                </div>
+        </table>
+        <tr><td colspan=3 align=center>
+            &nbsp; The analog input readings are gathered from external devices; The
+            PMC has two ranges, 0-5V and 0-10V. The range can be set by a jumper.
+            Dependent on jumper setting, interpret the respective column from the
+            table below. If the input value is out of range
+            (ex. Disconnected cable or over voltage)
+            the string "OOR" (Out Of Range) is printed.
+            If you would like to monitor the A2D inputs in Real Time please see the
+             <a href=page_2.html?home=true>Quick status</a> page.
+
+             <!-- To monitor temperature real time go to the 'Real Time' page. -->
+
+        <table align=center border=0 width=100% frame=void>
+            <tr> <td>
+            <tr bgcolor=#bbbbbb>
+                <th> &nbsp
+                <th> &nbsp  Name
+                <th> &nbsp; 10 Volts
+                <th> &nbsp; Percentage (to 10V)
+
+            ALINE(1, `#eeeeee',  bbbbbbb, ccccccc)
+            ALINE(2, `#dddddd',  eeeeeee, qqqqqqq)
+            ALINE(3, `#eeeeee',  hhhhhhh, kkkkkkk)
+            ALINE(4, `#dddddd',  ooooooo, ppppppp)
+
+        </table>
+</table>
+
+      <tr><td> <center><a href=page_1.html>Refresh this page</a></center>
+

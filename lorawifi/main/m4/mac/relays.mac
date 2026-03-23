@@ -1,0 +1,130 @@
+include(mac/general.mac)
+include(mac/cntlines.mac)
+
+<table width=100%>
+    <tr><td colspan=2 align=center>
+    The relay configuration page may be used to route alert events to
+    specific relays. Multiple events can be routed to the same relay. It is the
+    operator's responsibility to assure that the roting is
+    configured as expected.
+
+    <tr><td colspan=2 height=8>
+    <tr  bgcolor=#aaffaa> <td colspan=2>
+    <table width=100% align=center border=0>
+        <tr><td align=center>
+        <div>
+        <div style="font-size:20px">
+            <b>Relay Routing / Counts:</b>
+        </div>
+    </table>
+    <tr><td>
+        &nbsp; &nbsp; These relay events are triggered when the counter <b>count</b>
+        matches or exceeds the configured threshold values. The alarm is triggered
+        at the completion of the cycle. (At the break section of the make/brake cycle)
+        The alarm will automatically reset when the alarm condition ceases.
+        As multiple sources can trigger / reset the alarm, the alarm state
+        will be as instructed by the last event.
+    <tr><td>
+    <table width=100% align=center border=0>
+        <tr align=center><td align=center>
+        <tr  align=center bgcolor=#bbbbbb>
+            <th > Relay
+            <th> Input 1   <th> Input 2  <th> Input 3   <th> Input 4
+            <th> Input 5   <th> Input 6  <th> Input 7   <th> Input 8
+
+        <tr  align=center bgcolor=#eeeeee>
+            RELLINE(1, `#eeeeeeee')
+            RELLINE(2, `#dddddddd')
+            RELLINE(3, `#eeeeeeee')
+            RELLINE(4, `#dddddddd')
+    </table>
+
+    <tr><td colspan=2 height=8>
+    <tr  bgcolor=#aaffaa> <td colspan=2>
+    <table width=100% align=center border=0>
+        <tr><td align=center>
+        <div>
+        <div style="font-size:20px">
+            <b>Relay Routing / Intervals:</b>
+        </div>
+    </table>
+    <tr><td>
+        &nbsp; These are the relay events when the
+        <b>interval (duration) </b> exceeds
+        the configured threshold values. The relay is triggered real time
+        at the time point specified on the alarm / time configuration page.
+        The alarm will automatically reset when the alarm condition ceases.
+        As multiple sources can trigger / reset the alarm, the alarm state
+        will be as instructed by the last event.
+    <tr><td>
+    <table width=100% align=center border=0>
+        <tr align=center><td align=center>
+        <tr  align=center bgcolor=#bbbbbb>
+            <th > Relay
+            <th> Input 1   <th> Input 2  <th> Input 3   <th> Input 4
+            <th> Input 5   <th> Input 6  <th> Input 7   <th> Input 8
+
+        <tr  align=center bgcolor=#eeeeee>
+            DURALINE(1, `#eeeeeeee')
+            DURALINE(2, `#dddddddd')
+            DURALINE(3, `#eeeeeeee')
+            DURALINE(4, `#dddddddd')
+    </table>
+
+    <tr><td colspan=2 height=8>
+    <tr  bgcolor=#aaffaa> <td colspan=2>
+    <table width=100% align=center border=0>
+        <tr><td align=center>
+        <div>
+        <div style="font-size:20px">
+            <b>Relay Routing / Analog:</b>
+        </div>
+    </table>
+    <tr><td>
+        &nbsp;
+        These are the relay events when the <b>analog input</b> value exceeds
+        the configured threshold values. The relay will automatically de-energize if
+        the analog value is below the threshold.
+    <tr><td>
+    <table width=100% align=center border=0>
+        <tr align=center><td align=center>
+        <tr  align=center bgcolor=#bbbbbb>
+            <th > Relay
+            <th> Analog 1   <th> Analog 2
+            <th> Analog 3   <th> Analog 4
+
+        <tr  align=center bgcolor=#eeeeee>
+            ANALINE(1, `#eeeeeeee')
+            ANALINE(2, `#dddddddd')
+            ANALINE(3, `#eeeeeeee')
+            ANALINE(4, `#dddddddd')
+    </table>
+
+    <tr><td colspan=2 height=8>
+    <tr  bgcolor=#aaffaa> <td colspan=2>
+    <table width=100% align=center border=0>
+        <tr><td align=center>
+        <div>
+        <div style="font-size:20px">
+            <b>Relay Routing / Temperature:</b>
+        </div>
+    </table>
+    <tr><td>
+        &nbsp;
+        These are the relay events when the <b>temperature </b> value exceeds
+        the configured threshold values. The relays will automatically de-energize if
+        the temperature value is below the threshold.
+    <tr><td>
+    <table width=100% align=center border=0>
+        <tr align=center><td align=center>
+        <tr  align=center bgcolor=#bbbbbb>
+            <th > Relay
+            <th> Temp 1   <th> Temp2
+
+        <tr  align=center bgcolor=#eeeeee>
+            TRLINE(1, `#eeeeeeee')
+            TRLINE(2, `#dddddddd')
+            TRLINE(3, `#eeeeeeee')
+            TRLINE(4, `#dddddddd')
+    </table>
+</table>

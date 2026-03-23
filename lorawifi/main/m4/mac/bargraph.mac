@@ -1,0 +1,215 @@
+include(mac/general.mac)
+include(mac/cntlines.mac)
+
+<style>
+.myProgress {
+  height: 30px;
+  width: 100%;
+  background-color: #eeeeee;
+  overflow: auto;
+
+}
+
+.Fill {
+  width: 1.5%;
+  height: 30px;
+  background-color: #eeeeee;
+  float:left;
+}
+
+.myBar {
+  width: 0%;
+  height: 30px;
+  background-color: #00ff00;
+  float:left;
+}
+
+.myBarY {
+  width: 0%;
+  height: 30px;
+  background-color: #ffff00;
+  float:left;
+}
+
+.myBarR {
+  width: 0%;
+  height: 30px;
+  background-color: #ff0000;
+ float:left;
+}
+
+.myPer {
+  font-size: small;
+  line-height: 0.5;
+  float: left;
+}
+
+</style>
+
+<script>
+
+// The firmware will substitute these for actual values
+let varr   = [ vvvv1,  vvvv2,  vvvv3,  vvvv4,  vvvv5,  vvvv6,  vvvv7,  vvvv8 ];
+let varr2  = [ uuuu1,  uuuu2,  uuuu3,  uuuu4,  uuuu5,  uuuu6,  uuuu7,  uuuu8 ];
+
+window.addEventListener('load', initbars);
+
+function initbars()
+{
+    initbars1(); initbars2();
+}
+
+function initbars1()
+{
+    //console.log(" inited", varr)
+    for(aa = 1; aa <= 8; aa++)
+        {
+        var elem  = document.getElementById("barG_1_" + aa);
+        var elem2 = document.getElementById("barY_1_" + aa);
+        var elem3 = document.getElementById("barR_1_" + aa);
+        setbar(varr[aa-1], elem, elem2, elem3)
+
+        var elem4 = document.getElementById("perc_1_" + aa);
+        elem4.innerHTML =  " -- " + varr[aa-1] + " %";
+        }
+}
+
+function initbars2()
+{
+    for(aa = 1; aa <= 8; aa++)
+        {
+        var elem  = document.getElementById("barG_2_" + aa);
+        var elem2 = document.getElementById("barY_2_" + aa);
+        var elem3 = document.getElementById("barR_2_" + aa);
+        setbar(varr2[aa-1], elem, elem2, elem3)
+
+        var elem4 = document.getElementById("perc_2_" + aa);
+        elem4.innerHTML =  " -- " + varr2[aa-1] + " %";
+        }
+}
+
+var width = 0, id = 0;
+var width2 = 0, id2 = 0;
+
+function setbar(percent, elem, elem2, elem3)
+{
+    if(percent < 50)
+        {
+        elem.style.width = percent + "%";
+        elem2.style.width = 0;
+        elem3.style.width = 0;
+        }
+    else if(percent < 80)
+        {
+        elem.style.width = 50 + "%";
+        elem2.style.width = (percent - 50) + "%";
+        elem3.style.width = 0;
+        }
+    else
+        {
+        elem.style.width = 50 + "%";
+        elem2.style.width = 30 + "%";
+        // Shorten last value
+        rrr = percent - 80; if (rrr > 16) rrr = 16
+        elem3.style.width = rrr + "%";
+        }
+}
+
+function framex()
+    {
+    if (width >= 100)
+        {
+        width = 0;
+        clearInterval(id);
+        initbars1();
+        return;
+        }
+    for(aa = 1; aa <= 8; aa++)
+        {
+        var elem  = document.getElementById("barG_1_" + aa);
+        var elem2 = document.getElementById("barY_1_" + aa);
+        var elem3 = document.getElementById("barR_1_" + aa);
+        var elem4 = document.getElementById("perc_1_" + aa);
+        setbar(width, elem, elem2, elem3)
+        elem4.innerHTML = " == " +  width + " %";
+        }
+    width++;
+    }
+
+function framey()
+    {
+    if (width2 >= 100)
+        {
+        width2 = 0;
+        clearInterval(id2);
+        initbars2();
+        return;
+        }
+    for(aa = 1; aa <= 8; aa++)
+        {
+        var elem  = document.getElementById("barG_2_" + aa);
+        var elem2 = document.getElementById("barY_2_" + aa);
+        var elem3 = document.getElementById("barR_2_" + aa);
+        var elem4 = document.getElementById("perc_2_" + aa);
+        setbar(width2, elem, elem2, elem3)
+        elem4.innerHTML = " == " + width2 + " %";
+        }
+    width2++;
+    }
+
+// Just for fun
+
+function move()
+    {
+    width = 0;
+    if (id)
+        clearInterval(id);
+    id = setInterval(framex, 20);
+    width2 = 0;
+    if (id2)
+        clearInterval(id2);
+    id2 = setInterval(framey, 20); }
+
+</script>
+
+    <table align=center border=0 width=100% >
+        <tr bgcolor=#aaffaa><td align=center colspan=3>
+            <div style="font-size:large" align=center>
+                <b>Count Progres Bar Graph:&nbsp  </b>
+            </div>
+        <tr> <td>
+        <tr><td>
+            &nbsp; The state of the counters and timers are reflected as percentages of the
+             presets to reach alarm status. The status is reported as of last page load,
+             <a href=page_6a.html> refresh this page </a> for an up to date count.
+
+    </table>
+    <tr><td align=center>
+    <hr>
+    <font style="text-decoration:underline;font-size:x-large">
+    Counter Inputs
+    </font>
+
+    <table align=center border=0 width=100% frame=void cellspacing=2, cellpadding=2>
+
+     <tr><td colspan=6>
+
+        BARLINE(1, `#dddddd', 1, 2, Counter, 1)
+        BARLINE(2, `#dddddd', 3, 4, Counter, 1)
+        BARLINE(3, `#dddddd', 5, 6, Counter, 1)
+        BARLINE(4, `#dddddd', 7, 8, Counter, 1)
+
+     <tr><td colspan=6 align=center>   <hr>
+     <font style="text-decoration:underline;font-size:x-large">
+    Duration Inputs
+    </font>
+
+        BARLINE(1, `#dddddd', 1, 2, Duration, 2)
+        BARLINE(2, `#dddddd', 3, 4, Duration, 2)
+        BARLINE(3, `#dddddd', 5, 6, Duration, 2)
+        BARLINE(4, `#dddddd', 7, 8, Duration, 2)
+
+    <tr><td colspan=6 align=center>
+     <input type=button onclick="move()" value="Test Animation" </input>
+
+    </table>

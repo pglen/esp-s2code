@@ -1,0 +1,42 @@
+include(mac/cntlines.mac)
+    <tr> <td height=8>
+    <table align=center border=0 width=100% frame=void>
+    <tr><td colspan=2 width=100%>
+        <tr bgcolor=#aaffaa><td align=center>
+            <div style="font-size:large" align=center>
+                <b>Analog Input Friendly Names:</b><br>
+            </div>
+    </table>
+
+    <tr> <td>
+    &nbsp; &nbsp; &nbsp; The counters can be named to reflect the device it is connected to.
+    The name can be 24 characters long. Please avoid foreign characters and punctuation marks.<br>
+    An example of a name could be "Cart 5 Rear Sensor"
+
+    <tr> <td height=8>
+
+    <table align=center border=0 width=100% frame=void>
+
+    <tr bgcolor=#bbbbbb>
+        <th align=center> Input Number
+        <th align=center> Name
+        <th align=center> Friendly Analog Input Name
+
+        CNTALINE(1, `#eeeeee')
+        CNTALINE(2, `#dddddd')
+        CNTALINE(3, `#eeeeee')
+        CNTALINE(4, `#dddddd')
+
+    </table>
+
+    <tr> <td colspan=3 align=center>
+    <hr>
+    <tr><td colspan=3 align=center>
+    <input type=submit name=config value='Save Analog Input Names'>
+
+
+
+
+
+
+

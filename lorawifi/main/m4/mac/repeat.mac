@@ -1,0 +1,29 @@
+<tr><td>
+    <table align=center border=0 width=100% frame=void>
+        <tr><td>
+        <tr bgcolor=#cccccc>
+            <td align=center colspan=2>
+            <div style="font-size:large" align=center>
+                <b>Repeat Interval for the ON signal: &nbsp  </b>
+            </div>
+        <tr> <td colspan=2>
+        <tr><td colspan=2>
+        &nbsp; &nbsp; While the button is pressed, and held, the transmitter repeats a 'keep alive'
+        signal. This is how the receiver knows that the button is still pressed. The timing is
+        in milli seconds. It is safe to leave this setting untouched.
+
+        <tr><td colspan=2 align=center>
+            <table width=100%>
+                <tr align=center>
+                    <td><input type=radio name=alive id=200i value=200 checked>  200 ms &nbsp;
+                    <td><input type=radio name=alive id=300i value=300 checked>  300 ms &nbsp;
+                    <td><input type=radio name=alive id=500i value=500 checked>  500 ms &nbsp;
+                    <td><input type=radio name=alive id=700i value=700 checked>  700 ms &nbsp;
+            </table>
+
+        <tr><td colspan=2 align=center>
+
+        <tr><td colspan=2 align=center>
+            <input type=submit name=config value='Save Configuration'>
+    </table>
+

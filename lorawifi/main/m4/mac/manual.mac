@@ -1,0 +1,114 @@
+<table width=100%>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The LORANAME transceiver (transmitter / receiver) is a long range
+    pier to pier communcation device.
+    In the paragraphs below, a quick description of the
+    device's configuration and operation is detailed.
+
+    <tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Communcation</b>
+        </div>
+
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The LORANAME is ready to communicate out of the box; Just plug
+    it in to any USB, and connect to its web page. One may connect with any
+    standard browser, a phone, tablet, computer, or any other browser capable
+    device. Once connected, use the provided text box to send a message.
+    The message should show up on the other device, configured to the same trench
+
+    <tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Quick Setup, Connecting</b>
+        </div>
+
+    <tr><td   style="text-align:justify;">
+    &nbsp; &nbsp; Connecting to the LORANAME device via the web interface is easy.
+    On your Browser device (cell phone / computer etc.) connect to the WiFi
+    Station named LoraWiFi-NNNN (where NNNN is a four digit number of the device)
+    and use the password '12345678' (without the quotes).
+
+    <tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>The Trench parameter</b>
+        </div>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The trench is a distinct communication sub entry within the
+    current transmission channel. To communicate between two devices, their trench
+    numbers must match. (Naturally, all other LORA parameters must match as well)
+    The LORANAME system comes set to trench zero, channel 1 from the
+    manufacturer. Should a different trench be needed, the process extremely simple: just
+    enter a new trench number in the 'Trench:' text field. The trench number
+    can be from 0 to 65534. Both the receiver and transmitter has to be on the
+    same trench.
+
+    <tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Trench Safety</b>
+        </div>
+    <tr><td   style="text-align:justify;">
+        &nbsp; &nbsp; The device comes configured at trench 0. This is
+        meant to be a test channel for initial communication. It is
+        recommended to change the trench number after successfully testing
+        communication.Both the receiver and transmitter has to have the
+        trench and the same LORA parameters.
+
+    <tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Device Configuration Reset</b>
+        </div>
+
+    <tr><td   style="text-align:justify;">
+        &nbsp; &nbsp; If one encounters any difficulty during the pairing process,
+        the device parameters may be reset to their initial values by holding down
+        the configuration button during power up. This will reset device
+        configuration to manufacturer's defaults. (On the waterproof version hold
+        a magnet to the reed switch while powering up)
+
+    <tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Quick Setup, Default Configuration</b>
+        </div>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The LORANAME system starts up in transmit / receive mode
+    on channel 0. One may connect to the device's web page to use it and
+    to configure it. If no communication activity occurs in one minute,
+    the device will terminate the configuration mode, and resume communication
+    mode.
+
+<tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Features, Encryption and Checksum</b>
+        </div>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The LORANAME system communicates with an unencrypted data stream.
+    However, the data is protected with a checksum. Data cannot be falsified
+    by external sources, as the LORANAME will reject packets with an invalid
+    checksum. If one desires extra secrecy, there are plenty of applications
+    that serve this purpose on the browser / text entry level. However, tweaking
+    the LORA parameters may serve as a good substitute, as guessing the correct
+    LORA parameters and trench number can be as challenging as breaking encryption.
+
+<tr><td>
+    <tr bgcolor=COLX><td align=center>
+        <div style="font-size:large" align=center>
+        <b>Distance expectations</b>
+        </div>
+    <tr><td  style="text-align:justify;">
+    &nbsp; &nbsp; The LORANAME system utilizes a SEMTEC LORA device. The LORA
+     device's specification suggest an 8-10 kilometer (line of sight) range.
+     Under ideal conditions, this can be measured and proven with this
+     implementation, and it delivers according to specification. Using
+     the device in a non line of sight configuration, the range is
+     significantly less. For instance using in highrise building area, the
+     range can be as little as 500 meters.
+    <br>
+
+</table>

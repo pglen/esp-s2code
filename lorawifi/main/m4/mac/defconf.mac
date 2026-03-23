@@ -1,0 +1,70 @@
+<script async>
+
+    function containsPunctuation(str) {
+    // Regex to match a variety of common punctuation marks anywhere in the string
+    const punctuationRegex = /[!"#$%&'()*,\./:;<=>?@[\\\]^`{|}~]/;
+    return punctuationRegex.test(str);
+    }
+
+    async function save_def() {
+        const formData = new FormData(myform);
+        console.log("save_def formData", formData);
+    }
+
+    async function save_wifi() {
+        //console.log("Save WIFI");
+        const formData = new FormData(myform);
+        //console.log("formData", formData);
+        if(containsPunctuation(formData.get("apname")))
+            {
+            alert("Wifi hostname cannot contain punctuation.")
+            return;
+            }
+        if(formData.get("appass") != formData.get("appass2"))
+            {
+            alert("Wifi passes must match.")
+            return;
+            }
+        if(formData.get("appass").length < 8)
+            {
+            alert("Wifi pass must be 8 letters or longer.")
+            return;
+            }
+        const plainFormData = Object.fromEntries(formData.entries());
+        const jsonString = JSON.stringify(plainFormData);
+        //console.log("Submitting: '%s'", jsonString);
+        //document.getElementById("myform").submit();
+
+        const response = await fetch("page_2.html", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: jsonString
+                })
+        const data = await response.text();
+    }
+</script>
+
+<table width=100%>
+
+    <tr><td colspan=2 align=center>
+        <table align=center border=0 width=100%  frame=void>
+            <tr><td colspan=3 width=100%>
+                    <tr bgcolor=#eeeeee><td align=center>
+                    <div style="font-size:large" align=center>
+                    <b>Defaults</b><br>
+                    </div>
+        </table>
+        <tr><td>
+        <tr> <td align=right>
+    Default Channel:  &nbsp<td width=50%><input id=apname name=apname type=text
+                        autofocus value=defchandefchan>
+        <tr><td align=right>
+
+    <!-- <tr> <td> <td colspan=2>
+        <input type=button onclick=save_def() name=chanbutt accesskey=d
+        value='Save Default Configuration'> <font style=color:#aaaaaa>(Alt+Shift+d)</font>
+
+    <tr> <td colspan=3 align=center>
+    -->
+
+</table>

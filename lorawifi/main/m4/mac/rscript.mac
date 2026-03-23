@@ -1,0 +1,76 @@
+<script>
+
+window.addEventListener('load', initdivs);
+
+var last, last2;
+
+function dobutt()
+{
+    last.style.backgroundColor = "#00ff88"
+}
+
+function dobutt2()
+{
+    last2.style.backgroundColor = "#ffdd88"
+}
+
+function but_1()
+{
+    console.log(" clicked", this)
+
+    this.style.backgroundColor = "#00ffee"
+    last = this;
+    setTimeout(dobutt, 200);
+    hhh = document.getElementById("custId");
+    hhh.value = this.id
+    document.forms[0].submit()
+}
+
+function but_5()
+{
+    console.log(" clicked", this)
+
+    this.style.backgroundColor = "#ffffaa"
+    last2 = this;
+    setTimeout(dobutt2, 200);
+    hhh = document.getElementById("custId");
+    hhh.value = this.id
+    document.forms[0].submit()
+}
+
+
+//# ------------------------------------------------------------------------
+
+function initdivs()
+{
+    for (aa = 1; aa < 5; aa++)
+        {
+        var ddd = document.getElementById('relop_' + aa);
+        ddd.style.cursor = 'pointer';
+        ddd.onclick = but_1;
+
+        ddd.onmouseover = function() {
+            this.style.backgroundColor = "#00ff88";
+            };
+        ddd.onmouseout = function() {
+            this.style.backgroundColor = '';
+            };
+        }
+
+    for (aa = 5; aa < 9; aa++)
+        {
+        var eee = document.getElementById('relop_' + aa);
+        eee.style.cursor = 'pointer';
+        eee.onclick = but_5
+        eee.onmouseover = function() {
+            this.style.backgroundColor = "#ffdd88";
+            };
+        eee.onmouseout = function() {
+            this.style.backgroundColor = '';
+            };
+        }
+    console.log(" inited")
+}
+</script>
+
+dnl

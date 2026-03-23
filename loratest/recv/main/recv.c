@@ -48,22 +48,27 @@ void task_rx(void *p) {
     //printf("Started recv\n");
 
     int reclen = 0;
-
     for(;;) {
         lora_receive();
+        buffer[0] = '\0';
         reclen = lora_receive_packet((uint8_t*)buffer, sizeof(buffer));
         if (reclen == 0)
             {
             vTaskDelay(pdMS_TO_TICKS(100));
             continue;
             }
-        int OK = check_packet(buffer, reclen);
-        toggle_led(OK);
+        buffer[reclen] = '\0';
+        int isOK = check_packet(buffer, reclen);
+        if(!isOK)
+            {
+            printf("Error on packet: '%s'", buffer);
+            }
+        toggle_led(isOK);
         if(verbose)
             {
             int slen = snprintf(buff2, sizeof(buff2) - 1,
                     "Recvd: %d len: %d rssi: %d cnt: %d check: %d\n",
-                        cntR, reclen, lora_packet_rssi(), cntR, OK);
+                        cntR, reclen, lora_packet_rssi(), cntR, isOK);
             buff2[slen] = '\0';
             }
         else
