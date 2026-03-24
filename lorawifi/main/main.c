@@ -31,6 +31,10 @@
 #include "linenoise/linenoise.h"
 #include "argtable3/argtable3.h"
 #include "esp_console.h"
+#include <esp_timer.h>
+#include <esp_https_server.h>
+#include <esp_http_server.h>
+#include <esp_tls.h>
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -45,6 +49,9 @@
 #include "../common/wifi.h"
 #include "../common/nvs.h"
 #include "../common/strlib.h"
+#include "../common/comline.h"
+#include "../common/packets.h"
+#include "../common/comline.h"
 
 #include "lora.h"
 #include "leds.h"
@@ -58,22 +65,14 @@ int     gl_update = 0;
 #define PROG_VER    "1.0"
 #define PROG_DATE   "Mon 23.Mar.2026"
 
-#include <esp_timer.h>
-#include <esp_https_server.h>
-#include <esp_http_server.h>
-#include <esp_tls.h>
-
-#define DEF_SPREAD    "10"
-#define DEF_BWIDTH    "50E3"
-#define DEF_POWER     "15"
-#define DEF_FREQ      "433.375E6"
-#define DEF_TRENCH     "0"
 
 uint64_t    gl_last_http = 0;
 
 static SemaphoreHandle_t iSemaphore  = NULL;
 static SemaphoreHandle_t hSemaphore  = NULL;
-static SemaphoreHandle_t sSemaphore  = NULL;
+
+// This protects the LORA subsystem
+SemaphoreHandle_t sSemaphore  = NULL;
 
 char      gl_statx[64] = "";
 
@@ -102,7 +101,9 @@ char    gl_txpower[32]  = "";
 char    gl_txfreq[32]   = "";
 char    gl_deftren[32]  = "";
 
-#include "../common/packets.c"
+char    gl_curr_tr[32] = "0";
+
+//include "../common/packets.c"
 
 char *statstr   = "StatusStatusStatusStatusStatusStatusStatusStatus";
 char *rebostr   = "RebootRebootRebootRebootRebootRebootRebootRebootReboot";
@@ -653,9 +654,10 @@ static esp_err_t live_get_handler(httpd_req_t *req)
         gl_update = 0;
         for(int aa = 0; aa < gl_sentprog; aa++)
             {
-            char curr[12]; snprintf(curr, sizeof(curr), "hist_%d", aa);
-            // Wrap to 80
-            cJSON_AddStringToObject(root, curr, sentarr[aa]);
+            char curr[16];
+            snprintf(curr, sizeof(curr), "hist_%d", aa);
+            //printf("Sentarr: '%s' '%s'\n", curr, sentarr[aa]);
+            cJSON_AddStringToObject(root, curr, (const char*)sentarr[aa]);
             }
         if(gl_sentptr)
             {
@@ -665,8 +667,9 @@ static esp_err_t live_get_handler(httpd_req_t *req)
             }
         }
     const char *sys_info = cJSON_Print(root);
+    //printf("Sending JSON: '%s'\n", sys_info);
+
     cJSON_Delete(root);
-    //printf("Sending: '%s'\n", sys_info);
     httpd_resp_set_type(req, "application/json");
     httpd_resp_sendstr(req, sys_info);
 
@@ -978,6 +981,7 @@ char    gl_buff2[256];
 static  void recv_task (void* arg)
 {
     int cntR = 0;
+    char  cstr[16], hstr[16];
 
     for(;;) {
 
@@ -1011,7 +1015,43 @@ static  void recv_task (void* arg)
                     cntR, reclen, reclen - 5, rssi, cntR, isOK);
         printf("%s\n", buff2);
         cntR++;
-        printf("gl_buffer '%s'\n", &gl_buffer[4]);
+
+        //printf("gl_buffer '%s'\n", &gl_buffer[5]);
+        //xStr *sss = xstr_dumpbuff( &gl_buffer[5], strlen( &gl_buffer[5]) + 4);
+        //printf("'%s'\n", sss->str);
+        //xstr_destroy(sss);
+
+        snprintf(cstr, sizeof(cstr), "%d", atoi(gl_curr_tr));
+        xStr *sss = xstr_create(0);
+        xstr_padbr(sss, &gl_buffer[5], "<br>", 70);
+
+        cJSON *root = cJSON_CreateObject();
+        cJSON_AddStringToObject(root, "reply", sss->str);
+        int16_t sumx = lora_chksum(sss->str, sss->length);
+        xstr_destroy(sss);
+        snprintf(hstr, sizeof(hstr), "%x", sumx & 0xffff);
+        //printf("Chash %s\n", shstr);
+        //printf("cstr: '%s' hstr: '%s'\n", cstr, hstr);
+        cJSON_AddStringToObject(root, "chan", cstr);
+        cJSON_AddStringToObject(root, "hash", hstr);
+        cJSON_AddNumberToObject(root, "isok", isOK);
+        char *buff3 = cJSON_Print(root);
+        cJSON_Delete(root);
+
+        add_hist(buff3);
+        free(buff3);
+
+        gl_update = 1;
+        gl_recala = 1;
+
+        GIVE_SEMA(hSemaphore);
+
+        //snprintf(gl_statx, sizeof(gl_statx), "%s", "Done");
+        //vTaskDelay(1000 / portTICK_PERIOD_MS);
+        //snprintf(gl_statx, sizeof(gl_statx), "%s", "Idle ...");
+        //vTaskDelay(1000 / portTICK_PERIOD_MS);
+        //printf("Sent idle.\n");
+
         vTaskDelay(pdMS_TO_TICKS(100));
         }
 }

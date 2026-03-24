@@ -193,13 +193,19 @@ window.addEventListener('load', function()
                     let curr = "hist_" + aa;
                     if (jsObject[curr])
                         {
-                        //console.log("sent %d %s = '%s' ",
+                        //console.log("sent hist %d %s = '%s' ",
                         //                        xhr.status, curr, jsObject[curr]);
                         const myObject = JSON.parse(jsObject[curr]);
                         sentx2 = "[" + myObject.hash + "] (" + myObject.chan + ") "
+
                         if(myObject.reply)
                             {
-                            sentx2 += "<font color=blue>" + myObject.reply + "</font>";
+                            if(myObject.isok)
+                                sentx2 += "<font color=blue>" + myObject.reply +
+                                        "</font>";
+                            else
+                                sentx2 += "<font color=red>" + myObject.reply +
+                                         "</font>";
                             }
                         else
                             {
