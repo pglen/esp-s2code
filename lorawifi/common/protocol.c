@@ -51,8 +51,6 @@
 #define CHIP_NAME "ESP32-S2 Beta"
 #endif
 
-//static char *TAG = "IO4_prot";
-
 #if 0
 
 void    eval_waker(int waker)

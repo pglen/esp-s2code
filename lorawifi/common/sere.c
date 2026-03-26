@@ -23,10 +23,6 @@
 #include "freertos/timers.h"
 
 #include "esp_system.h"
-//#include "esp_spi_flash.h"
-//#include "driver/gpio.h"
-//#include "driver/rtc_io.h"
-
 #include "nvs_flash.h"
 #include "esp_event.h"
 #include "esp_netif.h"
@@ -37,8 +33,6 @@
 #include "esp_system.h"
 #include "esp_now.h"
 #include "esp_crc.h"
-
-//#include "esp32/ulp.h"
 #include "esp_sleep.h"
 
 #include "protocol.h"
@@ -46,11 +40,7 @@
 #include "sere.h"
 #include "wifi.h"
 
-// Back link
-
-//#include "../transmitter/main/a2d.h"
-
-static char *TAG = "IO4_sere";
+static char *TAG = "sere";
 
 uint32_t        gl_paired[MAX_PAIRED_DEVICES]   = {0, };
 int             gl_fresh_pair = 0;

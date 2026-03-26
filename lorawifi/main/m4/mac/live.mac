@@ -33,12 +33,15 @@ window.addEventListener('load', function()
         // Check response is ready or not
         if(xhr.readyState == 4 && xhr.status == 200)
             {
+            if(xhr.responseText == "")
+                return;
+
             const jsObject = JSON.parse(xhr.responseText);
             const statInput = document.getElementById('current');
             statInput.innerHTML = jsObject.strx;
 
             //console.log("Answer %d %d '%s' ",
-            //        xhr.readyState, xhr.status, xhr.responseText);
+            //            xhr.readyState, xhr.status, xhr.responseText);
 
             //console.log("Answer: '" + jsObject.strx +
             //                "' Update:" + jsObject.update +
@@ -105,6 +108,7 @@ window.addEventListener('load', function()
                         }
                     }
                 //console.log("update %d '%d' ", xhr.status, jsObject.update);
+                //console.log("sentx:", sentx);
                 const histInput = document.getElementById('hist');
                 histInput.innerHTML = sentx;
                 histInput.scrollTop = histInput.scrollHeight;

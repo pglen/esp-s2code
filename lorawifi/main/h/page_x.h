@@ -9,7 +9,7 @@
 
       REV   DATE            BY              DESCRIPTION
       ----  -----------     ----------      ------------------------------
-      0.00  Tue, 24-03-26   Peter Glen      Initial version.
+      0.00  Thu, 26-03-26   Peter Glen      Initial version.
 
    ======================================================================= */
 
@@ -41,12 +41,13 @@ const char notfound_html [] =
 "    }\n"
 ".chris {\n"
 "    font-family:    Arial, Helvetica, sans-serif;\n"
-"    font-size:      45px;\n"
+"    font-size:      38px;\n"
 "    font-style:     bold;\n"
+"    display:        inline-block;\n"
 "    }\n"
 ".chris2  {\n"
 "    font-family:    Arial, Helvetica, sans-serif;\n"
-"    font-size:      45px;\n"
+"    font-size:      34px;\n"
 "    font-style:     bold;\n"
 "    display:        inline-block;\n"
 "    }\n"

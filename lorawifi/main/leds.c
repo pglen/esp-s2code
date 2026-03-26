@@ -40,10 +40,20 @@ static uint8_t s_led_state = 0;
 
 static led_strip_handle_t led_strip;
 
-int     blink_cnt = 0;
-int     rr = 0, gg = 50, bb = 0;
+static int     blink_cnt = 0;
+static int     rr = 0, gg = 50, bb = 0;
+
 int     delay = 40;
 int     delay2 = 200;
+
+void    blink_led(int cnt, int  rrr, int ggg, int  bbb)
+{
+    rr = rrr;
+    gg = ggg;
+    bb = bbb;
+
+    blink_cnt = cnt;
+}
 
 static  void led_task (void* arg)
 {

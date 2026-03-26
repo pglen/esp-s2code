@@ -28,21 +28,15 @@
 #include "esp_timer.h"
 #include "esp_system.h"
 #include "esp_now.h"
-//#include "esp_pm.h"
-//#include "driver/gpio.h"
-//#include "esp32/rom/ets_sys.h"
-//#include "esp32/rom/crc.h"
-//#include "driver/i2c.h"
 #include "lwip/err.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
 
 #include "utils.h"
 
-static char *TAG= "IO4_utils";
+static char *TAG= "utils";
 
 // Shuffle a string to 16 bit unique ID
-
 //int16_t chksum(const char *str, int len)
 //{
 //    //printf("str '%s'\n", str);
@@ -632,5 +626,132 @@ int     inc_bootcount()
   err3:
     return boot_count;
 }
+
+//# define LINUX_TEST
+#define INCLUDE_DUMP
+
+int     isalnum2(char chh)
+{
+    if(chh >= '0' && chh <= '9')
+        return TRUE;
+    if(chh >= ':' && chh <= '@')
+        return TRUE;
+    if(chh >= 'a' && chh <= 'z')
+        return TRUE;
+    if(chh >= '[' && chh <= '`')
+        return TRUE;
+    if(chh >= 'A' && chh <= 'Z')
+        return TRUE;
+    if(chh >= ' ' && chh <= '/')
+        return TRUE;
+    if(chh >= '{' && chh <= '~')
+        return TRUE;
+    return FALSE;
+}
+
+void    sdump(const char *str, int len, char *out, int maxlen)
+{
+    int aa = 0, was = 0, prog = 0;
+    for(aa = 0; aa < len; aa++)
+        {
+        if(prog >= maxlen)
+            {
+            out[maxlen] = '\0';
+            printf("sdump overflow at: %d\n", prog);
+            return;
+            }
+        char bb = str[aa] & 0xff;
+        if(isalnum2(bb))
+            {
+            prog += sprintf(out+prog, "%c", bb);
+            was = 1;
+            }
+        else
+            {
+            if (was)
+                prog += sprintf(out+prog, " ");
+            prog += sprintf(out+prog, "%02x ", bb);
+            was = 0;
+            }
+        //if (aa % 16 == 15)
+        //    {
+        //    prog += sprintf(out+prog, "\n");
+        //    }
+        }
+    if (aa % 16 != 15)
+        prog += sprintf(out+prog, "\n");
+}
+
+# ifdef INCLUDE_DUMP
+
+void    hexdump(const char *str, int len, char *out, int maxlen)
+{
+    int aa = 0, sss = 0, prog = 0;
+    for(aa = 0; aa < len; aa++)
+        {
+        if(prog >= maxlen)
+            {
+            out[maxlen] = '\0';
+            printf("hexdump overflow at: %d\n", prog);
+            return;
+            }
+        //if (aa % 16 == 0)
+        //    prog += sprintf(out+prog, "0x%-3.2x- ", aa);
+        prog += sprintf(out+prog, "%02x ", str[aa] & 0xff);
+        if (aa % 16 == 15)
+            {
+            prog += sprintf(out+prog, " -  ");
+            for(int bb = sss; bb < sss + 16; bb++)
+                {
+                if(prog >= maxlen)
+                    {
+                    out[maxlen] = '\0';
+                    printf("hexdump overflow at: %d\n", prog);
+                    return;
+                    }
+                if(isalnum2(str[bb]))
+                    prog += sprintf(out+prog, "%c", str[bb]);
+                else
+                    prog += sprintf(out+prog, ".");
+                }
+            prog += sprintf(out+prog, "\n");
+            sss = aa + 1;
+            }
+        }
+    if (sss != aa )
+        {
+        for(int cc = aa; cc < aa + 16 - len % 16; cc++)
+            {
+            if(prog >= maxlen)
+                {
+                out[maxlen] = '\0';
+                printf("hexdump overflow at: %d\n", prog);
+                return;
+                }
+
+            prog += sprintf(out+prog, "   ");
+            }
+        prog += sprintf(out+prog, " -  ");
+        for(int bb = sss; bb < sss + 16; bb++)
+            {
+            if(prog >= maxlen)
+            {
+            out[maxlen] = '\0';
+            printf("hexdump overflow at: %d\n", prog);
+            return;
+            }
+
+            if (isalnum2(str[bb]))
+                prog += sprintf(out+prog, "%c", str[bb]);
+            else
+                prog += sprintf(out+prog, ".");
+            }
+        //sprintf(out, "sss %d aa, %d", sss, aa);
+        }
+    prog += sprintf(out+prog, "\n");
+    *(out+prog) = '\0';
+}
+
+# endif
 
 // EOF

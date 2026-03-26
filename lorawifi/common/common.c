@@ -25,10 +25,6 @@
 #include "freertos/timers.h"
 
 #include "esp_system.h"
-//#include "esp_spi_flash.h"
-//#include "driver/gpio.h"
-//#include "driver/rtc_io.h"
-
 #include "nvs_flash.h"
 #include "esp_event.h"
 #include "esp_timer.h"
@@ -39,11 +35,7 @@
 #include "esp_system.h"
 #include "esp_now.h"
 #include "esp_crc.h"
-
-//#include "esp32/ulp.h"
 #include "esp_sleep.h"
-
-//#include <mbedtls/aes.h>
 
 #include "protocol.h"
 #include "common.h"
@@ -69,7 +61,7 @@ uint64_t    gl_presscnt = 0;
 int         gl_iam_battery = 0;
 int         verbose = 0;
 
-static char *TAG = "IO4_prot";
+static char *TAG = "protocol";
 
 void    dump_str2(const void *vptr, int len)
 

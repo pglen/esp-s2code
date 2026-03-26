@@ -3,6 +3,7 @@ idf_component_register(SRCS main.c leds.c
                     ../common/protocol.c    ../common/wifi.c
                     ../common/nvs.c         ../common/strlib.c
                     ../common/comline.c     ../common/packets.c
+                    ../common/httpd.c
                     INCLUDE_DIRS "."
                     PRIV_REQUIRES json esp_wifi nvs_flash esp_https_server
                                     esp_driver_spi esp_timer esp_driver_gpio

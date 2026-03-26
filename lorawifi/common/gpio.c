@@ -55,7 +55,6 @@
 
 uint8_t     portarr[4] = {INPUT1, INPUT2, INPUT3, INPUT4};
 
-//static char *TAG = "IO4_gpio";
 static xQueueHandle gpio_evt_queue = NULL;
 
 typedef struct _ButtonPress

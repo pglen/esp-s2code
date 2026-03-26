@@ -24,10 +24,6 @@
 #include "freertos/timers.h"
 
 #include "esp_system.h"
-//#include "esp_spi_flash.h"
-//#include "driver/gpio.h"
-//#include "driver/rtc_io.h"
-
 #include "nvs_flash.h"
 #include "esp_event.h"
 #include "esp_netif.h"
@@ -36,11 +32,7 @@
 #include "esp_system.h"
 #include "esp_now.h"
 #include "esp_crc.h"
-
-//#include "esp32/ulp.h"
 #include "esp_sleep.h"
-
-//#include <mbedtls/aes.h>
 
 #include "protocol.h"
 #include "common.h"
@@ -52,8 +44,6 @@ int     gl_wifi_on = 0;
 
 char    gl_netname[32] = {0, };
 char    gl_netpass[32] = {0, };
-
-//static  char *TAG = "IO4_WiFi";
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,    //)
                                     int32_t event_id, void* event_data)

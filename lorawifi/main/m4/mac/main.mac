@@ -53,20 +53,37 @@
         return(ret);
     }
 
-     async function pressed_sub() {
+    function check_number(valx, lower, upper) {
+
+        if (valx < lower || valx > upper)
+            {
+            alert("Trench number out of range.");
+            return 0;
+            }
+        return 1;
+        }
+
+    async function pressed_sub() {
         // Check parameters
         const textInput = document.getElementById('txt');
+        const chanInput = document.getElementById('chan');
+
+        if (chanInput.value == "")
+            chanInput.value = 0;       // Auto zero
+        if (!isNumeric(chanInput.value))
+            {
+            alert("Cannot submit a non number for trench ");
+            textInput.focus();
+            return;
+            }
+        if (!check_number(chanInput.value, 0, 0xffff))
+            {
+            return;
+            }
         if (textInput.value == "")
             {
             //console.log("Empty string. Not Submitting");
             alert("Cannot submit empty message.");
-            textInput.focus();
-            return;
-            }
-        const chanInput = document.getElementById('chan');
-        if (!isNumeric(chanInput.value))
-            {
-            alert("Cannot submit a non number for channel " + chanInput.value);
             textInput.focus();
             return;
             }
@@ -94,6 +111,7 @@
         // Fill in current state
         const textOutput = document.getElementById('current');
         textOutput.innerHTML = data;
+        setTimeout(updateLiveData, 1000);
     }
 
     function pressed_send() {

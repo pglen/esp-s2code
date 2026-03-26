@@ -580,6 +580,28 @@ void    print_freq_deviation(int ret)
     printf("err %d - %.0f Hz\n", ret, freq);
 }
 
+double  trans_freq_deviation(int ret)
+
+{
+    double freq = (double)ret * (1 << 24);
+    freq /= (32 * 1000000);
+    freq *= 20;
+    freq /= 500;
+    return freq;
+}
+
+double  ppm_freq_deviation(int ret)
+
+{
+    double freq = (double)ret * (1 << 24);
+    freq /= (32 * 1000000);
+    freq *= 20;
+    freq /= 500;
+    freq *= 1000000;
+    freq /= __frequency;
+    return freq;
+}
+
 void
 lora_dump_registers(void)
 {

@@ -23,10 +23,8 @@
 #include "freertos/timers.h"
 
 #include "esp_system.h"
-//#include "esp_spi_flash.h"
 #include "driver/gpio.h"
 #include "driver/rtc_io.h"
-
 #include "nvs_flash.h"
 #include "esp_event.h"
 #include "esp_netif.h"
@@ -35,8 +33,6 @@
 #include "esp_system.h"
 #include "esp_now.h"
 #include "esp_crc.h"
-
-//#include "esp32/ulp.h"
 #include "esp_sleep.h"
 #include "esp_timer.h"
 
@@ -72,10 +68,6 @@
 #define    DOUBLE_CLICK_LIMIT   600
 
 // -----------------------------------------------------------------------
-
-#ifdef TEST_KEYS
-//static const char *TAG = "IO4_input";
-#endif
 
 int     switch_states[NUMBER_OF_INS] = {0, };
 

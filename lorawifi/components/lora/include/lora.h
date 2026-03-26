@@ -30,6 +30,8 @@ void setOCP(uint8_t mA);
 void lora_set_boost(int enable);
 int lora_read_freq_err();
 void    print_freq_deviation(int ret);
+double  trans_freq_deviation(int ret);
+double  ppm_freq_deviation(int ret);
 
 #endif
 

@@ -364,7 +364,7 @@ static int set_trstr(int argc, char **argv)
         printf("Pass string");
         return 0;
         }
-    send_payload(str_trargs.arg1->sval[0]);
+    send_payload(str_trargs.arg1->sval[0], atoi(gl_curr_tr));
     str_trargs.arg1->sval[0] = "";
     return 0;
 }
@@ -571,8 +571,6 @@ void register_cmds(void)
     DECL_COMMANDx("tr",         "transmit", &set_trstr, &str_trargs);
 }
 
-// -----------------------------------------------------------------------
-
 void    start_console(char *prompt)
 
 {
@@ -587,17 +585,25 @@ void    start_console(char *prompt)
     // init console REPL environment
     ESP_ERROR_CHECK(esp_console_new_repl_uart(
                                 &uart_config, &repl_config, &repl));
-
-    linenoiseSetDumbMode(1);
-    //linenoiseSetDumbMode(0);
+    //linenoiseSetDumbMode(1);
+    linenoiseSetDumbMode(0);
 
     /* Register commands */
-    //register_system();
     register_cmds();
 
     vTaskDelay(pdMS_TO_TICKS(100));
     // start console REPL
     ESP_ERROR_CHECK(esp_console_start_repl(repl));
+
+    //while(1)
+    //    {
+    //    int ret, retcode;
+    //    char *line = linenoise("LoraWiFI> ");
+    //    printf("Command: '%s'\n", line);
+    //    ret = esp_console_run(line, &retcode);
+    //    printf("ret=%d retcode=%d\n", ret, retcode);
+    //    linenoiseFree(line);
+    //    }
 }
 
-
+// EOF
