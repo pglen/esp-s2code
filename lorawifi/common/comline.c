@@ -45,46 +45,46 @@
 
 #include "cJSON.h"
 
+#include "httpd.h"
 #include "utils.h"
 #include "comline.h"
 #include "protocol.h"
 #include "packets.h"
 #include "nvs.h"
+#include "strlib.h"
 
 #include "lora.h"
 
 static const char *TAG = "comline";
 
-#define VT_SAVECURSOR            "\e7"  /* Save cursor and attrib */
-#define VT_RESTORECURSOR         "\e8"  /* Restore cursor pos and attribs */
-#define VT_SAVECURSOR2           "\es"  /* Save cursor and attrib */
-#define VT_RESTORECURSOR2        "\eu"  /* Restore cursor pos and attribs */
-#define VT_SETWIN_CLEAR          "\e[r" /* Clear scrollable window size */
-#define VT_CLEAR_SCREEN          "\e[2J" /* Clear screen */
-#define VT_CLEAR_LINE            "\e[2K" /* Clear this whole line */
-#define VT_RESET_TERMINAL        "\ec"
+int verbose  = 0;
 
-void    out_str(const char *strx, const char *str2)
-
+void    del_cache()
 {
-    printf(VT_SAVECURSOR);
-    printf("\033[1;12r");
-    printf("\033[12;1H");
-    printf("%s", strx);
-    printf("%s", str2);
-    //printf("\033[1;24r");
-    printf("\033[13;24r");
-    //printf("\033[18;1H");
-    printf(VT_RESTORECURSOR);
+    nvs_handle my_handle;
+    esp_err_t err2 = nvs_open("storage", NVS_READWRITE, &my_handle);
+    if (err2 != ESP_OK) {
+        ESP_LOGE(TAG, "Error (%d) opening NVS handle!", err2);
+        goto err3;
+        }
+    char head[24];
+    for (int aa = 0; aa < NVS_WRAP; aa++)
+        {
+        snprintf(head, sizeof(head),  "head_%d", aa);
+        submit_nvs_str(head, "");
+        }
+    int16_t curr_hist = 0;
+    nvs_set_i32(my_handle, histx, curr_hist);
+  err3:
+    nvs_close(my_handle);
+    // Also clean in memory history
+    for(int aa = gl_sentprog - 1; aa >= 0; aa--)
+        {
+        free((char*)gl_sentarr[aa]);
+        gl_sentarr[gl_sentprog] = NULL;
+        }
+    gl_sentprog = 0;
 }
-
-int splity = 12;
-
-void    set_split()
-{
-    printf("\033[%d;24r", splity);
-}
-
 
 typedef struct {
     struct arg_str *arg1;
@@ -95,6 +95,69 @@ typedef struct {
     struct arg_int *arg1;
     struct arg_end *end;
 } arg_argf_t;
+
+static arg_args_t  dump_args;
+
+static int set_dump(int argc, char **argv)
+{
+    char strx[256];
+
+    int nerrors = arg_parse(argc, argv, (void **) &dump_args);
+    if (nerrors != 0) {
+        }
+    if(dump_args.arg1->sval[0][0] == '?')
+        {
+        printf("Dump persistent memory. Add verbose for more info.\n");
+        return 0;
+        }
+    nvs_handle my_handle;
+    esp_err_t err2 = nvs_open("storage", NVS_READWRITE, &my_handle);
+    if (err2 != ESP_OK) {
+        ESP_LOGE(TAG, "Error (%d) opening NVS handle!", err2);
+        goto err3;
+        }
+    int16_t curr_hist = 0;
+    err2 = nvs_get_i16(my_handle, histx, &curr_hist);
+
+    char head[24];
+    // Print all perm hist (for test)
+    for (int aa = 0; aa < NVS_WRAP; aa++)
+        {
+        int now = (curr_hist + aa) % NVS_WRAP;
+        unsigned int olen = sizeof(strx);
+        snprintf(head, sizeof(head),  "head_%d", now);
+        nvs_get_str(my_handle, head, strx, &olen);
+        if(verbose > 0)
+            {
+            xStr *sss = xstr_fromstr(strx);
+            xstr_subststr(sss, "\n", "", 0);
+            printf("%d %s %s\n", aa, head, sss->str);
+            xstr_destroy(sss);
+            }
+        else
+            {
+            char *strxr = NULL;
+            cJSON *root = cJSON_Parse(strx);
+            cJSON *item = cJSON_GetObjectItem(root, "reply");
+            if(item)
+                strxr = item->valuestring;
+            if (!strxr || strxr[0] == '\0')
+                {
+                item = cJSON_GetObjectItem(root, "text");
+                if(item)
+                    strxr = item->valuestring;
+                }
+            if (strxr && strxr[0] != '\0')
+                printf("%d: %s\n", aa, strxr);
+            cJSON_Delete(root);
+            }
+        }
+  err3:
+    nvs_close(my_handle);
+
+    dump_args.arg1->sval[0] = "";
+    return 0;
+}
 
 static arg_args_t  spread_args;
 
@@ -172,6 +235,25 @@ static int set_bw(int argc, char **argv)
 
     printf("Bandwith set to %s\n", gl_bwidth);
     bw_args.arg1->sval[0] = "";
+    return 0;
+}
+
+static arg_args_t  clean_args;
+
+static int set_clean(int argc, char **argv)
+{
+    int nerrors = arg_parse(argc, argv, (void **) &clean_args);
+    if (nerrors != 0) {
+    }
+    if(clean_args.arg1->sval[0][0] == '?')
+        {
+        printf("Clean persistent (cached) data.\n");
+        return 0;
+        }
+    del_cache();
+    printf("Cleaned persistent (cached) data\n");
+
+    clean_args.arg1->sval[0] = "";
     return 0;
 }
 
@@ -369,7 +451,6 @@ static int set_trstr(int argc, char **argv)
     return 0;
 }
 
-int verbose  = 0;
 static arg_args_t  verb_args;
 static int set_verbose(int argc, char **argv)
 
@@ -477,18 +558,20 @@ static  int reboot_dev(int argc, char **argv)
 static  int help(int argc, char **argv)
 
 {
-    printf("Commands: v (verbose) [1-10]; h (help); r (reboot);\n");
+    printf("Commands: v (verbose) [1-10]; h (help); o (reboot);\n");
     printf("          w (pw) power level [2-15]\n");
     printf("          s (sf) spread [6-12]\n");
     printf("          b (bw) bandwidth [5-500]\n");
     printf("          f (fr) frequency [410.0-530.0] (Clamped to legal limits)\n");
-    printf("          u (tu) tune frequency up  by Hz\n");
-    printf("          n (td) tune frequency down by Hz \n");
-    printf("          d (de) defaults [fr=%s bw=%s sf=%s pw=%s] \n",
+    printf("          u (tu) tune frequency up by Hz.\n");
+    printf("          n (td) tune frequency down by Hz. \n");
+    printf("          d (de) defaults [fr=%s bw=%s sf=%s pw=%s]\n",
                                     DEF_FREQ, DEF_BWIDTH, DEF_SPREAD, DEF_POWER);
     printf("          t (tr) transmit string \n");
     printf("          r (re) set trench number \n");
     printf("          p (pr) print current and default configuration\n");
+    printf("          m (du) dump persistent data.\n");
+    printf("          c (cl) clear persistent data.\n");
     printf("Use: 'command ?' for help on a particular command.\n");
     return 0;
 }
@@ -518,25 +601,29 @@ void register_cmds(void)
 {
     INIT_STRUCT(verb_args)
     DECL_COMMANDx("verb",       "Set verbosity", &set_verbose, &verb_args);
-    DECL_COMMANDx("verbose",    "Set verbosity", &set_verbose, &verb_args);
-    DECL_COMMANDx("v",          "Set verbosity", &set_verbose, &verb_args);
+    DECL_COMMANDx("verbose",    "", &set_verbose, &verb_args);
+    DECL_COMMANDx("v",          "", &set_verbose, &verb_args);
 
     DECL_COMMANDx("restart",    "reboot / restart device",  &reboot_dev, NULL);
-    DECL_COMMANDx("reboot",     "reboot / restart device",  &reboot_dev, NULL);
-    DECL_COMMANDx("r",          "reboot / restart device",  &reboot_dev, NULL);
+    DECL_COMMANDx("reboot",     "",  &reboot_dev, NULL);
+    DECL_COMMANDx("o",          "",  &reboot_dev, NULL);
 
     DECL_COMMANDx("help",       "Help",  &help, NULL);
-    DECL_COMMANDx("h",          "Help",  &help, NULL);
-    DECL_COMMANDx("?",          "Help",  &help, NULL);
+    DECL_COMMANDx("h",          "",  &help, NULL);
+    DECL_COMMANDx("?",          "",  &help, NULL);
 
     INIT_STRUCT(spread_args)
     DECL_COMMANDx("spread",     "Set spread", &set_spread, &spread_args);
-    DECL_COMMANDx("sf",         "Set spread", &set_spread, &spread_args);
-    DECL_COMMANDx("s",          "Set spread", &set_spread, &spread_args);
+    DECL_COMMANDx("sf",         "", &set_spread, &spread_args);
+    DECL_COMMANDx("s",          "", &set_spread, &spread_args);
 
     INIT_STRUCT(bw_args)
     DECL_COMMANDx("bw",         "Set bandwidth", &set_bw, &bw_args);
-    DECL_COMMANDx("b",          "Set bandwidth", &set_bw, &bw_args);
+    DECL_COMMANDx("b",          "", &set_bw, &bw_args);
+
+    INIT_STRUCT(clean_args)
+    DECL_COMMANDx("cl",         "Clean cache", &set_clean, &clean_args);
+    DECL_COMMANDx("c",          "", &set_clean, &clean_args);
 
     INIT_STRUCT(tr_args)
     DECL_COMMANDx("re",         "Set trench", &set_tr, &tr_args);
@@ -563,12 +650,16 @@ void register_cmds(void)
     DECL_COMMANDx("d",          "", &set_de, &fr_args);
 
     INIT_STRUCT(pr_args)
-    DECL_COMMANDx("pr",         "print config", &set_pr, &de_args);
+    DECL_COMMANDx("pr",         "print config", &set_pr, &pr_args);
     DECL_COMMANDx("p",          "", &set_pr, &pr_args);
 
+    INIT_STRUCT(dump_args)
+    DECL_COMMANDx("du",         "dump hist", &set_dump, &dump_args);
+    DECL_COMMANDx("m",          "", &set_dump, &dump_args);
+
     INIT_STRUCT(str_trargs)
-    DECL_COMMANDx("t",         "transmit",  &set_trstr, &str_trargs);
-    DECL_COMMANDx("tr",         "transmit", &set_trstr, &str_trargs);
+    DECL_COMMANDx("t",          "transmit",  &set_trstr, &str_trargs);
+    DECL_COMMANDx("tr",         "", &set_trstr, &str_trargs);
 }
 
 void    start_console(char *prompt)

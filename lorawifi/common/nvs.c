@@ -17,23 +17,18 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/semphr.h"
-#include "freertos/timers.h"
-#include "esp_event.h"
-#include "esp_netif.h"
-#include "esp_wifi.h"
-#include "esp_log.h"
-#include "esp_system.h"
-#include "esp_now.h"
-//#include "esp_pm.h"
-//#include "driver/gpio.h"
-//#include "esp32/rom/ets_sys.h"
-//#include "esp32/rom/crc.h"
-//#include "driver/i2c.h"
-#include "lwip/err.h"
-#include "esp_log.h"
-#include "nvs_flash.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
+#include <freertos/timers.h>
+#include <esp_event.h>
+#include <esp_netif.h>
+#include <esp_wifi.h>
+#include <esp_log.h>
+#include <esp_system.h>
+#include <esp_now.h>
+#include <lwip/err.h>
+#include <esp_log.h>
+#include <nvs_flash.h>
 
 #include "nvs.h"
 
@@ -61,16 +56,17 @@
 // Every minute:
 //      "1849 * 100000 / (60 * 24 * 365)" -> 351.78843 years
 
-
 static char *TAG= "ap_nvs";
 
 #define NVS_STR_TYPE    1
 #define NVS_INT_TYPE    2
 #define NVS_LL_TYPE     3
+#define NVS_SHORT_TYPE  4
 
 static int inited = 0;
 
 union  payld {
+    uint16_t    sval;
     uint64_t    llval;
     uint32_t    val;
     char        *str;
@@ -87,6 +83,28 @@ typedef struct _nvs_queue
 static QueueHandle_t submit_queue;
 
 //static int64_t startx = 0, endx = 0;
+
+static void    write_nvs_short(char *name, int16_t val)
+
+{
+    nvs_handle my_handle;
+    //err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
+    err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
+
+    if (err != ESP_OK)
+        {
+        printf("Error (%d) opening NVS handle for %s.", err, name);
+        }
+    else
+        {
+        err = nvs_set_i16(my_handle, name, val);
+        if (err != ESP_OK)
+            {
+            printf("Error (%d) writing %s to nvs", err, name);
+            }
+        nvs_commit(my_handle); nvs_close(my_handle);
+        }
+}
 
 static void    write_nvs_int(char *name, int val)
 
@@ -176,6 +194,10 @@ static  void    nvs_write_worker(void *pvParameter)
                 {
                 write_nvs_int(evt.name, evt.pyl.val);
                 }
+            else if (evt.type == NVS_SHORT_TYPE)
+                {
+                write_nvs_short(evt.name, evt.pyl.sval);
+                }
             else if (evt.type == NVS_LL_TYPE)
                 {
                 write_nvs_int64(evt.name, evt.pyl.llval);
@@ -250,6 +272,25 @@ int     submit_nvs_int(const char *name, int valx)
     return ret;
 }
 
+int     submit_nvs_short(const char *name, int16_t valx)
+
+{
+    if(!inited)
+        init_nvs_writer();
+
+    int ret = 0;
+    nvs_queue evt; memset(&evt, '\0', sizeof(evt));
+    strncpy(evt.name, name, sizeof(evt.name));
+    evt.type = NVS_SHORT_TYPE;
+    evt.pyl.sval = valx;
+    if (xQueueSend(submit_queue, &evt, 1000 / portTICK_PERIOD_MS) != pdTRUE)
+        {
+        ESP_LOGE(TAG, "Submit to queue failed.");
+        ret = -2;
+        }
+    return ret;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Send decorated data via queue
 
@@ -287,6 +328,16 @@ int     submit_nvs_float(const char *name, float valx)
     char tmp[16]; snprintf(tmp, sizeof(tmp), "%f", valx);
     ret = submit_nvs_str(name, tmp);
 
+    return ret;
+}
+
+int     get_nvs_free()
+
+{
+    nvs_stats_t nvs_stats;
+    esp_err_t err = nvs_get_stats(NULL, &nvs_stats);
+    (void)err;
+    int ret = nvs_stats.free_entries * 32;
     return ret;
 }
 

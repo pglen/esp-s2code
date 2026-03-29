@@ -1,6 +1,5 @@
 idf_component_register(SRCS main.c leds.c
-                    ../common/utils.c       ../common/sere.c
-                    ../common/protocol.c    ../common/wifi.c
+                    ../common/utils.c       ../common/protocol.c
                     ../common/nvs.c         ../common/strlib.c
                     ../common/comline.c     ../common/packets.c
                     ../common/httpd.c

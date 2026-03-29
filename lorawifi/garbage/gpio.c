@@ -45,7 +45,7 @@
 
 #include "protocol.h"
 #include "common.h"
-#include "sere.h"
+//#include "sere.h"
 #include "input.h"
 #include "wifi.h"
 

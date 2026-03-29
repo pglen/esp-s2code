@@ -1,7 +1,7 @@
 
 /* =====[ ESP32 project ]=================================================
 
-   File Name:       main/html/page_x.html
+   File Name:       main/html/redir.html
 
    Description:     Main file
 
@@ -15,14 +15,14 @@
 
 // Page contents as header. DO NOT EDIT. Contents are overwritten at
 // compile time.
-// Edit the corresponding HTML file instead: main/html/page_x.html
+// Edit the corresponding HTML file instead: main/html/redir.html
 
-const char notfound_html [] =
+const char redir_html [] =
 
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">\n"
 "<html>\n"
 "<head>\n"
-"<title>LORAWIFI Missing Page</title>\n"
+"<title>LORAWIFI Main Page</title>\n"
 "<meta charset=\"UTF-8\">\n"
 "<link rel='icon' href='data:;base64,iVBORw0KGgo='>\n"
 "</head>\n"
@@ -122,49 +122,23 @@ const char notfound_html [] =
 "        </div>\n"
 "    </a>\n"
 "    </table>\n"
-"    <tr><td>\n"
-"    <table align=center>\n"
-"        <tr><td>\n"
-"        <div id=status class=statstat align=center>\n"
-"            StatusStatusStatusStatusStatusStatusStatusStatus\n"
-"        </div>\n"
-"    </table>\n"
 "<center>\n"
-"<hr>\n"
-"<font size=6>The requested Page is Not Found</font>\n"
+"<title>Device rebooting ...</title>\n"
+"<script>\n"
+"    function jump() {\n"
+"        window.location.href = \"http://192.168.4.1/page_1.html?reboot=done\";\n"
+"    }\n"
+"    function refresh() {\n"
+"        setTimeout(jump, 3000);\n"
+"    }\n"
+"window.addEventListener('load', refresh())\n"
+"</script>\n"
+"<h2>Device rebooting, please wait ... </h2>\n"
+"<h3>Redirection to device's home page in 3 sec.</h3>\n"
+"<p>If you are not redirected automatically, follow this\n"
+"<a href=http://192.168.4.1/page_1.html?reboot=done>\n"
+"link to the Device's page</a>.</p>\n"
 "</center>\n"
-"<tr><td>\n"
-"  <table width=100% border=0>\n"
-"        <tr>\n"
-"            <td align=center colspan=3 width=100%>\n"
-"            <hr>\n"
-"        <tr>\n"
-"            <td align=center>\n"
-"                <div style=\"font-size:large\"   align=center>\n"
-"                   <a href=page_4.html> Main Settings </a>\n"
-"                </div>\n"
-"            <td align=center>\n"
-"                <div style=\"font-size:large\"   align=center>\n"
-"                   <a href=page_2.html> WiFi Settings </a>\n"
-"                </div>\n"
-"            <td align=center>\n"
-"                 <div style=\"font-size:large\"   align=center>\n"
-"                    <a href=page_3.html> LORA Parameters </a>\n"
-"                </div>\n"
-"        <tr>\n"
-"            <td align=center>\n"
-"                <div style=\"font-size:large\" >\n"
-"                    <a href=page_8.html> Quick Start Manual </a>\n"
-"                </div>\n"
-"            <td align=center>\n"
-"                <div style=\"font-size:large\" >\n"
-"                   <a href=page_1.html> Back to Home Page </a>\n"
-"                </div>\n"
-"           <td align=center>\n"
-"                <div style=\"font-size:large\" >\n"
-"                   <a href=page_1.html?reboot=true>Reboot Device</a>\n"
-"                </div>\n"
-"    </table>\n"
 "    <tr>\n"
 "    <td colspan=2 align=center>\n"
 "    <hr>\n"

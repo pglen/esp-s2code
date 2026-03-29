@@ -40,6 +40,7 @@ xStr    *xstr_hexdump(xStr *sss);
 xStr    *xstr_randstr(int len);
 int     xstr_strstr(xStr *sss, const xStr *str2, int offs);
 void    xstr_substr(xStr *sss, const xStr *str2, const xStr *str3, int offs);
+void    xstr_subststr(xStr *sss, const char *str2, const char *str3, int offs);
 void    xstr_slice(xStr *sss, int beg, int end);
 void    xstr_catstr(xStr *sss, const char *str);
 void    xstr_dumplist();

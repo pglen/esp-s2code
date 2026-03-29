@@ -21,6 +21,7 @@ convert page_2   settings_html
 convert page_3   lora_html
 convert page_4   config_html
 convert channels lora_chann_html
+convert redir    redir_html
 
 #echo Done.
 

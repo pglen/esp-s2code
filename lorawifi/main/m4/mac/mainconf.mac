@@ -22,6 +22,7 @@
     async function save_conf() {
         //console.log("Save conf");
         const formData = new FormData(myform);
+        //formData.append("checked", "0");
         console.log("Data", formData);
         check_lims(formData, "deftrench", 0, 65534);
         const plainFormData = Object.fromEntries(formData.entries());
@@ -39,6 +40,32 @@
         //console.log("butt:", confButt)
         confButt.value = data;
     }
+
+    async function del_perm() {
+        //console.log("del perm");
+        const formData = new FormData(myform);
+        const confButt = document.getElementById('confirm');
+        //console.log("confButt", confButt.checked);
+        if(confButt.checked)
+            formData.append("checked", "1");
+        else
+            formData.append("checked", "0");
+        const plainFormData = Object.fromEntries(formData.entries());
+        const jsonString = JSON.stringify(plainFormData);
+        //console.log("Submitting delform: '%s'", jsonString);
+        //document.getElementById("myform").submit();
+        const response = await fetch("page_4.html", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: jsonString
+                })
+        const data = await response.text();
+        //console.log("Data from main config: " + data)
+        const delButt = document.getElementById('delbutt');
+        //console.log("butt:", delButt)
+        delButt.value = data;
+    }
+
 </script>
 
 <table align=center width=100% padding=10>
@@ -53,12 +80,28 @@
     Default Trench: (0-65534) &nbsp<td width=50%><input id=deftrench name=deftrench type=text
                         autofocus value=deftrenchdeftrench>
         <tr><td align=right>
-
     <tr> <td colspan=3 align=center>
-    <hr>
     <tr><td><td>
     <input type=button onclick=save_conf() id=confbutt name=confbutt
                                                 value='Save Configuration'>
-    <tr> <td colspan=3 align=center>
+    <tr> <td colspan=3>
+    <hr>
+    <tr> <td colspan=3>
+    &nbsp; &nbsp; The device stores communication history on board, in
+    permanent storage. This allows the device to be unplugged, re-connected
+    to a different host, without the loss of communication data.
+    (For example moving the device connection from smart phone to laptop or from
+    simple power supply to cell phone.)
+    The button below removes all communication history
+    from the current session and from the device's on board storage.
+
+    <tr> <td align=right>
+    Confirm Data removal: &nbsp<td width=50%>
+                            <input id=confirm name=confirm type=checkbox
+                                 value="1" label="Confirm Removal">
+    <tr><td><td>
+    <input type=button onclick=del_perm() id=delbutt name=delbutt
+                            value='Remove ALL Cached data'>
+        <tr><td align=right>
 
 </table>

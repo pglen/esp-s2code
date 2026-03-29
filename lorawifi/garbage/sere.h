@@ -1,15 +1,15 @@
 
-/* =====[ AKOSTAR IOCOM project ]====================================
+/* =====[ access point template project ]=================================
 
-   File Name:       main.c
+   File Name:       common.c
 
    Description:
 
    Revisions:
 
-      REV       DATE                BY          DESCRIPTION
+      REV       DATE               BY          DESCRIPTION
       ----  -----------         ----------      -------------------------
-      0.00  Thu 25.Mar.2021     Peter Glen      Initial version.
+      0.00  Tue 10.Mar.2026     Peter Glen      Initial version.
 
    ======================================================================= */
 

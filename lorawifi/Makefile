@@ -10,6 +10,9 @@ target:
 convert:
 	./convpages.sh && ./genpages.sh
 
+build:
+	idf.py build
+
 menuconfig:
 	idf.py menuconfig
 
@@ -18,5 +21,8 @@ monitor:
 
 clean:
 	idf.py clean
+
+fullclean: clean
+	rm -rf build
 
 # EOF

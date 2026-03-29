@@ -34,6 +34,24 @@
           }
         };
 
+    var escapeHTML = function(unsafe) {
+      return unsafe.replace(/[&<>"']/g, function(m) {
+        switch (m) {
+          case '&':
+            return '&amp;';
+          case '<':
+            return '&lt;';
+          case '>':
+            return '&gt;';
+          case '"':
+            return '&quot;';
+          default:
+            return '&#039;';
+        }
+      });
+    };
+
+
     // re - write in javascript
     function chksum(strx) {
         //console.log("chksum() strx='%s'", strx);
@@ -87,6 +105,7 @@
             textInput.focus();
             return;
             }
+        textInput.value = escapeHTML(textInput.value);
         const formData = new FormData(myform);
         const plainFormData = Object.fromEntries(formData.entries());
         if(plainFormData['text'].length > 200)
@@ -166,7 +185,7 @@ function onKeyUp(e){
   }
 </script>
 
-<table align=center width=100% padding=10>
+<table align=center width=100% padding=1>
 
     <tr><td> Data: <td colspan=2>
         <div class="container">
@@ -193,7 +212,6 @@ function onKeyUp(e){
             <div class=mytext id=current>Idle.</div>
         <td class=mydiv>
             <div class=mytext width=90% id=rssi> &nbsp;
-            Last RSSI: 0 &nbsp;
-            Last Ack: 0
+            Last RSSI: 0 &nbsp; Last Ack: 0
             </div>
 </table>

@@ -20,39 +20,39 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_mac.h"
-#include "esp_wifi.h"
-#include "esp_event.h"
-#include "esp_log.h"
-#include "esp_system.h"
-#include "nvs_flash.h"
-#include "linenoise/linenoise.h"
-#include "argtable3/argtable3.h"
-#include "esp_console.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <esp_mac.h>
+#include <esp_wifi.h>
+#include <esp_event.h>
+#include <esp_log.h>
+#include <esp_system.h>
+#include <nvs_flash.h>
+#include <linenoise/linenoise.h>
+#include <argtable3/argtable3.h>
+#include <esp_console.h>
 #include <esp_timer.h>
 #include <esp_https_server.h>
 #include <esp_http_server.h>
 #include <esp_tls.h>
 
-#include "lwip/err.h"
-#include "lwip/sys.h"
-#include "esp_heap_caps.h"
-#include "driver/gpio.h"
+#include <lwip/err.h>
+#include <lwip/sys.h>
+#include <esp_heap_caps.h>
+#include <driver/gpio.h>
 
 #include "cJSON.h"
 
-#include "../common/protocol.h"
-#include "../common/utils.h"
-#include "../common/common.h"
-#include "../common/wifi.h"
-#include "../common/nvs.h"
-#include "../common/strlib.h"
-#include "../common/comline.h"
-#include "../common/packets.h"
-#include "../common/comline.h"
-#include "../common/httpd.h"
+#include "protocol.h"
+#include "utils.h"
+#include "common.h"
+#include "wifi.h"
+#include "nvs.h"
+#include "strlib.h"
+#include "comline.h"
+#include "packets.h"
+#include "comline.h"
+#include "httpd.h"
 
 #include "lora.h"
 #include "leds.h"
@@ -60,13 +60,14 @@
 #define PROG_VER    "1.0"
 #define PROG_DATE   "Wed 25.Mar.2026"
 
+char    gl_netname[32] = {0, };
+char    gl_netpass[32] = {0, };
+
 static const char *TAG = "lorawifi";
 
 static httpd_handle_t gl_serverx = NULL;
 static httpd_handle_t gl_server = NULL;
-
-#define SENTMAX 24        // Maximum history items
-const   char *sentarr[SENTMAX] = {0, };
+static int timeout_cnt = 0;
 
 char *statstr   = "StatusStatusStatusStatusStatusStatusStatusStatus";
 char *rebostr   = "RebootRebootRebootRebootRebootRebootRebootRebootReboot";
@@ -87,11 +88,10 @@ char *freqstr   = "freqfreqfreqfreqfreqfreq";
 char *chanstr   = "deftrenchdeftrench";
 char *trenchstr = "trenchtrenchtrench";
 
+const   char *gl_sentarr[SENTMAX] = {0, };
+char    *histx = "curr_hist";
 char    *gl_sentptr = NULL;
 uint64_t    gl_last_http = 0;
-
-static  int timeout_cnt = 0;
-
 
 void    add_hist(const char *item)
 
@@ -110,17 +110,47 @@ void    add_hist(const char *item)
     // Cut to size
     if(gl_sentprog >= SENTMAX)
         {
-        free((void*)sentarr[0]);
+        free((void*)gl_sentarr[0]);
         // Shift down
         for(int aa = 1; aa < gl_sentprog; aa++)
             {
-            sentarr[aa-1] = sentarr[aa];
+            gl_sentarr[aa-1] = gl_sentarr[aa];
             }
         gl_sentprog--;
         }
-    sentarr[gl_sentprog] = tmp;
+    gl_sentarr[gl_sentprog] = tmp;
     gl_sentprog++;
 
+    //int     freex = get_nvs_free();
+    //printf("free: %d \n", freex);
+
+    nvs_handle my_handle;
+    esp_err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Error (%d) opening NVS handle!", err);
+        goto err3;
+        }
+    int16_t curr_hist = 0;
+    err = nvs_get_i16(my_handle, histx, &curr_hist);
+    //printf("curr_hist %d\n", freex, curr_hist);
+    nvs_close(my_handle);
+    if(curr_hist >= NVS_WRAP)
+        {
+        curr_hist = 0;
+        }
+    char head[24];
+    snprintf(head, sizeof(head), "head_%d", curr_hist);
+    //printf("Submit: %s -- %s\n", head, tmp);
+    submit_nvs_str(head, tmp);
+
+    curr_hist++;
+    submit_nvs_short(histx, curr_hist);
+
+    // Sleep for the values to commit
+    //vTaskDelay(300 / portTICK_PERIOD_MS);
+
+  err3:
+    nvs_close(my_handle);
     GIVE_SEMA(hSemaphore);
 }
 
@@ -288,6 +318,28 @@ static esp_err_t conf_post_handler(httpd_req_t *req)
     //printf("conf cJSON '%s'\n", buff);
     cJSON *root5 = cJSON_Parse(buff);
     free(buff);
+
+    cJSON *item = cJSON_GetObjectItem(root5, "checked");
+    if(item)
+        {
+        char *strxx = item->valuestring;
+        if(strxx)
+            {
+            if(strcmp(strxx, "1") == 0)
+                {
+                del_cache();
+                printf("Deleted hist cache\n");
+                httpd_resp_send(req, "Comm history erased.", HTTPD_RESP_USE_STRLEN);
+                }
+            else
+                {
+                printf("NOT Deleted hist cache\n");
+                httpd_resp_send(req, "Must have checkbox checked.", HTTPD_RESP_USE_STRLEN);
+                }
+            cJSON_Delete(root5);
+            return ESP_OK;
+            }
+        }
     char *strxd = cJSON_GetObjectItem(root5, "deftrench")->valuestring;
     strncpy(gl_deftren,  strxd, sizeof(gl_deftren));
     submit_nvs_str("deftrench", strxd);
@@ -468,9 +520,10 @@ static esp_err_t live_get_handler(httpd_req_t *req)
 {
     //printf("in Live handler.\n");
     char  tmpx[24];
-
-    if(!gl_update)
+    if(!gl_update2)
         {
+        //printf("Empty JSON sent\n");
+        vTaskDelay(10 / portTICK_PERIOD_MS);
         httpd_resp_set_type(req, "application/json");
         httpd_resp_sendstr(req, "");
         return ESP_OK;
@@ -481,15 +534,10 @@ static esp_err_t live_get_handler(httpd_req_t *req)
         return ESP_OK;
         }
     reenter = 1;
-
     if(strcmp(gl_statx, "Done") == 0)
         {
         timeout_cnt = 0;
         }
-    //if(timeout_cnt > 9 && timeout_cnt < 11)
-    //    {
-    //    gl_statx[0] = '\0';
-    //    }
     if(timeout_cnt >= 8 && timeout_cnt <= 10)
         {
         snprintf(tmpx, sizeof(tmpx), "%s", "Timeout");
@@ -506,6 +554,7 @@ static esp_err_t live_get_handler(httpd_req_t *req)
         }
     cJSON *root = cJSON_CreateObject();
     cJSON_AddStringToObject(root, "strx",   gl_statx);
+    cJSON_AddStringToObject(root, "ack",    gl_ack);
     cJSON_AddNumberToObject(root, "count",  timeout_cnt);
     cJSON_AddNumberToObject(root, "update", gl_update);
     cJSON_AddNumberToObject(root, "rssi",   gl_rssi);
@@ -516,8 +565,8 @@ static esp_err_t live_get_handler(httpd_req_t *req)
             {
             char curr[16];
             snprintf(curr, sizeof(curr), "hist_%d", aa);
-            //printf("Sentarr: '%s' '%s'\n", curr, sentarr[aa]);
-            cJSON_AddStringToObject(root, curr, (const char*)sentarr[aa]);
+            //printf("Sentarr: '%s' '%s'\n", curr, gl_sentarr[aa]);
+            cJSON_AddStringToObject(root, curr, (const char*)gl_sentarr[aa]);
             }
         gl_update = 0;
         }
@@ -549,19 +598,16 @@ static const httpd_uri_t livex = {
     .handler   = live_get_handler
 };
 
+#include "h/redir.h"
+
 static esp_err_t home_get_handler(httpd_req_t *req)
 {
     gl_recala = 0;      // Clear rec LED
     gl_update = 1;
+    gl_update2 = 1;
 
-    printf("home_get_handler()\n");
+    //printf("home_get_handler()\n");
 
-    char* resp_str = xstrdup(index_html);
-    if(!resp_str)
-        {
-        httpd_resp_send(req, "No Mem for home", HTTPD_RESP_USE_STRLEN);
-        return ESP_OK;
-        }
     // see if reboot requested
     //printf("home req: %s", req->uri);
     char *kkk = get_arg_ptr(req->uri);
@@ -573,8 +619,25 @@ static esp_err_t home_get_handler(httpd_req_t *req)
         printf("reboot val: '%s'\n", buffu2);
         if(strcmp(buffu2, "true") == 0)
             {
+            char* resp_str = xstrdup(redir_html);
+            if(!resp_str)
+                {
+                httpd_resp_send(req, "No Mem for redir", HTTPD_RESP_USE_STRLEN);
+                return ESP_OK;
+                }
+            subst_footer(resp_str);
+            httpd_resp_set_type(req, "text/html");
+            httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
+            free(resp_str);
             delayed_reboot(500);
+            return ESP_OK;
             }
+        }
+    char* resp_str = xstrdup(index_html);
+    if(!resp_str)
+        {
+        httpd_resp_send(req, "No Mem for home", HTTPD_RESP_USE_STRLEN);
+        return ESP_OK;
         }
     subst_str(resp_str, trenchstr, gl_deftren);
     subst_footer(resp_str);
@@ -616,9 +679,10 @@ static const httpd_uri_t faviconx = {
 static esp_err_t home_post_handler(httpd_req_t *req)
 {
     gl_recala = 0;      // Clear rec LED
+    gl_update2 = 1;
     gl_update = 1;
 
-    printf("home_post_handler()\n");
+    //printf("home_post_handler()\n");
 
     //char* resp_str = xstrdup(index_html);
     //if(!resp_str)
@@ -650,7 +714,7 @@ static esp_err_t post_post_handler(httpd_req_t *req)
 {
     gl_recala = 0;      // Clear rec LED
 
-    printf("post_post_handler()");
+    //printf("post_post_handler()");
     //printf("post_post content_len %d\n", req->content_len);
     char    *buff = malloc(req->content_len + 1);
     if(!buff)
@@ -688,6 +752,7 @@ static esp_err_t post_post_handler(httpd_req_t *req)
     gl_sentbuff = xstrdup(strx2);
     gl_sendtrench = atoi(trenchs);
     gl_update = 1;
+    gl_update2 = 1;
     cJSON_Delete(root2);
     httpd_resp_send(req, "Submitted ...", HTTPD_RESP_USE_STRLEN);
     //printf("Mem %ld\n", esp_get_free_heap_size());

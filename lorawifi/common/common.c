@@ -17,30 +17,29 @@
 #include <string.h>
 #include <ctype.h>
 #include <sys/param.h>
-#include "sdkconfig.h"
+//#include "sdkconfig.h"
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/semphr.h"
-#include "freertos/timers.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/semphr.h>
+#include <freertos/timers.h>
 
-#include "esp_system.h"
-#include "nvs_flash.h"
-#include "esp_event.h"
-#include "esp_timer.h"
-#include "esp_chip_info.h"
-#include "esp_netif.h"
-#include "esp_wifi.h"
-#include "esp_log.h"
-#include "esp_system.h"
-#include "esp_now.h"
-#include "esp_crc.h"
-#include "esp_sleep.h"
+#include <esp_system.h>
+#include <nvs_flash.h>
+#include <esp_event.h>
+#include <esp_timer.h>
+#include <esp_chip_info.h>
+#include <esp_netif.h>
+#include <esp_wifi.h>
+#include <esp_log.h>
+#include <esp_system.h>
+#include <esp_now.h>
+#include <esp_crc.h>
+#include <esp_sleep.h>
 
 #include "protocol.h"
 #include "common.h"
-#include "sere.h"
-#include "input.h"
+//#include "input.h"
 #include "wifi.h"
 
 #ifdef CONFIG_IDF_TARGET_ESP32
@@ -422,7 +421,7 @@ int     inc_bootcount()
         return boot_count;
 
     nvs_handle my_handle;
-    err = nvs_open("lorawifi", NVS_READWRITE, &my_handle);
+    err = nvs_open("storage", NVS_READWRITE, &my_handle);
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "Error (%d) opening NVS handle!", err);
         goto err3;

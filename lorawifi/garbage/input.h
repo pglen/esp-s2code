@@ -1,15 +1,15 @@
 
-/* =====[ AKOSTAR IOCOM project ]=========================================
+/* =====[ access point template project ]=================================
 
-   File Name:       inputs
+   File Name:       common.c
 
-   Description:     Input functions
+   Description:
 
    Revisions:
 
-      REV   DATE            BY              DESCRIPTION
-      ----  -----------     ----------      ------------------------------
-      0.00  Mon 29.Mar.2021 Peter Glen      Initial version.
+      REV       DATE               BY          DESCRIPTION
+      ----  -----------         ----------      -------------------------
+      0.00  Tue 10.Mar.2026     Peter Glen      Initial version.
 
    ======================================================================= */
 

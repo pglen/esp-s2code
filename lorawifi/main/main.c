@@ -20,28 +20,30 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_mac.h"
-#include "esp_wifi.h"
-#include "esp_event.h"
-#include "esp_log.h"
-#include "esp_system.h"
-#include "nvs_flash.h"
-#include "linenoise/linenoise.h"
-#include "argtable3/argtable3.h"
-#include "esp_console.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <esp_mac.h>
+#include <esp_wifi.h>
+#include <esp_event.h>
+#include <esp_log.h>
+#include <esp_system.h>
+#include <nvs_flash.h>
+#include <linenoise/linenoise.h>
+#include <argtable3/argtable3.h>
+#include <esp_console.h>
 #include <esp_timer.h>
 #include <esp_https_server.h>
 #include <esp_http_server.h>
 #include <esp_tls.h>
 
-#include "lwip/err.h"
-#include "lwip/sys.h"
-#include "esp_heap_caps.h"
-#include "driver/gpio.h"
+#include <lwip/err.h>
+#include <lwip/sys.h>
+#include <esp_heap_caps.h>
+#include <driver/gpio.h>
 
 #include "cJSON.h"
+#include "lora.h"
+#include "leds.h"
 
 #include "../common/protocol.h"
 #include "../common/utils.h"
@@ -53,9 +55,6 @@
 #include "../common/packets.h"
 #include "../common/comline.h"
 #include "../common/httpd.h"
-
-#include "lora.h"
-#include "leds.h"
 
 static const char *TAG = "lorawifi";
 
@@ -72,21 +71,25 @@ SemaphoreHandle_t sSemaphore  = NULL;
 #define EXAMPLE_GTK_REKEY_INTERVAL 0
 #endif
 
+char    gl_buff2[256];
+
 int     gl_recala       = 0;
 int     gl_sentprog     = 0;
 
-char    gl_statx[64] = "";
+char    gl_statx[32] = "";
 char    gl_spread[32]   = "";
 char    gl_bwidth[32]   = "";
 char    gl_txpower[32]  = "";
 char    gl_txfreq[32]   = "";
 char    gl_deftren[32]  = "";
+char    gl_ack[16]      = "";
 
 char    gl_curr_tr[32] = "0";
 char    *gl_sentbuff = NULL;
 int     gl_sendtrench = 0;
 int     gl_rssi = 0;
 int     gl_update = 0;
+int     gl_update2 = 0;
 double  gl_ppm = 0;
 
 // Read var from nvs, if none, set default
@@ -108,6 +111,34 @@ static void read_set_def(nvs_handle handle, char *key, char *val, int maxlen, ch
         {
         printf("nvs read: %s -> '%s'\n", key, val);
         }
+}
+
+void    read_nvs_hist()
+
+{
+    nvs_handle my_handle;
+    esp_err_t err2 = nvs_open("storage", NVS_READWRITE, &my_handle);
+    if (err2 != ESP_OK) {
+        ESP_LOGE(TAG, "Error (%d) opening NVS handle!", err2);
+        goto err3;
+        }
+    int16_t curr_hist = 0;
+    err2 = nvs_get_i16(my_handle, histx, &curr_hist);
+
+    char head[24]; char strx[256];
+    // Print all perm hist (for test)
+    for (int aa = 0; aa < NVS_WRAP; aa++)
+        {
+        int now = (curr_hist + aa) % NVS_WRAP;
+        unsigned int olen = sizeof(strx);
+        snprintf(head, sizeof(head),  "head_%d", now);
+        nvs_get_str(my_handle, head, strx, &olen);
+        //printf("read hist: %s '%s'\n", head, strx);
+        if(strx[0] != '\0')
+            add_hist(strx);
+        }
+  err3:
+    nvs_close(my_handle);
 }
 
 // Read / set default values
@@ -251,11 +282,12 @@ void wifi_init_softap(void)
              //.password = CONFIG_EXAMPLE_WIFI_PASSWORD,
              //.ssid = CONFIG_EXAMPLE_WIFI_SSID,
              //.ssid_len = strlen(CONFIG_EXAMPLE_WIFI_SSID),
-            .channel = CONFIG_ESP_WIFI_CHANNEL,
+             //.channel = CONFIG_ESP_WIFI_CHANNEL,
+             .channel = 1,
             .max_connection = CONFIG_ESP_MAX_STA_CONN,
 #ifdef CONFIG_ESP_WIFI_SOFTAP_SAE_SUPPORT
-            .authmode = WIFI_AUTH_WPA3_PSK,
-            .sae_pwe_h2e = WPA3_SAE_PWE_BOTH,
+            //.authmode = WIFI_AUTH_WPA3_PSK,
+            //.sae_pwe_h2e = WPA3_SAE_PWE_BOTH,
 #else /* CONFIG_ESP_WIFI_SOFTAP_SAE_SUPPORT */
             .authmode = WIFI_AUTH_WPA2_PSK,
 #endif
@@ -283,28 +315,23 @@ void wifi_init_softap(void)
     //printf("Wifi Name '%s' -> '%s'\n",
     //                wifi_config.ap.ssid, wifi_config.ap.password);
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
+    //ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
+    ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_FLASH));
     ESP_ERROR_CHECK(esp_wifi_start());
 
     //ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
     //         EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS, EXAMPLE_ESP_WIFI_CHANNEL);
     ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s channel:%d",
-             CONFIG_EXAMPLE_WIFI_SSID, CONFIG_ESP_WIFI_CHANNEL);
+             wifi_config.ap.ssid, wifi_config.ap.channel);
 }
-
-char *testx =   "Simulated Recv Simulated Recv Simulated Recv "
-                "Simulated Recv Simulated Recv Simulated Recv "
-                "Simulated Recv Simulated Recv Simulated Recv "
-                "Simulated %d";
-
-char    gl_buffer[256];
-char    gl_buff2[256];
 
 static  void recv_task (void* arg)
 {
     int cntR = 0;
-    char  cstr[16], hstr[16];
+    char    cstr[16], hstr[16];
+    char    gl_buffer[256];
 
     for(;;) {
 
@@ -340,9 +367,9 @@ static  void recv_task (void* arg)
         "Recvd: %d len: %d paylen: %d rssi: %d cnt: %d check: %d devi: %.0f ppm: %.0f",
                     cntR, reclen, reclen - 5, gl_rssi, cntR, isOK, devi, gl_ppm);
         printf("%s\n", ppp->str);
-        printf("Received: hhh=%x ttt=%d '%s'\n", hhh, ttt, ptr);
-
         xstr_destroy(ppp);
+
+        printf("Received: hhh=%x ttt=%d '%s'\n", hhh, ttt, ptr);
         cntR++;
 
         //xStr *sss = xstr_dumpbuff( &gl_buffer[5], strlen( &gl_buffer[5]) + 4);
@@ -361,13 +388,16 @@ static  void recv_task (void* arg)
         //printf("Chash %s\n", shstr);
         //printf("cstr: '%s' hstr: '%s'\n", cstr, hstr);
         cJSON_AddStringToObject(root, "chan", cstr);
+        cJSON_AddStringToObject(root, "ack", gl_ack);
         cJSON_AddStringToObject(root, "hash", hstr);
         cJSON_AddNumberToObject(root, "isok", isOK);
+        cJSON_AddNumberToObject(root, "rssi", gl_rssi);
         char *buff3 = cJSON_Print(root);
         cJSON_Delete(root);
         add_hist(buff3);
         free(buff3);
 
+        gl_update2 = 1;
         gl_update = 1;
         gl_recala = 1;
 
@@ -402,6 +432,7 @@ static  void trans_task (void* arg)
         send_payload(gl_sentbuff, gl_sendtrench);
         free(gl_sentbuff);
         gl_sentbuff = NULL;
+        gl_update2 = 1;
         gl_update = 1;
         snprintf(gl_statx, sizeof(gl_statx), "%s", "Done");
         vTaskDelay(1000 / portTICK_PERIOD_MS);
@@ -409,6 +440,7 @@ static  void trans_task (void* arg)
         vTaskDelay(1000 / portTICK_PERIOD_MS);
         //blink_cnt = 2;
         blink_led(1, 0, 30, 0);
+        gl_update2 = 0;
         vTaskDelay(10 / portTICK_PERIOD_MS);
         }
 }
@@ -458,6 +490,8 @@ void app_main(void)
     CREATE_SEMA(iSemaphore); TAKE_SEMA(iSemaphore, TAG, portMAX_DELAY);
     CREATE_SEMA(hSemaphore); CREATE_SEMA(sSemaphore);
 
+    read_nvs_hist();
+
     start_console("LoraWifi>");
 
     xTaskCreate(&trans_task, "trans_task", 3048, NULL, 15, NULL);
@@ -478,8 +512,11 @@ void app_main(void)
 
         if(cnt % 4 == 0)
             {
-            if(verbose)
-                printf("Mem main: %ld bytes\n", esp_get_free_heap_size());
+            if(verbose > 2)
+                printf("Free mem: %ld bytes\n", esp_get_free_heap_size());
+            if(verbose > 3)
+                printf("Free nvs: %d bytes\n", get_nvs_free());
+
             if(gl_recala)
                 {
                 //pulse_led(40, 0, 55, 0);

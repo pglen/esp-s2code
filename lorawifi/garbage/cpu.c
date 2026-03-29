@@ -44,8 +44,6 @@
 #include "esp_log.h"
 #include "esp_now.h"
 #include "esp_crc.h"
-
-//#include "esp32/ulp.h"
 #include "esp_sleep.h"
 #include "esp32/rom/crc.h"
 
@@ -53,9 +51,9 @@
 
 #include "common.h"
 #include "protocol.h"
-#include "sere.h"
+//#include "sere.h"
 #include "wifi.h"
-#include "input.h"
+//#include "input.h"
 
 static  int     idle_cnt = 0;
 static  int     new_cnt = 0;

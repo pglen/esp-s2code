@@ -97,6 +97,9 @@ void  main()
     xstr_substr(str4, str5, str6, 0);
     printf("substr len=%d '%s'\n", str4->length, str4->str);
 
+    xstr_subststr(str4, " ", " X ", 0);
+    printf("subststr len=%d '%s'\n", str4->length, str4->str);
+
     int64_t nanos3 = nanos();
     srand(time(NULL));
     xStr *str8 = xstr_randstr(32);

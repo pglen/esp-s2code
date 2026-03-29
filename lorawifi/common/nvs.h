@@ -13,11 +13,13 @@
 
    ======================================================================= */
 
+int     submit_nvs_short(const char *name, int16_t valx);
 int     submit_nvs_int(const char *name, int valx);
 int     submit_nvs_int64(const char *name, int64_t valx);
 int     submit_nvs_str(const char *name, const char *strx);
 int     submit_nvs_float(const char *name, float valx);
 
+int     get_nvs_free();
 void    get_nvs_info();
 void    init_nvs_writer();
 

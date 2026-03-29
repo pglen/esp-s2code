@@ -17,28 +17,28 @@
 #include <string.h>
 #include "sdkconfig.h"
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/semphr.h"
-#include "freertos/timers.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/semphr.h>
+#include <freertos/timers.h>
 
-#include "esp_system.h"
-#include "driver/gpio.h"
-#include "driver/rtc_io.h"
-#include "nvs_flash.h"
-#include "esp_event.h"
-#include "esp_netif.h"
-#include "esp_wifi.h"
-#include "esp_log.h"
-#include "esp_system.h"
-#include "esp_now.h"
-#include "esp_crc.h"
-#include "esp_sleep.h"
-#include "esp_timer.h"
+#include <esp_system.h>
+#include <driver/gpio.h>
+#include <driver/rtc_io.h>
+#include <nvs_flash.h>
+#include <esp_event.h>
+#include <esp_netif.h>
+#include <esp_wifi.h>
+#include <esp_log.h>
+#include <esp_system.h>
+#include <esp_now.h>
+#include <esp_crc.h>
+#include <esp_sleep.h>
+#include <esp_timer.h>
 
 #include "protocol.h"
 #include "common.h"
-#include "sere.h"
+//#include "sere.h"
 #include "input.h"
 #include "wifi.h"
 

@@ -13,32 +13,7 @@
 
    ======================================================================= */
 
-#define DEF_SPREAD    "10"
-#define DEF_BWIDTH    "50E3"
-#define DEF_POWER     "12"
-#define DEF_FREQ      "433.375E6"
-#define DEF_TRENCH    "0"
-
-extern  int     gl_recala      ;
-extern  int     gl_sentprog    ;
-
-extern  char    gl_spread[32]   ;
-extern  char    gl_bwidth[32]   ;
-extern  char    gl_txpower[32]  ;
-extern  char    gl_txfreq[32]   ;
-extern  char    gl_deftren[32]  ;
-extern  char    gl_curr_tr[32]  ;
-extern  char    gl_statx[64] ;
-extern  int     gl_rssi ;
-extern  int     gl_update ;
-extern  double  gl_ppm ;
-
-extern  char    *gl_sentbuff;
-extern   int     gl_sendtrench ;
-
-void    out_str(const char *strx, const char *str2);
-void    set_split();
+void    del_cache();
 void    start_console(char *prompt);
-
 
 // EOF

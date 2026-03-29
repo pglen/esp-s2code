@@ -18,39 +18,23 @@
 #include <ctype.h>
 #include <sys/param.h>
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/semphr.h"
-#include "freertos/timers.h"
-#include "esp_event.h"
-#include "esp_netif.h"
-#include "esp_wifi.h"
-#include "esp_log.h"
-#include "esp_timer.h"
-#include "esp_system.h"
-#include "esp_now.h"
-#include "lwip/err.h"
-#include "esp_log.h"
-#include "nvs_flash.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
+#include <freertos/timers.h>
+#include <esp_event.h>
+#include <esp_netif.h>
+#include <esp_wifi.h>
+#include <esp_log.h>
+#include <esp_timer.h>
+#include <esp_system.h>
+#include <esp_now.h>
+#include <lwip/err.h>
+#include <esp_log.h>
+#include <nvs_flash.h>
 
 #include "utils.h"
 
 static char *TAG= "utils";
-
-// Shuffle a string to 16 bit unique ID
-//int16_t chksum(const char *str, int len)
-//{
-//    //printf("str '%s'\n", str);
-//    uint16_t ret = 0;
-//    for(int aa = 0; aa < len; aa++)
-//        {
-//        uint16_t nn = (uint16_t)str[aa];
-//        uint16_t qq = nn << 7 | nn;
-//        ret += qq + 10000;
-//        ret ^= 0x5aa5;
-//        }
-//    //printf("sum ret %x\n", ret);
-//    return(ret);
-//}
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -594,7 +578,7 @@ int     inc_bootcount()
         return boot_count;
 
     nvs_handle my_handle;
-    err = nvs_open("lorawifi", NVS_READWRITE, &my_handle);
+    err = nvs_open("storage", NVS_READWRITE, &my_handle);
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "Error (%d) opening NVS handle!", err);
         goto err3;
@@ -615,7 +599,6 @@ int     inc_bootcount()
         ESP_LOGE(TAG, "Error (%d)commit to NVS!", err);
         goto err4;
         }
-
     was_counted = true;
     //(void)err;  // Stop warning
 

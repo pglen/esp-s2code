@@ -228,6 +228,10 @@ void    xstr_substr(xStr *sss, const xStr *str2, const xStr *str3, int offs)
 
     //printf("substr() '%s' -> '%s' with '%s' offs: %d\n",
     //                                        sss->str, str2->str, str3->str, offs);
+
+    if(str2->length == 0)   // Empty from str
+        return;
+
     while(1)
         {
         if(prog >= sss->length)
@@ -249,6 +253,56 @@ void    xstr_substr(xStr *sss, const xStr *str2, const xStr *str3, int offs)
             // subst
             xstr_cat(res, str3);
             prog += str2->length - 1;
+            }
+        else
+            {
+            xstr_catchar(res, sss->str[prog]);
+            }
+        prog++;
+        }
+    // reassign, remove old
+    //printf("res: %s\n", res->str);
+    free(sss->str);
+    sss->str = res->str;
+    sss->length = res->length;
+    res->str = NULL;
+    xstr_destroy(res);
+}
+
+void    xstr_subststr(xStr *sss, const char *str2, const char *str3, int offs)
+{
+    int prog = offs;  xStr *res = xstr_create(0);
+
+    //printf("substr() '%s' -> '%s' with '%s' offs: %d\n",
+    //                                        sss->str, str2->str, str3->str, offs);
+
+    if(str2[0] == '\0')   // Empty str2 -- nothing to do
+        return;
+
+    int len2 = strlen(str2);
+    int len3 = strlen(str3);
+    while(1)
+        {
+        if(prog >= sss->length)
+            break;
+
+        int found = 1;
+        for(int aa = 0; aa < len2; aa++)
+            {
+            if(prog + aa >= sss->length) {
+                //printf("beyond access prog %d aa %d\n", prog, aa);
+                found = 0; break;
+                }
+            if(sss->str[prog + aa] != str2[aa]) {
+                found = 0; break;
+                }
+            }
+        if(found)
+            {
+            // subst
+            for (int aa = 0; aa < len3; aa++)
+                xstr_catchar(res, str3[aa]);
+            prog += len2 - 1;
             }
         else
             {

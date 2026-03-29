@@ -15,25 +15,25 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "sdkconfig.h"
+//#include "sdkconfig.h"
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/semphr.h"
-#include "freertos/timers.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/semphr.h>
+#include <freertos/timers.h>
 
-#include "esp_system.h"
-#include "nvs_flash.h"
-#include "esp_event.h"
-#include "esp_netif.h"
-#include "esp_wifi.h"
-#include "esp_timer.h"
-#include "esp_random.h"
-#include "esp_log.h"
-#include "esp_system.h"
-#include "esp_now.h"
-#include "esp_crc.h"
-#include "esp_sleep.h"
+#include <esp_system.h>
+#include <nvs_flash.h>
+#include <esp_event.h>
+#include <esp_netif.h>
+#include <esp_wifi.h>
+#include <esp_timer.h>
+#include <esp_random.h>
+#include <esp_log.h>
+#include <esp_system.h>
+#include <esp_now.h>
+#include <esp_crc.h>
+#include <esp_sleep.h>
 
 #include "protocol.h"
 #include "common.h"
@@ -48,7 +48,6 @@ int             gl_listen   = 0;
 int             gl_alive = 0;                   // How many ticks to keep it alive
 int             gl_stop_pair = 0;
 int             gl_stop_listen = 0;
-
 int             gl_packon = 0;
 
 static  int     gl_broad    = 0;

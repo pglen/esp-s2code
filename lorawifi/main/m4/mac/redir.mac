@@ -1,0 +1,19 @@
+<center>
+<title>Device rebooting ...</title>
+<script>
+    function jump() {
+        window.location.href = "http://192.168.4.1/page_1.html?reboot=done";
+    }
+    function refresh() {
+        setTimeout(jump, 3000);
+    }
+window.addEventListener('load', refresh())
+</script>
+
+<h2>Device rebooting, please wait ... </h2>
+<h3>Redirection to device's home page in 3 sec.</h3>
+<p>If you are not redirected automatically, follow this
+<a href=http://192.168.4.1/page_1.html?reboot=done>
+link to the Device's page</a>.</p>
+</center>
+

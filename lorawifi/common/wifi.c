@@ -36,8 +36,8 @@
 
 #include "protocol.h"
 #include "common.h"
-#include "sere.h"
-#include "input.h"
+//#include "sere.h"
+//#include "input.h"
 #include "wifi.h"
 
 int     gl_wifi_on = 0;
@@ -107,7 +107,7 @@ void    web_task(void *ptr)
             break;
 
         cnt++;
-        gl_alive = 3;
+        //gl_alive = 3;
         vTaskDelay(500 / portTICK_PERIOD_MS);
         }
     gl_webon = false;
