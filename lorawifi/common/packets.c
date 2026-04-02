@@ -81,6 +81,8 @@ int     assemble_packet(const char *pay, uint16_t trench, char *outstr, int maxl
     return(prog += slen);
 }
 
+// return packet length
+
 int     disass_packet(const char *instr, uint16_t *hash, uint16_t *trench, const char **out)
 {
     uint16_t hhh, ttt;  int prog = 0;
@@ -100,10 +102,12 @@ int     disass_packet(const char *instr, uint16_t *hash, uint16_t *trench, const
 int     check_packet(const char *str, int len)
 
 {
-    uint16_t nsum = lora_chksum(str + 5, *(str+2) );
-    uint16_t org = *(str) + (*(str+1) << 8);
+    uint16_t hash, trench;
+    const char *out;
+    int lenx = disass_packet(str, &hash, &trench, &out);
+    uint16_t nsum = lora_chksum(out, lenx);
     //printf("nsum %d org %d\n", nsum, org);
-    return nsum == org;
+    return nsum == hash;
 }
 
 void    send_payload(const char * buff, uint16_t trench)
@@ -115,13 +119,10 @@ void    send_payload(const char * buff, uint16_t trench)
 
     printf("Sending: trench=%d str: '%s'\n", trench, buff);
     int slen = assemble_packet(buff, trench, buffer, sizeof(buffer));
-    int32_t tttt = (int32_t)(esp_timer_get_time() / 1000);
     TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
     lora_send_packet((uint8_t *)buffer, slen);
     //int ret = lora_read_freq_err();
     GIVE_SEMA(sSemaphore);
-    int32_t tttt2 = (int32_t)(esp_timer_get_time() / 1000);
-    printf("Send time: %ld ms\n", tttt2-tttt);
     //blink_cnt = 2;
     blink_led(2, 100, 50, 0);
     //print_freq_deviation(ret);
@@ -132,12 +133,22 @@ void    send_payload(const char * buff, uint16_t trench)
 void    init_lora_common()
 
 {
+    // Correct it
+    double fff = atofx(gl_txfreq);
+    if(fff < 1000000)
+        fff *= 1000000;
+
+    double bw = atofx(gl_bwidth);
+    if(bw < 1000)
+        bw *= 1000;
+
     //lora_enable_crc(); // Enable CRC check
-    lora_set_frequency(atofx(gl_txfreq));
+    lora_set_frequency(fff);
+    lora_set_bandwidth(bw);
+
     lora_set_tx_power(atofx(gl_txpower));
     lora_set_boost(1);
     lora_set_spreading_factor(atofx(gl_spread));
-    lora_set_bandwidth(atofx(gl_bwidth));
 }
 
 #ifdef LINUX_TEST
@@ -173,3 +184,6 @@ int     main(int argv, char* argc[])
 #endif
 
 #endif
+
+
+// EOF

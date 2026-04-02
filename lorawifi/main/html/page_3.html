@@ -166,12 +166,37 @@ textarea {
         //console.log("butt:", confButt)
         confButt.value = data;
     }
+
+    async function default_lora() {
+        //console.log("default_lora()");
+        const formData = new FormData(myform);
+        formData.append("reset", "1");
+        const plainFormData = Object.fromEntries(formData.entries());
+        const jsonString = JSON.stringify(plainFormData);
+        console.log("Submitting: '%s'", jsonString);
+        //document.getElementById("myform").submit();
+        const response = await fetch("page_3.html", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: jsonString
+                })
+        const data = await response.text();
+        console.log("Data from lora reset: " + data)
+        const defButt = document.getElementById('defbutt');
+        defButt.value = data;
+
+        // Fake reset config fields NOTE: change when code in chip changes
+        document.getElementById('spread').value = 10;
+        document.getElementById('bwidth').value = 50;
+        document.getElementById('txpower').value = 12;
+        document.getElementById('txfreq').value = 433.375;
+    }
 </script>
 
 <table width=100%>
 
-    <tr><td colspan=2 align=center height=12>
-    The following fields determine the LORA transmit / receive configuration.
+    <tr><td colspan=2>
+    &nbsp; &nbsp; The following fields determine the LORA transmit / receive configuration.
     These configurations must match between the sender and receiver units.
     The parameters are range contained. The frequency parameter is a floating
     point number multiplied by megahertz. The bandwidth parameter is a floating
@@ -190,9 +215,9 @@ textarea {
         <tr><td>
         <tr> <td align=right>
             LORA Spread Factor: (6 - 12)  &nbsp
-            <td width=50%><input name=spread type=text value=spreadspread>
+            <td width=50%><input id=spread name=spread type=text value=spreadspread>
         <tr><td align=right>
-            LORA Bandwidth: (10 - 500) kHz &nbsp<td><input name=bwidth type=text
+            LORA Bandwidth: (10 - 500) kHz &nbsp<td><input id=bwidth name=bwidth type=text
             value=bandbandbandband>
     <tr><td>
     <tr><td colspan=2 align=right>
@@ -205,17 +230,35 @@ textarea {
         </table>
     <tr><td>
     <tr> <td align=right>
-        LORA TX power (1-15):  &nbsp<td><input name=txpower type=text
+        LORA TX power (1-15):  &nbsp<td><input name=txpower id=txpower type=text
             value=txpowtxpowtxpow>
     <tr> <td align=right>
-        LORA Frequency: (433.05 - 434.79) MHz &nbsp<td><input name=txfreq type=text
+        LORA Frequency: (433.05 - 434.79) MHz &nbsp<td><input id=txfreq name=txfreq type=text
         value=freqfreqfreqfreqfreqfreq> <a href=channels.html >(Channel Table) </a>
     <tr><td colspan=3>
-    <hr>
     <tr><td><td>
     <input type=button onclick=save_lora() id=confbutt name=confbutt
                                             value='Save LORA Configuration'>
     <tr> <td colspan=3 align=center>
+        <table align=center border=0 width=100%  frame=void>
+            <tr><td colspan=3 width=100%>
+                    <tr bgcolor=#eeeeee><td align=center>
+                    <div style="font-size:large" align=center>
+                    <b>Reset LORA parameters:</b><br>
+                    </div>
+        </table>
+    <tr><td colspan=3>
+    &nbsp; &nbsp; The button below resets the LORA parameters to
+    manufacturer's defaults. This may be necessary if communication
+    configuration becomes out of sync with the target. Please remember
+    to change these parameters for increased distance and increased privacy.
+    Note that both tr sender and reciver needs identical parameters to
+    communicate.
+
+    <tr><td><td>
+    <input type=button onclick=default_lora() id=defbutt name=defbutt
+                                            value='Reset LORA Configuration'>
+    <tr><td colspan=3>
 
 </table>
 
@@ -252,7 +295,7 @@ textarea {
 
             <td align=center>
                 <div style="font-size:large" >
-                   <a href=page_1.html> Back to Home Page </a>
+                   <a href=page_1.html> Go to Home Page </a>
                 </div>
 
            <td align=center>

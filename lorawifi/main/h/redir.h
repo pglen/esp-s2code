@@ -9,7 +9,7 @@
 
       REV   DATE            BY              DESCRIPTION
       ----  -----------     ----------      ------------------------------
-      0.00  Sun, 29-03-26   Peter Glen      Initial version.
+      0.00  Thu, 02-04-26   Peter Glen      Initial version.
 
    ======================================================================= */
 
@@ -126,7 +126,7 @@ const char redir_html [] =
 "<title>Device rebooting ...</title>\n"
 "<script>\n"
 "    function jump() {\n"
-"        window.location.href = \"http://192.168.4.1/page_1.html?reboot=done\";\n"
+"        window.location.href = \"page_1.html?reboot=done\";\n"
 "    }\n"
 "    function refresh() {\n"
 "        setTimeout(jump, 3000);\n"

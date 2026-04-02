@@ -1,0 +1,86 @@
+
+int     xcompress(uchar *in, int len, int level, uchar *out, int *outlen);
+int     xdecompress(uchar *in, int inlen, uchar *out, int *outlen);
+
+int     xcompress(uchar *in, int len, int level, uchar *out, int *outlen)
+
+{
+    int ret, flush = 1;
+    z_stream strm;
+
+    /* allocate deflate state */
+    strm.zalloc = Z_NULL;
+    strm.zfree = Z_NULL;
+    strm.opaque = Z_NULL;
+    ret = deflateInit(&strm, level);
+    if (ret != Z_OK)
+        {
+        printf("Cannot init zlib; %d\n", ret);
+        return ret;
+        }
+    strm.avail_in = len;
+    strm.next_in  = in;
+    strm.avail_out = *outlen;
+    strm.next_out = out;
+    ret = deflate(&strm, flush);    /* no bad return value */
+    assert(ret != Z_STREAM_ERROR);  /* state not clobbered */
+    *outlen = strm.total_out;
+    /* clean up and return */
+    (void)deflateEnd(&strm);
+    return Z_OK;
+}
+
+int     xdecompress(uchar *in, int inlen, uchar *out, int *outlen)
+{
+    int ret;
+    //unsigned have;
+    z_stream strm;
+
+    /* allocate inflate state */
+    strm.zalloc = Z_NULL;
+    strm.zfree = Z_NULL;
+    strm.opaque = Z_NULL;
+    strm.avail_in = 0;
+    strm.next_in = Z_NULL;
+    ret = inflateInit(&strm);
+    if (ret != Z_OK)
+        return ret;
+
+    strm.avail_in = inlen;
+    strm.next_in = in;
+
+    strm.avail_out = *outlen;
+    strm.next_out = out;
+    ret = inflate(&strm, Z_NO_FLUSH);
+    assert(ret != Z_STREAM_ERROR);  /* state not clobbered */
+    *outlen = strm.total_out;
+
+    switch (ret) {
+    case Z_NEED_DICT:
+            ret = Z_DATA_ERROR;     /* and fall through */
+            (void)inflateEnd(&strm);
+            break;
+        case Z_DATA_ERROR:
+        case Z_MEM_ERROR:
+            (void)inflateEnd(&strm);
+        return ret;
+    }
+    /* clean up and return */
+    (void)inflateEnd(&strm);
+    return ret == Z_STREAM_END ? Z_OK : Z_DATA_ERROR;
+}
+
+uchar   *testx = (uchar*)"12345678 12345678";
+    int     xlen = strlen((char*)testx);
+    uchar   test2[64] = "";
+    int     olen = sizeof(test2);
+    //Z_DEFAULT_COMPRESSION
+    xcompress(testx, xlen, 1, test2, &olen);
+
+    uchar   test3[64] = "";
+    int     olen2 = sizeof(test3);
+    xdecompress(test2, olen, test3, &olen2);
+
+    printf("'%s', '%s', '%s'\n", testx, test2, test3);
+
+

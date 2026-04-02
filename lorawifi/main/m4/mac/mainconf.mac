@@ -65,7 +65,6 @@
         //console.log("butt:", delButt)
         delButt.value = data;
     }
-
 </script>
 
 <table align=center width=100% padding=10>
@@ -87,13 +86,14 @@
     <tr> <td colspan=3>
     <hr>
     <tr> <td colspan=3>
-    &nbsp; &nbsp; The device stores communication history on board, in
+    &nbsp; &nbsp; The device stores communication history on-board, in
     permanent storage. This allows the device to be unplugged, re-connected
     to a different host, without the loss of communication data.
     (For example moving the device connection from smart phone to laptop or from
     simple power supply to cell phone.)
-    The button below removes all communication history
-    from the current session and from the device's on board storage.
+    The button below removes all communication history from the current session
+    and from the device's on-board storage. This feature is provided as a privacy
+    measure, it is not needed for normal operation.
 
     <tr> <td align=right>
     Confirm Data removal: &nbsp<td width=50%>

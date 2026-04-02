@@ -1,7 +1,10 @@
 <script async>
 
+timeoutID = 0;
+
 window.addEventListener('load', function()
 {
+    //console.log("load window");
     var xhr = null;
 
     getXmlHttpRequestObject = function()
@@ -27,6 +30,8 @@ window.addEventListener('load', function()
 
     function evenHandler()
     {
+        timeoutID = 0;
+
         //console.log("Answer %d %d '%s' ",
         //        xhr.readyState, xhr.status, xhr.responseText);
 
@@ -39,12 +44,13 @@ window.addEventListener('load', function()
                 setTimeout(updateLiveData, 1000);
                 return;
                 }
+            //console.log("Answer %d %d '%s' ",
+            //            xhr.readyState, xhr.status, xhr.responseText);
+
             const jsObject = JSON.parse(xhr.responseText);
             const statInput = document.getElementById('current');
+            const textInput = document.getElementById('txt');
             statInput.innerHTML = jsObject.strx;
-
-            console.log("Answer %d %d '%s' ",
-                        xhr.readyState, xhr.status, xhr.responseText);
 
             //console.log("Answer: '" + jsObject.strx +
             //                "' Update:" + jsObject.update +
@@ -53,9 +59,7 @@ window.addEventListener('load', function()
             // Update text control states
             if(jsObject.strx == "Done")
                 {
-                const textInput = document.getElementById('txt');
                 textInput.disabled = false;
-                textInput.value = "";
                 const cntOutput = document.getElementById('cnt');
                 cntOutput.innerHTML = "Count: 0"
                 textInput.focus();
@@ -63,13 +67,11 @@ window.addEventListener('load', function()
                 }
             else if (jsObject.strx == "Timeout")
                 {
-                const textInput = document.getElementById('txt');
                 textInput.disabled = false;
                 textInput.focus();
                 }
             else if (jsObject.strx == "Idle ...")
                 {
-                const textInput = document.getElementById('txt');
                 textInput.disabled = false;
                 //textInput.focus();
                 }
@@ -79,6 +81,7 @@ window.addEventListener('load', function()
                 }
             if (jsObject.update)
                 {
+                textInput.value = "";
                 sentx = "";
                 for(aa = 0; aa < jsObject.maxcnt; aa++)
                     {
@@ -99,8 +102,12 @@ window.addEventListener('load', function()
                                 sentx2 += "<font color=red>" + myObject.reply +
                                          "</font>";
                             const rssiInput = document.getElementById('rssi');
-                            rssiInput.innerHTML = "Last RSSI: " + jsObject.rssi;
-                            rssiInput.innerHTML += " &nbsp; Last Ack: " + jsObject.ack;
+                            rssiInput.innerHTML =   "Last RSSI: " + jsObject.rssi;
+                            const ppmInput = document.getElementById('ppm');
+                            ppmInput.innerHTML = " &nbsp; PPM: " + jsObject.ppm.toFixed(2);
+
+                            //rssiInput.innerHTML += " &nbsp; Last Ack: " + jsObject.ack;
+                            //rssiInput.innerHTML += " &nbsp; Devi: " + jsObject.devi;
                             }
                         else
                             {
@@ -110,7 +117,7 @@ window.addEventListener('load', function()
                         }
                     else
                         {
-                        break;
+                        //break;
                         }
                     }
                 //console.log("update %d '%d' ", xhr.status, jsObject.update);
@@ -120,10 +127,20 @@ window.addEventListener('load', function()
                 histInput.scrollTop = histInput.scrollHeight;
                 }
             // Update the live data every xx msec
-            setTimeout(updateLiveData, 1000);
+            redo_timer();
             }
     }
 });
+
+function redo_timer()
+{
+    // prevent duplicate timer
+    if (timeoutID)
+        {
+        clearTimeout(timeoutID);
+        }
+    timeoutID = setTimeout(updateLiveData, 1000);
+}
 
 </script>
 

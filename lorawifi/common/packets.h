@@ -13,7 +13,7 @@
 
    ======================================================================= */
 
-// packets
+typedef  unsigned char uchar;
 
 extern  SemaphoreHandle_t sSemaphore;
 extern  SemaphoreHandle_t hSemaphore;

@@ -9,7 +9,7 @@
 
       REV   DATE            BY              DESCRIPTION
       ----  -----------     ----------      ------------------------------
-      0.00  Sun, 29-03-26   Peter Glen      Initial version.
+      0.00  Thu, 02-04-26   Peter Glen      Initial version.
 
    ======================================================================= */
 
@@ -208,13 +208,14 @@ const char config_html [] =
 "    <tr> <td colspan=3>\n"
 "    <hr>\n"
 "    <tr> <td colspan=3>\n"
-"    &nbsp; &nbsp; The device stores communication history on board, in\n"
+"    &nbsp; &nbsp; The device stores communication history on-board, in\n"
 "    permanent storage. This allows the device to be unplugged, re-connected\n"
 "    to a different host, without the loss of communication data.\n"
 "    (For example moving the device connection from smart phone to laptop or from\n"
 "    simple power supply to cell phone.)\n"
-"    The button below removes all communication history\n"
-"    from the current session and from the device's on board storage.\n"
+"    The button below removes all communication history from the current session\n"
+"    and from the device's on-board storage. This feature is provided as a privacy\n"
+"    measure, it is not needed for normal operation.\n"
 "    <tr> <td align=right>\n"
 "    Confirm Data removal: &nbsp<td width=50%>\n"
 "                            <input id=confirm name=confirm type=checkbox\n"
@@ -252,7 +253,7 @@ const char config_html [] =
 "                </div>\n"
 "            <td align=center>\n"
 "                <div style=\"font-size:large\" >\n"
-"                   <a href=page_1.html> Back to Home Page </a>\n"
+"                   <a href=page_1.html> Go to Home Page </a>\n"
 "                </div>\n"
 "           <td align=center>\n"
 "                <div style=\"font-size:large\" >\n"

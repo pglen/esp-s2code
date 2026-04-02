@@ -36,6 +36,30 @@
 
 static char *TAG= "utils";
 
+// Get JSON item if any
+
+char   *get_json_str(cJSON *root2, const char *name)
+{
+    char *retstr = "";
+    cJSON   *item = cJSON_GetObjectItem(root2, name);
+    if(item)
+        {
+        retstr = item->valuestring;
+        }
+    return(retstr);
+}
+
+int     get_json_int(cJSON *root2, const char *name)
+{
+    int retint = -1;
+    cJSON   *item = cJSON_GetObjectItem(root2, name);
+    if(item)
+        {
+        retint = item->valueint;
+        }
+    return(retint);
+}
+
 //////////////////////////////////////////////////////////////////////////
 //
 // Parse list of names into buffers. List terminated with NULL.

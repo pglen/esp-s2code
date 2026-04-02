@@ -93,11 +93,12 @@ char    *histx = "curr_hist";
 char    *gl_sentptr = NULL;
 uint64_t    gl_last_http = 0;
 
-void    add_hist(const char *item)
+void    add_hist(const char *item, int noperm)
 
 {
     if(!item)
         return;
+
     //printf("History: '%s'\n", item);
     char *tmp = xstrdup(item);
     if(!tmp)
@@ -120,37 +121,38 @@ void    add_hist(const char *item)
         }
     gl_sentarr[gl_sentprog] = tmp;
     gl_sentprog++;
-
     //int     freex = get_nvs_free();
     //printf("free: %d \n", freex);
-
-    nvs_handle my_handle;
-    esp_err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Error (%d) opening NVS handle!", err);
-        goto err3;
-        }
-    int16_t curr_hist = 0;
-    err = nvs_get_i16(my_handle, histx, &curr_hist);
-    //printf("curr_hist %d\n", freex, curr_hist);
-    nvs_close(my_handle);
-    if(curr_hist >= NVS_WRAP)
+    if (!noperm)
         {
-        curr_hist = 0;
+        nvs_handle my_handle;
+        esp_err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
+        if (err != ESP_OK) {
+            ESP_LOGE(TAG, "Error (%d) opening NVS handle!", err);
+            goto err3;
+            }
+        int16_t curr_hist = 0;
+        err = nvs_get_i16(my_handle, histx, &curr_hist);
+        //printf("curr_hist %d\n", freex, curr_hist);
+        nvs_close(my_handle);
+        if(curr_hist >= NVS_WRAP)
+            {
+            curr_hist = 0;
+            }
+        char head[24];
+        snprintf(head, sizeof(head), "head_%d", curr_hist);
+        //printf("Submit: %s -- %s\n", head, tmp);
+        submit_nvs_str(head, tmp);
+
+        curr_hist++;
+        submit_nvs_short(histx, curr_hist);
+
+        // Sleep for the values to commit
+        //vTaskDelay(300 / portTICK_PERIOD_MS);
+
+      err3:
+        nvs_close(my_handle);
         }
-    char head[24];
-    snprintf(head, sizeof(head), "head_%d", curr_hist);
-    //printf("Submit: %s -- %s\n", head, tmp);
-    submit_nvs_str(head, tmp);
-
-    curr_hist++;
-    submit_nvs_short(histx, curr_hist);
-
-    // Sleep for the values to commit
-    //vTaskDelay(300 / portTICK_PERIOD_MS);
-
-  err3:
-    nvs_close(my_handle);
     GIVE_SEMA(hSemaphore);
 }
 
@@ -313,38 +315,35 @@ static esp_err_t conf_post_handler(httpd_req_t *req)
         httpd_resp_send(req, "no mem for conf", HTTPD_RESP_USE_STRLEN);
         return ESP_OK;
         }
-    httpd_req_recv(req, buff, req->content_len);
+    int ret = httpd_req_recv(req, buff, req->content_len);
+    //printf("conf req_rec ret %d\n", ret);
+    (void)ret;
     buff[req->content_len] = '\0';
     //printf("conf cJSON '%s'\n", buff);
     cJSON *root5 = cJSON_Parse(buff);
     free(buff);
-
-    cJSON *item = cJSON_GetObjectItem(root5, "checked");
-    if(item)
+    char *checkedx = get_json_str(root5, "checked");
+    if(checkedx[0] != '\0')
         {
-        char *strxx = item->valuestring;
-        if(strxx)
+        if(strcmp(checkedx, "1") == 0)
             {
-            if(strcmp(strxx, "1") == 0)
-                {
-                del_cache();
-                printf("Deleted hist cache\n");
-                httpd_resp_send(req, "Comm history erased.", HTTPD_RESP_USE_STRLEN);
-                }
-            else
-                {
-                printf("NOT Deleted hist cache\n");
-                httpd_resp_send(req, "Must have checkbox checked.", HTTPD_RESP_USE_STRLEN);
-                }
-            cJSON_Delete(root5);
-            return ESP_OK;
+            del_cache();
+            //printf("Deleted hist cache\n");
+            httpd_resp_send(req, "Comm history erased.", HTTPD_RESP_USE_STRLEN);
             }
+        else
+            {
+            //printf("NOT Deleted hist cache\n");
+            httpd_resp_send(req, "Must have checkbox checked.", HTTPD_RESP_USE_STRLEN);
+            }
+        cJSON_Delete(root5);
+        return ESP_OK;
         }
     char *strxd = cJSON_GetObjectItem(root5, "deftrench")->valuestring;
     strncpy(gl_deftren,  strxd, sizeof(gl_deftren));
     submit_nvs_str("deftrench", strxd);
     cJSON_Delete(root5);
-    httpd_resp_send(req, "Configuration Saved", HTTPD_RESP_USE_STRLEN);
+    httpd_resp_send(req, "Configuration Saved.", HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
 }
 
@@ -359,6 +358,8 @@ static esp_err_t lora_post_handler(httpd_req_t *req)
 {
     gl_last_http = esp_timer_get_time();
 
+    char *resp_str;
+
     char    *buff = malloc(req->content_len + 1);
     if(!buff)
         {
@@ -366,19 +367,37 @@ static esp_err_t lora_post_handler(httpd_req_t *req)
         httpd_resp_send(req, "no mem for lora post", HTTPD_RESP_USE_STRLEN);
         return ESP_OK;
         }
-    httpd_req_recv(req, buff, req->content_len);
+    int ret = httpd_req_recv(req, buff, req->content_len);
     buff[req->content_len] = '\0';
+    (void)ret;
+    //printf("lora req_rec ret %d\n", ret);
     //printf("settings lora post cJSON '%s'\n", buff);
     cJSON *root3 = cJSON_Parse(buff);
     free(buff);
 
-    char *strxs = cJSON_GetObjectItem(root3, "spread")->valuestring;
-    char *strxb = cJSON_GetObjectItem(root3, "bwidth")->valuestring;
-    char *strxt = cJSON_GetObjectItem(root3, "txpower")->valuestring;
-    char *strxx = cJSON_GetObjectItem(root3, "txfreq")->valuestring;
+    char *strxs, *strxb, *strxt, *strxx;
+    char   *reset = get_json_str(root3, "reset");
+    if(strcmp(reset, "1") == 0)
+        {
+        printf("reset pressed\n");
+        strxs =  DEF_SPREAD;
+        strxb =  DEF_BWIDTH;
+        strxt =  DEF_POWER;
+        strxx =  DEF_FREQ;
+        resp_str = "LORA parameters reset.";
+        //refesh page for new parameters.";
+        }
+    else
+        {
+        strxs = cJSON_GetObjectItem(root3, "spread")->valuestring;
+        strxb = cJSON_GetObjectItem(root3, "bwidth")->valuestring;
+        strxt = cJSON_GetObjectItem(root3, "txpower")->valuestring;
+        strxx = cJSON_GetObjectItem(root3, "txfreq")->valuestring;
+        resp_str = "Config Saved";
+        }
 
-    printf("Spread: %s bwidth: %s \n", strxs, strxb);
-    printf("Txpow: %s txfrq: %s\n", strxt, strxx);
+    //printf("spread: %s bwidth: %s \n", strxs, strxb);
+    //printf("txpow: %s txfrq: %s\n", strxt, strxx);
 
     strncpy(gl_spread,      strxs, sizeof(gl_spread));
     strncpy(gl_bwidth,      strxb, sizeof(gl_bwidth));
@@ -390,19 +409,17 @@ static esp_err_t lora_post_handler(httpd_req_t *req)
     submit_nvs_str("txpower",   strxt);
     submit_nvs_str("txfreq",    strxx);
 
-    // Commit to board
-    double  freq = atofx(strxx);
+    double  freq = atofx(gl_txfreq);
     if(freq < 1000000)
         freq *= 1000000;
-    double  bw = atofx(strxb);
+    double bw = atofx(gl_bwidth);
     if(bw < 1000)
         bw *= 1000;
 
-    printf("freq %f\n", freq);
-    printf("bw %f\n", bw);
-    printf("pow: %d\n", atoi(strxt));
-    printf("spread: %d\n", atoi(strxs));
+    //printf("freq %f\n", freq);
+    //printf("bw: %f\n", bw);
 
+    // Commit to board
     TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
     lora_set_frequency(freq);
     lora_set_bandwidth(bw);
@@ -413,7 +430,6 @@ static esp_err_t lora_post_handler(httpd_req_t *req)
     cJSON_Delete(root3);
 
     //printf("manual.html incoming query %s\n", req->uri);
-    char *resp_str = "Config Saved";
     httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
 
     return ESP_OK;
@@ -491,8 +507,10 @@ static esp_err_t netconf_post_handler(httpd_req_t *req)
         httpd_resp_send(req, "no mem settins post", HTTPD_RESP_USE_STRLEN);
         return ESP_OK;
         }
-    httpd_req_recv(req, buff, req->content_len);
+    int ret = httpd_req_recv(req, buff, req->content_len);
     buff[req->content_len] = '\0';
+    (void)ret;
+    //printf("netconf req_rec ret %d\n", ret);
     //printf("settings post cJSON '%s'\n", buff);
     cJSON *root2 = cJSON_Parse(buff);
     free(buff);
@@ -519,7 +537,6 @@ int reenter = 0;
 static esp_err_t live_get_handler(httpd_req_t *req)
 {
     //printf("in Live handler.\n");
-    char  tmpx[24];
     if(!gl_update2)
         {
         //printf("Empty JSON sent\n");
@@ -540,7 +557,8 @@ static esp_err_t live_get_handler(httpd_req_t *req)
         }
     if(timeout_cnt >= 8 && timeout_cnt <= 10)
         {
-        snprintf(tmpx, sizeof(tmpx), "%s", "Timeout");
+        //char  tmpx[24];
+        //snprintf(tmpx, sizeof(tmpx), "%s", "Timeout");
         }
     if(gl_statx[0] == '\0' || strcmp(gl_statx, "Idle ...") != 0)
         {
@@ -548,7 +566,7 @@ static esp_err_t live_get_handler(httpd_req_t *req)
         }
     if(gl_sentptr)
         {
-        add_hist(gl_sentptr);
+        add_hist(gl_sentptr, false);
         free(gl_sentptr);
         gl_sentptr = NULL;
         }
@@ -558,18 +576,34 @@ static esp_err_t live_get_handler(httpd_req_t *req)
     cJSON_AddNumberToObject(root, "count",  timeout_cnt);
     cJSON_AddNumberToObject(root, "update", gl_update);
     cJSON_AddNumberToObject(root, "rssi",   gl_rssi);
-    cJSON_AddNumberToObject(root, "maxcnt", gl_sentprog);
+    cJSON_AddNumberToObject(root, "devi",   gl_devi);
+    cJSON_AddNumberToObject(root, "ppm",    gl_ppm);
+    int sent = 0;
     if(gl_update)
         {
         for(int aa = 0; aa < gl_sentprog; aa++)
             {
+            if(!gl_prom)
+                {
+                cJSON *root6 = cJSON_Parse(gl_sentarr[aa]);
+                char *chan = cJSON_GetObjectItem(root6, "chan")->valuestring;
+                int ccc = atoi(chan);
+                cJSON_Delete(root6);
+                //printf("chan: %d trench %d\n", ccc, gl_sendtrench);
+                if(ccc != gl_sendtrench)
+                    continue;
+                }
             char curr[16];
-            snprintf(curr, sizeof(curr), "hist_%d", aa);
-            //printf("Sentarr: '%s' '%s'\n", curr, gl_sentarr[aa]);
+            snprintf(curr, sizeof(curr), "hist_%d", sent);
+            //printf("Sentarr: %d '%s' '%s'\n", gl_prom, curr, gl_sentarr[aa]);
             cJSON_AddStringToObject(root, curr, (const char*)gl_sentarr[aa]);
+            sent++;
             }
         gl_update = 0;
+        gl_update2 = 0;
         }
+    cJSON_AddNumberToObject(root, "maxcnt", sent);
+
     const char *sys_info = cJSON_Print(root);
     //printf("Sending JSON: '%s'\n", sys_info);
 
@@ -616,7 +650,7 @@ static esp_err_t home_get_handler(httpd_req_t *req)
         char buff2[24], buffu2[24];
         httpd_query_key_value(kkk, "reboot", buff2, sizeof(buff2));
         unescape_url(buff2, buffu2, sizeof(buffu2));
-        printf("reboot val: '%s'\n", buffu2);
+        //printf("reboot val: '%s'\n", buffu2);
         if(strcmp(buffu2, "true") == 0)
             {
             char* resp_str = xstrdup(redir_html);
@@ -664,7 +698,7 @@ char iconx[] =
 
 static esp_err_t root_icon_handler(httpd_req_t *req)
 {
-    printf("Icon handler. '%s'\n", req->uri);
+    //printf("Icon handler. '%s'\n", req->uri);
     httpd_resp_set_type(req, "image/x-icon");
     httpd_resp_send(req, iconx, HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
@@ -710,26 +744,50 @@ static const httpd_uri_t sindex = {
     .handler   = home_post_handler
 };
 
+int reent = 0;
+
 static esp_err_t post_post_handler(httpd_req_t *req)
 {
     gl_recala = 0;      // Clear rec LED
 
+    if(reent)
+        {
+        printf("POST reentry\n");
+        }
+    reent = 1;
     //printf("post_post_handler()");
-    //printf("post_post content_len %d\n", req->content_len);
+    printf("post_post content_len %d\n", req->content_len);
     char    *buff = malloc(req->content_len + 1);
     if(!buff)
         {
-        printf("no mem for buff\n");
-        httpd_resp_send(req, "no mem", HTTPD_RESP_USE_STRLEN);
+        printf("no mem for post buff\n");
+        httpd_resp_send(req, "no mem for post buf", HTTPD_RESP_USE_STRLEN);
         return ESP_OK;
         }
-    httpd_req_recv(req, buff, req->content_len);
+    vTaskDelay(10 / portTICK_PERIOD_MS);
+
+    int ret = httpd_req_recv(req, buff, req->content_len);
+    //printf("post req_rec ret %d\n", ret);
     buff[req->content_len] = '\0';
+    (void)ret;
     //printf("JSON buff'%s'\n", buff);
     cJSON *root2 = cJSON_Parse(buff);
     free(buff);
+    char   *trenchs = get_json_str(root2, "chan");
+    int     check   = get_json_int(root2, "check");
+    if(check != -1)
+        {
+        gl_prom = check;
+        gl_sendtrench = atoi(trenchs);
+        cJSON_Delete(root2);
+        //printf("Check prom: %d gl_sendtrench: %d\n", gl_prom, gl_sendtrench);
+        gl_update = 1;
+        gl_update2 = 1;
+        httpd_resp_send(req, "Check ...", HTTPD_RESP_USE_STRLEN);
+        reent = 0;
+        return ESP_OK;
+        }
     char *strx2   = cJSON_GetObjectItem(root2, "text")->valuestring;
-    char *trenchs = cJSON_GetObjectItem(root2, "chan")->valuestring;
     // Check Chash
     //printf("json strx2: '%s'\n", strx2);
     //int16_t sss = chksum(strx2, strlen(strx2));
@@ -739,7 +797,6 @@ static esp_err_t post_post_handler(httpd_req_t *req)
     xstr_padbr(yyy, strx2, "<br>", 70);
     cJSON_AddStringToObject(root2, "text", yyy->str);
     xstr_destroy(yyy);
-
     cJSON_AddStringToObject(root2, "reply", "");
     char *buff2 = cJSON_Print(root2);
     if(!buff2)
@@ -757,6 +814,7 @@ static esp_err_t post_post_handler(httpd_req_t *req)
     httpd_resp_send(req, "Submitted ...", HTTPD_RESP_USE_STRLEN);
     //printf("Mem %ld\n", esp_get_free_heap_size());
     //printf("Integ %d\n", heap_caps_check_integrity(MALLOC_CAP_DEFAULT, true));
+    reent = 0;
     GIVE_SEMA(iSemaphore);
     return ESP_OK;
 }
@@ -775,12 +833,10 @@ void stop_webservers(void)
 }
 
 void start_webservers(void)
-
 {
     //httpd_handle_t server = NULL;
-
     // Start the httpd server
-    ESP_LOGI(TAG, "Starting servers");
+    //ESP_LOGI(TAG, "Starting servers");
 
     httpd_ssl_config_t conf = HTTPD_SSL_CONFIG_DEFAULT();
     conf.httpd.max_uri_handlers = 20;
@@ -837,3 +893,4 @@ void start_webservers(void)
     httpd_register_uri(&postxpostx);
 }
 
+// EOF

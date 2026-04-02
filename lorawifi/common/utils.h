@@ -21,6 +21,8 @@
 typedef  const char cchar;
 typedef  const unsigned char cuchar;
 
+#include "cJSON.h"
+
 // /#define MIN(aa, bb)  ((aa) < (bb) ? (aa) : (bb))
 // /#define MAX(aa, bb)  ((aa) > (bb) ? (aa) : (bb))
 
@@ -39,5 +41,7 @@ int     enc_str(char *str, int len, char *key, int klen, char *out, int olen);
 char    *time2str(int64_t ttt);
 char    *xsnprintf(char *format, ...);
 int     inc_bootcount();
+char   *get_json_str(cJSON *root2, const char *name);
+int     get_json_int(cJSON *root2, const char *name);
 
 // EOF

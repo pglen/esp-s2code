@@ -99,3 +99,34 @@ void    set_split()
     printf("\033[%d;24r", splity);
 }
 
+#define MINIZ_NO_MALLOC
+#define DATASIZE (128)
+unsigned char  orgbuf[DATASIZE] = "";
+unsigned char  inbuf[DATASIZE] = "";
+unsigned char  outbuf[DATASIZE] = "";
+
+// Test compress
+    size_t inbytes = 0, outbytes = 0, inpos = 0, outpos = 0, compsz;
+
+    srand(0); // semi random data
+    for (int i = 0; i < DATASIZE; i++) {
+        inbuf[i] = (i & 0x01) ? rand() & 0xff : 0;
+    }
+    memcpy(orgbuf, inbuf, DATASIZE);
+
+    tdefl_compressor *comp = malloc(sizeof(tdefl_compressor));
+    tdefl_status comp_status = tdefl_init(comp, NULL, NULL,
+            TDEFL_WRITE_ZLIB_HEADER | 1500);
+
+    comp_status = tdefl_compress(comp, &inbuf[inpos], &inbytes, &outbuf[outpos],
+                                &outbytes, TDEFL_FINISH);
+
+    tinfl_decompressor *decomp = calloc(1, sizeof(tinfl_decompressor));
+    tinfl_init(decomp);
+
+    tinfl_status decomp_status = tinfl_decompress(decomp, &inbuf[inpos],
+            &inbytes, outbuf, &outbuf[outpos], &outbytes, TINFL_FLAG_PARSE_ZLIB_HEADER);
+
+    int ccc = memcmp(orgbuf, inbuf, DATASIZE);
+
+

@@ -76,21 +76,23 @@ char    gl_buff2[256];
 int     gl_recala       = 0;
 int     gl_sentprog     = 0;
 
-char    gl_statx[32] = "";
+char    gl_statx[32]    = "Init";
 char    gl_spread[32]   = "";
 char    gl_bwidth[32]   = "";
 char    gl_txpower[32]  = "";
 char    gl_txfreq[32]   = "";
 char    gl_deftren[32]  = "";
 char    gl_ack[16]      = "";
-
+int     gl_prom         = 0;
 char    gl_curr_tr[32] = "0";
 char    *gl_sentbuff = NULL;
 int     gl_sendtrench = 0;
 int     gl_rssi = 0;
+int     gl_freq_err = 0;
 int     gl_update = 0;
 int     gl_update2 = 0;
 double  gl_ppm = 0;
+double  gl_devi = 0;
 
 // Read var from nvs, if none, set default
 
@@ -105,11 +107,11 @@ static void read_set_def(nvs_handle handle, char *key, char *val, int maxlen, ch
         err = nvs_set_str(handle, key, defval);
         if (err != ESP_OK)
             ESP_LOGI(TAG, "ERR (%d) writing default NVS %s", err, key, defval);
-        printf("nvs def: %s -> '%s'\n", key, val);
+        //printf("nvs def: %s -> '%s'\n", key, val);
         }
     else
         {
-        printf("nvs read: %s -> '%s'\n", key, val);
+        //printf("nvs read: %s -> '%s'\n", key, val);
         }
 }
 
@@ -126,7 +128,7 @@ void    read_nvs_hist()
     err2 = nvs_get_i16(my_handle, histx, &curr_hist);
 
     char head[24]; char strx[256];
-    // Print all perm hist (for test)
+    // Load all perm hist
     for (int aa = 0; aa < NVS_WRAP; aa++)
         {
         int now = (curr_hist + aa) % NVS_WRAP;
@@ -135,7 +137,7 @@ void    read_nvs_hist()
         nvs_get_str(my_handle, head, strx, &olen);
         //printf("read hist: %s '%s'\n", head, strx);
         if(strx[0] != '\0')
-            add_hist(strx);
+            add_hist(strx, true);
         }
   err3:
     nvs_close(my_handle);
@@ -348,7 +350,7 @@ static  void recv_task (void* arg)
             }
         gl_buffer[reclen] = '\0';
         uint16_t hhh, ttt; const char *ptr;
-        disass_packet(gl_buffer, &hhh, &ttt, &ptr);
+        int paylen = disass_packet(gl_buffer, &hhh, &ttt, &ptr);
 
         int isOK = check_packet(gl_buffer, reclen);
         if(!isOK)
@@ -358,23 +360,29 @@ static  void recv_task (void* arg)
         toggle_led(isOK);
         TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
         gl_rssi = lora_packet_rssi();
-        int ret = lora_read_freq_err();
+        gl_freq_err = lora_read_freq_err();
         GIVE_SEMA(sSemaphore);
-        double devi = trans_freq_deviation(ret);
-        gl_ppm = ppm_freq_deviation(ret);
+        gl_devi = trans_freq_deviation(gl_freq_err);
+        gl_ppm = ppm_freq_deviation(gl_freq_err);
+        blink_led(1, 100, 50, 0);
 
-        xStr *ppp = xstr_sprintf(
-        "Recvd: %d len: %d paylen: %d rssi: %d cnt: %d check: %d devi: %.0f ppm: %.0f",
-                    cntR, reclen, reclen - 5, gl_rssi, cntR, isOK, devi, gl_ppm);
-        printf("%s\n", ppp->str);
-        xstr_destroy(ppp);
+        if(verbose > 1)
+            {
+            xStr *ppp = xstr_sprintf(
+            "Recvd: %d reclen: %d paylen: %d rssi: %d "
+            "cnt: %d check: %d devi: %.0f ppm: %.0f",
+                        cntR, reclen, paylen, gl_rssi,
+                            cntR, isOK, gl_devi, gl_ppm);
+            printf("%s\n", ppp->str);
+            xstr_destroy(ppp);
+            cntR++;
+
+            xStr *sss = xstr_dumpbuff(ptr, paylen);
+            printf("'%s'\n", sss->str);
+            xstr_destroy(sss);
+            }
 
         printf("Received: hhh=%x ttt=%d '%s'\n", hhh, ttt, ptr);
-        cntR++;
-
-        //xStr *sss = xstr_dumpbuff( &gl_buffer[5], strlen( &gl_buffer[5]) + 4);
-        //printf("'%s'\n", sss->str);
-        //xstr_destroy(sss);
 
         snprintf(cstr, sizeof(cstr), "%d", ttt);
         xStr *sss = xstr_create(0);
@@ -392,9 +400,11 @@ static  void recv_task (void* arg)
         cJSON_AddStringToObject(root, "hash", hstr);
         cJSON_AddNumberToObject(root, "isok", isOK);
         cJSON_AddNumberToObject(root, "rssi", gl_rssi);
+        cJSON_AddNumberToObject(root, "freq", gl_freq_err);
+        cJSON_AddNumberToObject(root, "devi", gl_devi);
         char *buff3 = cJSON_Print(root);
         cJSON_Delete(root);
-        add_hist(buff3);
+        add_hist(buff3, false);
         free(buff3);
 
         gl_update2 = 1;
@@ -468,44 +478,45 @@ void app_main(void)
         //ret = nvs_flash_init();
         nvs_handle my_handle;
         esp_err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
-        if (err == ESP_OK)
+        if (err != ESP_OK)
             {
-            nvs_erase_key(my_handle, "netname");
-            nvs_erase_key(my_handle, "netpass");
-            nvs_erase_key(my_handle, "spread");
-            nvs_erase_key(my_handle, "bwidth");
-            nvs_erase_key(my_handle, "txpower");
-            nvs_erase_key(my_handle, "txfreq");
-            nvs_erase_key(my_handle, "deftrench");
-
-            nvs_close(my_handle);
+            printf("Error on erasing keys %d\n", err);
+            goto err3;
             }
+        nvs_erase_key(my_handle, "netname");
+        nvs_erase_key(my_handle, "netpass");
+        nvs_erase_key(my_handle, "spread");
+        nvs_erase_key(my_handle, "bwidth");
+        nvs_erase_key(my_handle, "txpower");
+        nvs_erase_key(my_handle, "txfreq");
+        nvs_erase_key(my_handle, "deftrench");
+        nvs_close(my_handle);
+      err3:
+          ;
         }
     //ESP_LOGI(TAG, "ESP_WIFI_MODE_AP");
     wifi_init_softap();
-    printf("Entering main loop ... mem = %ld\n", esp_get_free_heap_size());
-
     configure_led();
 
     CREATE_SEMA(iSemaphore); TAKE_SEMA(iSemaphore, TAG, portMAX_DELAY);
     CREATE_SEMA(hSemaphore); CREATE_SEMA(sSemaphore);
 
+    printf("Initial mem = %ld\n",  esp_get_free_heap_size());
     read_nvs_hist();
-
+    gl_sendtrench = atoi(gl_deftren);
+    printf("Entering main loop for '%s'\n", gl_netname);
     start_console("LoraWifi>");
-
     xTaskCreate(&trans_task, "trans_task", 3048, NULL, 15, NULL);
     xTaskCreate(&recv_task, "recv_task", 3048, NULL, 15, NULL);
-    //xTaskCreate(&recv_sim_task, "recv_sim_task", 3048, NULL, 15, NULL);
     //get_nvs_info();
     blink_led(3, 0, 0, 50);
     //pulse_led(40, 0, 0, 55);
-
     int cnt = 0;
     while(1)
         {
         //uint32_t ttt = esp_timer_get_time()/1000;
-        //printf("time: %ld\n", ttt);
+        //printf("time: %ld ms porttick: %ld\n", ttt, portTICK_PERIOD_MS);
+
         //if(cnt % 12 == 0)
         //    printf("Integ %d\n", heap_caps_check_integrity(MALLOC_CAP_DEFAULT, true));
         //toggle_led(0);

@@ -23,7 +23,17 @@
 
     //console.log("Start program");
     //alert("start");
-
+    window.addEventListener('load', function() {
+        //console.log("Start load");
+        const checkInput = document.getElementById('prom');
+        if (checkInput) {
+            checkInput.addEventListener('change', checkprom , false);
+        }
+    document.querySelector('form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        // Handle data manually here
+        });
+    });
     const isNumeric = (str) => Number.isFinite(+str);
 
     const truncateString = (str, num) => {
@@ -51,8 +61,7 @@
       });
     };
 
-
-    // re - write in javascript
+    // Re - write in javascript
     function chksum(strx) {
         //console.log("chksum() strx='%s'", strx);
         let ret = 0;
@@ -71,6 +80,22 @@
         return(ret);
     }
 
+    // Pressed checkbox
+    async function checkprom() {
+        const checkInput = document.getElementById('prom');
+        const chanInput = document.getElementById('chan');
+        //console.log("Check pressed", checkInput.checked)
+        if (!chanInput.value)
+            return;
+        jsonString = '{"check": ' + checkInput.checked + ', "chan": "'
+                        + chanInput.value +  '" }';
+        redo_timer();
+        const response = await fetch("post.html", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: jsonString
+                })
+    }
     function check_number(valx, lower, upper) {
 
         if (valx < lower || valx > upper)
@@ -111,8 +136,10 @@
         if(plainFormData['text'].length > 200)
             {
             alert("Truncating message to 200 bytes");
+            plainFormData['text'] = truncateString(plainFormData['text'], 200);
             }
-        plainFormData['text'] = truncateString(plainFormData['text'], 200);
+        textInput.disabled = true
+
         const num = chksum(plainFormData['text']);
         plainFormData['hash'] = num.toString(16);
         //plainFormData['answer'] = "Awaiting ...";
@@ -133,12 +160,6 @@
         setTimeout(updateLiveData, 1000);
     }
 
-    function pressed_send() {
-        //const mForm = document.getElementById('myform')
-        //mForm.submit()
-        pressed_sub();
-    }
-
 function textUpdate() {
     const textInput = document.getElementById('txt');
     //console.log('Text area content changed in real-time.' +
@@ -147,9 +168,15 @@ function textUpdate() {
     cntOutput.innerHTML = "Count: " + textInput.value.length;
 }
 
+function chanUpdate() {
+    checkprom();
+}
+
 window.addEventListener('load', () => {
     const textInput = document.getElementById('txt');
     textInput.addEventListener('input', textUpdate)
+    const chanInput = document.getElementById('chan');
+    chanInput.addEventListener('input', chanUpdate)
     const cntOutput = document.getElementById('cnt');
     cntOutput.innerHTML = "Count: " + textInput.value.length;
 });
@@ -162,10 +189,10 @@ function onKeyDown(e){
     //console.log("Dn " + e.key);
     if(e.key == "Enter" && ctrl == 1)
         {
-        const textIn = document.getElementById('txt');
-        //console.log("Ctrl-Enter: '%s'", textIn.value )
-        e.preventDefault();
-        pressed_send();
+        const textInput = document.getElementById('txt');
+        //console.log("Ctrl-Enter: '%s'", textInput.value )
+        //e.preventDefault();
+        pressed_sub();
         }
     if(e.key == "Control")
         {
@@ -187,7 +214,7 @@ function onKeyUp(e){
 
 <table align=center width=100% padding=1>
 
-    <tr><td> Data: <td colspan=2>
+    <tr><td> Data: <td colspan=3>
         <div class="container">
             <div class=resdiv id=hist> Nothing received yet ... &nbsp; </div>
         </div>
@@ -195,23 +222,27 @@ function onKeyUp(e){
         Trench:
         <td><input type=text name=chan id=chan value=trenchtrenchtrench> (0-65534)
         <td>
+        <input type=checkbox name=prom id=prom>
+        <label for="prom">Show all trenches</label>
+        <td> &nbsp;
     <tr><td>
         Send:
-        <td>
+        <td colspan=2>
         <textarea autofocus name=text rows=4 cols=64 id=txt></textarea>
         <td align=center>
                           <div id=cnt>Count: 0</div>
                           <i>Max 200 Characters</i><br>
                           Ctrl-Enter to submit <p>
-            <input type=button value=Send onclick=pressed_send()><br>
+            <input type=button value=Send onclick=pressed_sub()><br>
             <div id=status></div>
-
     <tr><td>
         Status:
         <td class=mydiv>
             <div class=mytext id=current>Idle.</div>
         <td class=mydiv>
-            <div class=mytext width=90% id=rssi> &nbsp;
-            Last RSSI: 0 &nbsp; Last Ack: 0
+            <div class=mytext id=rssi> Last RSSI: 0
+            </div>
+        <td class=mydiv>
+            <div class=mytext id=ppm> PPM: 0
             </div>
 </table>

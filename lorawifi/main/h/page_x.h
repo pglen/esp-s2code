@@ -9,7 +9,7 @@
 
       REV   DATE            BY              DESCRIPTION
       ----  -----------     ----------      ------------------------------
-      0.00  Sun, 29-03-26   Peter Glen      Initial version.
+      0.00  Thu, 02-04-26   Peter Glen      Initial version.
 
    ======================================================================= */
 
@@ -158,7 +158,7 @@ const char notfound_html [] =
 "                </div>\n"
 "            <td align=center>\n"
 "                <div style=\"font-size:large\" >\n"
-"                   <a href=page_1.html> Back to Home Page </a>\n"
+"                   <a href=page_1.html> Go to Home Page </a>\n"
 "                </div>\n"
 "           <td align=center>\n"
 "                <div style=\"font-size:large\" >\n"

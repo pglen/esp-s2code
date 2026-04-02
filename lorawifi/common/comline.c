@@ -33,6 +33,7 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_system.h"
+#include "esp_timer.h"
 #include "nvs_flash.h"
 #include "linenoise/linenoise.h"
 #include "argtable3/argtable3.h"
@@ -57,7 +58,8 @@
 
 static const char *TAG = "comline";
 
-int verbose  = 0;
+int verbose = 0;
+int repeat  = 1;
 
 void    del_cache()
 {
@@ -206,9 +208,13 @@ static int set_bw(int argc, char **argv)
     int nerrors = arg_parse(argc, argv, (void **) &bw_args);
     if (nerrors != 0) {
     }
+    double bw = atofx(gl_bwidth);
+    if(bw < 1000)
+        bw *= 1000;
+
     if(strlen(bw_args.arg1->sval[0]) == 0)
         {
-        printf("Current bandwidth: %s\n", gl_bwidth);
+        printf("Current bandwidth: %e\n", bw);
         return 0;
         }
     if(bw_args.arg1->sval[0][0] == '?')
@@ -223,7 +229,7 @@ static int set_bw(int argc, char **argv)
         sss *= 1000;
     if (sss > 500E3 || sss < 5E3)
         {
-        printf("Invalid bandwidth. Kept old: %s\n", gl_bwidth);
+        printf("Invalid bandwidth. Kept old: %e\n", bw);
         return 0;
         }
     snprintf(gl_bwidth, sizeof(gl_bwidth), "%e", sss);
@@ -327,9 +333,14 @@ static int set_fr(int argc, char **argv)
     int nerrors = arg_parse(argc, argv, (void **) &bw_args);
     if (nerrors != 0) {
     }
+    float fff = atof(gl_txfreq);
+    // Correct it
+    if(fff < 1000000)
+        fff *= 1000000;
+
     if(strlen(bw_args.arg1->sval[0]) == 0)
         {
-        printf("Current frequency: %s\n", gl_txfreq);
+        printf("Current frequency: %e\n", fff);
         return 0;
         }
     if(bw_args.arg1->sval[0][0] == '?')
@@ -345,7 +356,7 @@ static int set_fr(int argc, char **argv)
         sss *= 1000000;
     if (sss > 530E6 || sss < 410E6)
         {
-        printf("Invalid frequency. Kept old: %s\n", gl_txfreq);
+        printf("Invalid frequency. Kept old: %e\n", fff);
         return 0;
         }
     snprintf(gl_txfreq, sizeof(gl_txfreq), "%e", sss);
@@ -379,6 +390,9 @@ static int set_tu(int argc, char **argv)
         return 0;
         }
     double sss = atofx(gl_txfreq);
+    // Correct it
+    if(sss < 1000000)
+        sss *= 1000000;
     int ttt = atoi(tu_args.arg1->sval[0]);
     sss += (double)ttt;
     printf("Adjustment %d %f\n", ttt, sss);
@@ -413,6 +427,10 @@ static int set_td(int argc, char **argv)
         return 0;
         }
     double sss = atofx(gl_txfreq);
+    // Correct it
+    if(sss < 1000000)
+        sss *= 1000000;
+
     int ttt = atoi(tu_args.arg1->sval[0]);
     sss -= (double)ttt;
     printf("Adjustment %d %f\n", ttt, sss);
@@ -438,15 +456,22 @@ static int set_trstr(int argc, char **argv)
     }
     if(strlen(str_trargs.arg1->sval[0]) == 0)
         {
-        printf("Cannot send empty string\n");
+        printf("Cannot send empty string.\n");
         return 0;
         }
     if(str_trargs.arg1->sval[0][0] == '?')
         {
-        printf("Pass string");
+        printf("Transmitting string.");
         return 0;
         }
-    send_payload(str_trargs.arg1->sval[0], atoi(gl_curr_tr));
+    for(int aa = 0; aa < repeat; aa++)
+        {
+        int32_t tttt = (int32_t)(esp_timer_get_time() / 1000);
+        send_payload(str_trargs.arg1->sval[0], atoi(gl_curr_tr));
+        int32_t tttt2 = (int32_t)(esp_timer_get_time() / 1000);
+        printf("Send time: %ld ms\n", tttt2-tttt);
+        vTaskDelay((int)300 / portTICK_PERIOD_MS);
+        }
     str_trargs.arg1->sval[0] = "";
     return 0;
 }
@@ -479,6 +504,30 @@ static int set_verbose(int argc, char **argv)
     return 0;
 }
 
+static arg_args_t  re_args;
+static int set_re(int argc, char **argv)
+
+{
+    int nerrors = arg_parse(argc, argv, (void **) &re_args);
+    if (nerrors != 0) {
+        }
+    if(strlen(re_args.arg1->sval[0]) == 0)
+        {
+        printf("Current repeat count: %d\n", repeat);
+        return 0;
+        }
+    int rrr = atoi(re_args.arg1->sval[0]);
+    if(rrr <  1)
+        rrr = 1;
+    if(rrr > 100)
+        rrr = 100;
+    repeat = rrr;
+    printf("Repeat set to %d\n", repeat);
+    verb_args.arg1->sval[0] = "";
+
+    return 0;
+}
+
 static arg_args_t  de_args;
 
 static  int set_de(int argc, char **argv)
@@ -504,13 +553,19 @@ static  int set_de(int argc, char **argv)
     strncpy(gl_bwidth,  DEF_BWIDTH,  sizeof(gl_bwidth));
     strncpy(gl_txpower, DEF_POWER,   sizeof(gl_txpower));
     strncpy(gl_txfreq,  DEF_FREQ,    sizeof(gl_txfreq));
-    //strncpy(gl_deftren, DEF_TRENCH,  sizeof(gl_deftren));
+
+    double  freq = atofx(gl_txfreq);
+    if(freq < 1000000)
+        freq *= 1000000;
+    double bw = atofx(gl_bwidth);
+    if(bw < 1000)
+        bw *= 1000;
 
     TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
-    lora_set_frequency(atof(gl_txfreq));
+    lora_set_frequency(freq);
+    lora_set_bandwidth(bw);
     lora_set_tx_power(atof(gl_txpower));
     lora_set_spreading_factor(atof(gl_spread));
-    lora_set_bandwidth(atof(gl_bwidth));
     GIVE_SEMA(sSemaphore);
 
     submit_nvs_str("spread",    gl_spread);
@@ -539,8 +594,14 @@ static  int set_pr(int argc, char **argv)
         }
     printf("Defaults: [fr=%s bw=%s sf=%s pw=%s]\n",
                                     DEF_FREQ, DEF_BWIDTH, DEF_SPREAD, DEF_POWER);
-    printf("Current:  [fr=%s bw=%s sf=%s pw=%s]\n",
-                                    gl_txfreq, gl_bwidth, gl_spread, gl_txpower);
+    double  freq = atofx(gl_txfreq);
+    if(freq < 1000000)
+        freq *= 1000000;
+    double bw = atofx(gl_bwidth);
+    if(bw < 1000)
+        bw *= 1000;
+    printf("Current:  [fr=%e bw=%e sf=%s pw=%s]\n",
+                                    freq, bw, gl_spread, gl_txpower);
     pr_args.arg1->sval[0] = "";
     return 0;
 }
@@ -559,15 +620,16 @@ static  int help(int argc, char **argv)
 
 {
     printf("Commands: v (verbose) [1-10]; h (help); o (reboot);\n");
-    printf("          w (pw) power level [2-15]\n");
-    printf("          s (sf) spread [6-12]\n");
-    printf("          b (bw) bandwidth [5-500]\n");
-    printf("          f (fr) frequency [410.0-530.0] (Clamped to legal limits)\n");
+    printf("          w (pw) set power level. [2-15]\n");
+    printf("          s (sf) set spread factor. [6-12]\n");
+    printf("          b (bw) set bandwidth. [5-500]\n");
+    printf("          f (fr) set frequency. [410.0-530.0] (Clamped to legal limits)\n");
     printf("          u (tu) tune frequency up by Hz.\n");
     printf("          n (td) tune frequency down by Hz. \n");
-    printf("          d (de) defaults [fr=%s bw=%s sf=%s pw=%s]\n",
+    printf("          d (de) set defaults. [fr=%s bw=%s sf=%s pw=%s]\n",
                                     DEF_FREQ, DEF_BWIDTH, DEF_SPREAD, DEF_POWER);
     printf("          t (tr) transmit string \n");
+    printf("          e (ep) repeat transmit string \n");
     printf("          r (re) set trench number \n");
     printf("          p (pr) print current and default configuration\n");
     printf("          m (du) dump persistent data.\n");
@@ -648,6 +710,10 @@ void register_cmds(void)
     INIT_STRUCT(de_args)
     DECL_COMMANDx("de",         "reset defaults", &set_de, &de_args);
     DECL_COMMANDx("d",          "", &set_de, &fr_args);
+
+    INIT_STRUCT(re_args)
+    DECL_COMMANDx("re",         "repat trans", &set_re, &re_args);
+    DECL_COMMANDx("e",          "", &set_re, &re_args);
 
     INIT_STRUCT(pr_args)
     DECL_COMMANDx("pr",         "print config", &set_pr, &pr_args);
