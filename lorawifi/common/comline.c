@@ -372,78 +372,65 @@ static int set_fr(int argc, char **argv)
     return 0;
 }
 
-static arg_args_t  tu_args;
+static arg_argf_t  of_args;
 
-static int set_tu(int argc, char **argv)
+static int set_of(int argc, char **argv)
 {
-    int nerrors = arg_parse(argc, argv, (void **) &tu_args);
+    int nerrors = arg_parse(argc, argv, (void **) &of_args);
     if (nerrors != 0) {
-    }
-    if(strlen(tu_args.arg1->sval[0]) == 0)
+        }
+    //for(int aa = 0 ; aa < argc; aa++)
+    //    {
+    //    printf("arg: %d %s\n", aa, argv[aa]);
+    //    }
+    if(argc == 1)
         {
-        printf("Current adjusted frequency: %s\n", gl_txfreq);
+        printf("Current adjustment: %d\n", atoi(gl_corrfreq));
         return 0;
         }
-    if(tu_args.arg1->sval[0][0] == '?')
+    int ttt = 0;
+    if(argc == 2)
         {
-        printf("Adjust Frequency. Use +- diff\n");
-        return 0;
+        if(argv[1][0] == '?')
+            {
+            printf("Adjust RX Frequency by +-Hz\n");
+            return 0;
+            }
+        ttt = atoi(argv[1]);
+        printf("Adjusting RX Frequency by %d\n", ttt);
+        snprintf(gl_corrfreq, sizeof(gl_corrfreq), "%d", ttt);
+        submit_nvs_str("corrfreq",  gl_corrfreq);
         }
-    double sss = atofx(gl_txfreq);
-    // Correct it
-    if(sss < 1000000)
-        sss *= 1000000;
-    int ttt = atoi(tu_args.arg1->sval[0]);
-    sss += (double)ttt;
-    printf("Adjustment %d %f\n", ttt, sss);
-    snprintf(gl_txfreq, sizeof(gl_txfreq), "%e", sss);
-    printf("gl_txfreq: %s\n", gl_txfreq);
-
-    TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
-    lora_set_frequency(sss);
-    GIVE_SEMA(sSemaphore);
-    printf("Frequency adjusted to %f\n", sss);
-    submit_nvs_str("txfreq",  gl_txfreq);
-
-    tu_args.arg1->sval[0] = "";
     return 0;
 }
 
-static arg_args_t  td_args;
+static arg_args_t  pp_args;
 
-static int set_td(int argc, char **argv)
+static int set_pp(int argc, char **argv)
 {
-    int nerrors = arg_parse(argc, argv, (void **) &tu_args);
+    int nerrors = arg_parse(argc, argv, (void **) &pp_args);
     if (nerrors != 0) {
     }
-    if(strlen(tu_args.arg1->sval[0]) == 0)
+    if(argc == 1)
         {
-        printf("Current adjusted frequency: %s\n", gl_txfreq);
+        TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
+        char vv = get_ppm_correction();
+        if(vv & 0x80) vv = -vv;
+        GIVE_SEMA(sSemaphore);
+        printf("Current ppm adjustment: %d\n", vv);
         return 0;
         }
-    if(tu_args.arg1->sval[0][0] == '?')
+    if(argv[1][0] == '?')
         {
-        printf("Adjust Frequency. Use +- diff\n");
+        printf("Adjust ppm value. Use +-ppmval\n");
         return 0;
         }
-    double sss = atofx(gl_txfreq);
-    // Correct it
-    if(sss < 1000000)
-        sss *= 1000000;
-
-    int ttt = atoi(tu_args.arg1->sval[0]);
-    sss -= (double)ttt;
-    printf("Adjustment %d %f\n", ttt, sss);
-    snprintf(gl_txfreq, sizeof(gl_txfreq), "%e", sss);
-    printf("gl_txfreq: %s\n", gl_txfreq);
-
+    int ppp = atoi(argv[1]);
+    printf("Setting new ppm adjustment %d\n", ppp);
     TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
-    lora_set_frequency(sss);
+    set_ppm_correction(ppp);
     GIVE_SEMA(sSemaphore);
-    printf("Frequency adjusted to %f\n", sss);
-    submit_nvs_str("txfreq",  gl_txfreq);
-
-    tu_args.arg1->sval[0] = "";
+    pp_args.arg1->sval[0] = "";
     return 0;
 }
 
@@ -619,13 +606,14 @@ static  int reboot_dev(int argc, char **argv)
 static  int help(int argc, char **argv)
 
 {
+    printf("LoraWifi station: '%s' %s\n", gl_netname, gl_version);
     printf("Commands: v (verbose) [1-10]; h (help); o (reboot);\n");
     printf("          w (pw) set power level. [2-15]\n");
     printf("          s (sf) set spread factor. [6-12]\n");
     printf("          b (bw) set bandwidth. [5-500]\n");
     printf("          f (fr) set frequency. [410.0-530.0] (Clamped to legal limits)\n");
-    printf("          u (tu) tune frequency up by Hz.\n");
-    printf("          n (td) tune frequency down by Hz. \n");
+    printf("          x (rx) RX offset frequency in +-Hz.\n");
+    printf("          j (pj) ppm adjustment (+-0x7f) \n");
     printf("          d (de) set defaults. [fr=%s bw=%s sf=%s pw=%s]\n",
                                     DEF_FREQ, DEF_BWIDTH, DEF_SPREAD, DEF_POWER);
     printf("          t (tr) transmit string \n");
@@ -699,13 +687,13 @@ void register_cmds(void)
     DECL_COMMANDx("fr",         "Set frequency", &set_fr, &fr_args);
     DECL_COMMANDx("f",          "", &set_fr, &fr_args);
 
-    INIT_STRUCT(tu_args)
-    DECL_COMMANDx("tu",         "Tune frequency up", &set_tu, &tu_args);
-    DECL_COMMANDx("u",          "", &set_tu, &tu_args);
+    INIT_STRUCTF(of_args)
+    DECL_COMMANDx("rx",         "Adjust RX frequency offset", &set_of, &of_args);
+    DECL_COMMANDx("x",          "", &set_of, &of_args);
 
-    INIT_STRUCT(td_args)
-    DECL_COMMANDx("td",         "Tune frequency down", &set_td, &td_args);
-    DECL_COMMANDx("n",          "", &set_td, &td_args);
+    INIT_STRUCT(pp_args)
+    DECL_COMMANDx("jp",         "Tune ppm", &set_pp, &pp_args);
+    DECL_COMMANDx("j",          "", &set_pp, &pp_args);
 
     INIT_STRUCT(de_args)
     DECL_COMMANDx("de",         "reset defaults", &set_de, &de_args);

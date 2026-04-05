@@ -20,16 +20,17 @@
 
 #define SENTMAX 24        // Maximum history items
 
-extern  int     gl_recala      ;
-extern  int     gl_sentprog    ;
-
+extern  int     gl_recala       ;
+extern  int     gl_sentprog     ;
+extern  char    gl_version[48]  ;
 extern  char    gl_spread[32]   ;
 extern  char    gl_bwidth[32]   ;
 extern  char    gl_txpower[32]  ;
 extern  char    gl_txfreq[32]   ;
+extern  char    gl_corrfreq[32] ;
 extern  char    gl_deftren[32]  ;
 extern  char    gl_curr_tr[32]  ;
-extern  char    gl_statx[32] ;
+extern  char    gl_statx[32]    ;
 extern  int     gl_rssi ;
 extern  int     gl_freq_err ;
 extern  int     gl_update ;

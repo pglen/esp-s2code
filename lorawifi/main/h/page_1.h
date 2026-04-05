@@ -9,7 +9,7 @@
 
       REV   DATE            BY              DESCRIPTION
       ----  -----------     ----------      ------------------------------
-      0.00  Thu, 02-04-26   Peter Glen      Initial version.
+      0.00  Sun, 05-04-26   Peter Glen      Initial version.
 
    ======================================================================= */
 
@@ -218,6 +218,8 @@ const char index_html [] =
 "                            rssiInput.innerHTML =   \"Last RSSI: \" + jsObject.rssi;\n"
 "                            const ppmInput = document.getElementById('ppm');\n"
 "                            ppmInput.innerHTML = \" &nbsp; PPM: \" + jsObject.ppm.toFixed(2);\n"
+"                            const deviInput = document.getElementById('devi');\n"
+"                            deviInput.innerHTML = \" &nbsp; devi: \" + jsObject.devi.toFixed(2);\n"
 "                            //rssiInput.innerHTML += \" &nbsp; Last Ack: \" + jsObject.ack;\n"
 "                            //rssiInput.innerHTML += \" &nbsp; Devi: \" + jsObject.devi;\n"
 "                            }\n"
@@ -376,10 +378,10 @@ const char index_html [] =
 "        textInput.value = escapeHTML(textInput.value);\n"
 "        const formData = new FormData(myform);\n"
 "        const plainFormData = Object.fromEntries(formData.entries());\n"
-"        if(plainFormData['text'].length > 200)\n"
+"        if(plainFormData['text'].length > 230)\n"
 "            {\n"
-"            alert(\"Truncating message to 200 bytes\");\n"
-"            plainFormData['text'] = truncateString(plainFormData['text'], 200);\n"
+"            alert(\"Truncating message to 230 bytes\");\n"
+"            plainFormData['text'] = truncateString(plainFormData['text'], 230);\n"
 "            }\n"
 "        textInput.disabled = true\n"
 "        const num = chksum(plainFormData['text']);\n"
@@ -464,7 +466,7 @@ const char index_html [] =
 "        <textarea autofocus name=text rows=4 cols=64 id=txt></textarea>\n"
 "        <td align=center>\n"
 "                          <div id=cnt>Count: 0</div>\n"
-"                          <i>Max 200 Characters</i><br>\n"
+"                          <i>Max 230 Characters</i><br>\n"
 "                          Ctrl-Enter to submit <p>\n"
 "            <input type=button value=Send onclick=pressed_sub()><br>\n"
 "            <div id=status></div>\n"
@@ -472,12 +474,18 @@ const char index_html [] =
 "        Status:\n"
 "        <td class=mydiv>\n"
 "            <div class=mytext id=current>Idle.</div>\n"
-"        <td class=mydiv>\n"
-"            <div class=mytext id=rssi> Last RSSI: 0\n"
-"            </div>\n"
-"        <td class=mydiv>\n"
-"            <div class=mytext id=ppm> PPM: 0\n"
-"            </div>\n"
+"        <td class=mydiv colspan=2>\n"
+"            <table width=100%>\n"
+"                <td class=mydiv>\n"
+"                    <div class=mytext id=rssi> Last RSSI: 0\n"
+"                    </div>\n"
+"                <td class=mydiv>\n"
+"                    <div class=mytext id=devi> Last devi: 0\n"
+"                    </div>\n"
+"                <td class=mydiv>\n"
+"                    <div class=mytext id=ppm> Last PPM: 0\n"
+"                    </div>\n"
+"            </table>\n"
 "</table>\n"
 "<tr><td>\n"
 "  <table width=100% border=0>\n"

@@ -105,6 +105,8 @@ window.addEventListener('load', function()
                             rssiInput.innerHTML =   "Last RSSI: " + jsObject.rssi;
                             const ppmInput = document.getElementById('ppm');
                             ppmInput.innerHTML = " &nbsp; PPM: " + jsObject.ppm.toFixed(2);
+                            const deviInput = document.getElementById('devi');
+                            deviInput.innerHTML = " &nbsp; devi: " + jsObject.devi.toFixed(2);
 
                             //rssiInput.innerHTML += " &nbsp; Last Ack: " + jsObject.ack;
                             //rssiInput.innerHTML += " &nbsp; Devi: " + jsObject.devi;

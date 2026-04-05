@@ -1,25 +1,23 @@
 <script async>
 
     //console.log("Start LORA");
-
     const isNumeric2 = (str) => Number.isFinite(+str);
 
-    function check_lims(data, validx, lower, upper) {
-
-        valx = data.get(validx)
-
-        if (!isNumeric2(valx))
+    function check_num(valxx, namex, lower, upper) {
+        if (!isNumeric2(valxx))
             {
-            alert("Field: " + validx + " must be a number.")
+            alert("Field for " + namex + " must be a number.")
             return 0;
             }
-        //console.log("value: %s", valx);
-        if (valx < lower || valx > upper)
+        if (valxx < lower || valxx > upper)
             {
-            alert("Number out of range for:  " + validx + " value = " + valx)
+            alert("Number for " + namex + " is out of range.")
             return 0;
             }
         return 1;
+        }
+    function check_lims(data, validx, lower, upper) {
+        return check_num(data.get(validx), validx, lower, upper)
         }
     async function save_lora() {
         //console.log("Save LORA");
@@ -44,6 +42,27 @@
         const confButt = document.getElementById('confbutt');
         //console.log("butt:", confButt)
         confButt.value = data;
+        }
+
+    async function adj_recv_lora() {
+        console.log("adj_recv_lora()");
+        const rxButt = document.getElementById('rxbutt');
+        const rxTune = document.getElementById('rxtune');
+        if(!check_num(rxTune.value, "rxtune", -20000, 20000))
+            return;
+        const formData = new FormData(myform);
+        formData.append("rxtune", rxTune.value);
+        const plainFormData = Object.fromEntries(formData.entries());
+        const jsonString = JSON.stringify(plainFormData);
+        console.log("Submitting: '%s'", jsonString);
+        const response = await fetch("page_3.html", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: jsonString
+                })
+        const data = await response.text();
+        console.log("Data from lora tune: " + data)
+        rxButt.value = data;
     }
 
     async function default_lora() {
@@ -123,6 +142,29 @@
             <tr><td colspan=3 width=100%>
                     <tr bgcolor=#eeeeee><td align=center>
                     <div style="font-size:large" align=center>
+                    <b>Tune LORA receive:</b><br>
+                    </div>
+        </table>
+    <tr><td colspan=3>
+    &nbsp; &nbsp; This field tunes the LORA receive frequency offset.
+    This step is optional, and it may be necessary if communication
+    is difficult at lower bandwidths. The tuning value can be derived from
+    the Main LORA page's 'devi' field. The tuning value should be set to
+    decrease the 'devi' field on the main page as close to zero as possible.
+    <tr><td align=right>
+        LORA RX tuning (+-) (0-10000):
+                &nbsp<td><input id=rxtune type=text
+                    value=rxtunerxtunerxtune>
+    <tr><td><td>
+    <input type=button onclick=adj_recv_lora() id=rxbutt
+                                            value='Tune RX Frequency offset.'>
+    <tr><td colspan=3>
+
+    <tr> <td colspan=3 align=center>
+        <table align=center border=0 width=100%  frame=void>
+            <tr><td colspan=3 width=100%>
+                    <tr bgcolor=#eeeeee><td align=center>
+                    <div style="font-size:large" align=center>
                     <b>Reset LORA parameters:</b><br>
                     </div>
         </table>
@@ -136,7 +178,7 @@
 
     <tr><td><td>
     <input type=button onclick=default_lora() id=defbutt name=defbutt
-                                            value='Reset LORA Configuration'>
+                                            value='Reset LORA Recive Frequency'>
     <tr><td colspan=3>
 
 </table>

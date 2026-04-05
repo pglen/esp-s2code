@@ -1,60 +1,59 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-C61 | ESP32-S2 | ESP32-S3 | ESP32-P4 | ESP32-H2 |
-| ----------------- | ----- | -------- | -------- | -------- | --------- | -------- | -------- | -------- | -------- | -------- |
+# LoraWiFi
 
-# Wi-Fi SoftAP Example
+## Compile / build requirements
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+The project is developed with ESP-IDF 5.5. Can be downloaded from espressif's
+web site.
 
-This example shows how to use the Wi-Fi SoftAP functionality of the Wi-Fi driver of ESP for serving as an Access Point.
+Additionally:
 
-## How to use example
+    m4      macro processor
+    make    make utility
 
-SoftAP supports Protected Management Frames(PMF). Necessary configurations can be set using pmf flags. Please refer [Wifi-Security](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/wifi-security.html) for more info.
+These are available with all platforms / distros, and most likely are
+already installed.
 
 ### Configure the project
 
-Open the project configuration menu (`idf.py menuconfig`).
-
-In the `Example Configuration` menu:
-
-* Set the Wi-Fi configuration.
-    * Set `WiFi SSID`.
-    * Set `WiFi Password`.
-
-Optional: If you need, change the other options according to your requirements.
+  Open the project configuration menu ('idf.py menuconfig') or 'make menuconfig'
+The LORA configuration is under / Component config / LoRa Configuration
+The web configuratio is under
 
 ### Build and Flash
 
-Build the project and flash it to the board, then run the monitor tool to view the serial output:
+Execute the  ./convpages.sh to generate the pages from the m4 macros.
+Executer the ./genpages.sh to generate headers from html.
+
+Build the project and flash it to the board, then run the monitor tool to
+view the serial output:
 
 Run `idf.py -p PORT flash monitor` to build, flash and monitor the project.
-
+You can use the 'make' command to do
 (To exit the serial monitor, type ``Ctrl-]``.)
 
-See the Getting Started Guide for all the steps to configure and use the ESP-IDF to build projects.
+See the Getting Started Guide for all the steps to configure and use the
+ESP-IDF to build projects.
 
-* [ESP-IDF Getting Started Guide on ESP32](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html)
-* [ESP-IDF Getting Started Guide on ESP32-S2](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/get-started/index.html)
-* [ESP-IDF Getting Started Guide on ESP32-C3](https://docs.espressif.com/projects/esp-idf/en/latest/esp32c3/get-started/index.html)
+## Screen shot of home page
+![Screeshot](images/screen.png)
 
-## Example Output
 
-There is the console output for this example:
+## Command line interface
 
-```
-I (917) phy: phy_version: 3960, 5211945, Jul 18 2018, 10:40:07, 0, 0
-I (917) wifi: mode : softAP (30:ae:a4:80:45:69)
-I (917) wifi softAP: wifi_init_softap finished.SSID:myssid password:mypassword
-I (26457) wifi: n:1 0, o:1 0, ap:1 1, sta:255 255, prof:1
-I (26457) wifi: station: 70:ef:00:43:96:67 join, AID=1, bg, 20
-I (26467) wifi softAP: station:70:ef:00:43:96:67 join, AID=1
-I (27657) esp_netif_lwip: DHCP server assigned IP to a station, IP is: 192.168.4.2
-```
+    Commands: v (verbose) [1-10]; h (help); o (reboot);
+              w (pw) set power level. [2-15]
+              s (sf) set spread factor. [6-12]
+              b (bw) set bandwidth. [5-500]
+              f (fr) set frequency. [410.0-530.0] (Clamped to legal limits)
+              x (rx) RX offset frequency in +-Hz.
+              j (pj) ppm adjustment (+-0x7f)
+              d (de) set defaults. [fr=433.375 bw=50 sf=10 pw=12]
+              t (tr) transmit string
+              e (ep) repeat transmit string
+              r (re) set trench number
+              p (pr) print current and default configuration
+              m (du) dump persistent data.
+              c (cl) clear persistent data.
+    Use: 'command ?' for help on a particular command.
 
-## Running the example on ESP Chips without Wi-Fi
-
-This example can run on ESP Chips without Wi-Fi using ESP-Hosted. See the [Two-Chip Solution](../../README.md#wi-fi-examples-with-two-chip-solution) section in the upper level `README.md` for information.
-
-## Troubleshooting
-
-For any technical queries, please open an [issue](https://github.com/espressif/esp-idf/issues) on GitHub. We will get back to you soon.
+// EOF

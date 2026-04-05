@@ -220,6 +220,8 @@ window.addEventListener('load', function()
                             rssiInput.innerHTML =   "Last RSSI: " + jsObject.rssi;
                             const ppmInput = document.getElementById('ppm');
                             ppmInput.innerHTML = " &nbsp; PPM: " + jsObject.ppm.toFixed(2);
+                            const deviInput = document.getElementById('devi');
+                            deviInput.innerHTML = " &nbsp; devi: " + jsObject.devi.toFixed(2);
 
                             //rssiInput.innerHTML += " &nbsp; Last Ack: " + jsObject.ack;
                             //rssiInput.innerHTML += " &nbsp; Devi: " + jsObject.devi;
@@ -395,10 +397,10 @@ function redo_timer()
         textInput.value = escapeHTML(textInput.value);
         const formData = new FormData(myform);
         const plainFormData = Object.fromEntries(formData.entries());
-        if(plainFormData['text'].length > 200)
+        if(plainFormData['text'].length > 230)
             {
-            alert("Truncating message to 200 bytes");
-            plainFormData['text'] = truncateString(plainFormData['text'], 200);
+            alert("Truncating message to 230 bytes");
+            plainFormData['text'] = truncateString(plainFormData['text'], 230);
             }
         textInput.disabled = true
 
@@ -493,7 +495,7 @@ function onKeyUp(e){
         <textarea autofocus name=text rows=4 cols=64 id=txt></textarea>
         <td align=center>
                           <div id=cnt>Count: 0</div>
-                          <i>Max 200 Characters</i><br>
+                          <i>Max 230 Characters</i><br>
                           Ctrl-Enter to submit <p>
             <input type=button value=Send onclick=pressed_sub()><br>
             <div id=status></div>
@@ -501,12 +503,18 @@ function onKeyUp(e){
         Status:
         <td class=mydiv>
             <div class=mytext id=current>Idle.</div>
-        <td class=mydiv>
-            <div class=mytext id=rssi> Last RSSI: 0
-            </div>
-        <td class=mydiv>
-            <div class=mytext id=ppm> PPM: 0
-            </div>
+        <td class=mydiv colspan=2>
+            <table width=100%>
+                <td class=mydiv>
+                    <div class=mytext id=rssi> Last RSSI: 0
+                    </div>
+                <td class=mydiv>
+                    <div class=mytext id=devi> Last devi: 0
+                    </div>
+                <td class=mydiv>
+                    <div class=mytext id=ppm> Last PPM: 0
+                    </div>
+            </table>
 </table>
 
 <tr><td>

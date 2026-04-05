@@ -1,0 +1,44 @@
+<h1>LoraWiFi</h1>
+<h2>Compile / build requirements</h2>
+<p>The project is developed with ESP-IDF 5.5. Can be downloaded from espressif's<br />
+web site.</p>
+<p>Additionally:</p>
+<pre><code>m4      macro processor
+make    make utility
+</code></pre>
+<p>These are available with all platform / distros, and most likely are<br />
+already installed.</p>
+<h3>Configure the project</h3>
+<p>Open the project configuration menu ('idf.py menuconfig') or 'make menuconfig'<br />
+The LORA configuration is under / Component config / LoRa Configuration<br />
+The web configuratio is under</p>
+<h3>Build and Flash</h3>
+<p>Execute the  ./convpages.sh to generate the pages from the m4 macros.<br />
+Executer the ./genpages.sh to generate headers from html.</p>
+<p>Build the project and flash it to the board, then run the monitor tool to<br />
+view the serial output:</p>
+<p>Run <code>idf.py -p PORT flash monitor</code> to build, flash and monitor the project.<br />
+You can use the 'make' command to do<br />
+(To exit the serial monitor, type <code>Ctrl-]</code>.)</p>
+<p>See the Getting Started Guide for all the steps to configure and use the<br />
+ESP-IDF to build projects.</p>
+<h2>Screen shot of home page</h2>
+<p><img alt="Screeshot" src="images/screen.png" /></p>
+<h2>Command line interface</h2>
+<pre><code>Commands: v (verbose) [1-10]; h (help); o (reboot);
+          w (pw) set power level. [2-15]
+          s (sf) set spread factor. [6-12]
+          b (bw) set bandwidth. [5-500]
+          f (fr) set frequency. [410.0-530.0] (Clamped to legal limits)
+          x (rx) RX offset frequency in +-Hz.
+          j (pj) ppm adjustment (+-0x7f)
+          d (de) set defaults. [fr=433.375 bw=50 sf=10 pw=12]
+          t (tr) transmit string
+          e (ep) repeat transmit string
+          r (re) set trench number
+          p (pr) print current and default configuration
+          m (du) dump persistent data.
+          c (cl) clear persistent data.
+Use: 'command ?' for help on a particular command.
+</code></pre>
+<p>// EOF</p>

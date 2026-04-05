@@ -58,6 +58,9 @@
 
 static const char *TAG = "lorawifi";
 
+#define PROG_VER    "1.0"
+#define PROG_DATE   "Sat 04.Apr.2026"
+
 SemaphoreHandle_t iSemaphore  = NULL;
 SemaphoreHandle_t hSemaphore  = NULL;
 // This protects the LORA subsystem
@@ -72,7 +75,7 @@ SemaphoreHandle_t sSemaphore  = NULL;
 #endif
 
 char    gl_buff2[256];
-
+char    gl_version[48]  = "";
 int     gl_recala       = 0;
 int     gl_sentprog     = 0;
 
@@ -81,6 +84,7 @@ char    gl_spread[32]   = "";
 char    gl_bwidth[32]   = "";
 char    gl_txpower[32]  = "";
 char    gl_txfreq[32]   = "";
+char    gl_corrfreq[32] = "";
 char    gl_deftren[32]  = "";
 char    gl_ack[16]      = "";
 int     gl_prom         = 0;
@@ -336,11 +340,15 @@ static  void recv_task (void* arg)
     char    gl_buffer[256];
 
     for(;;) {
-
+        long    corr = atofx(gl_corrfreq);
+        //printf("corr %ld\n", corr);
         TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
+        double orig = lora_get_frequency();
+        lora_set_frequency(orig + corr);
         lora_receive();
         gl_buffer[0] = '\0';
         int reclen = lora_receive_packet((uint8_t*)gl_buffer, sizeof(gl_buffer));
+        lora_set_frequency(orig);
         GIVE_SEMA(sSemaphore);
 
         if (reclen == 0)
@@ -426,8 +434,8 @@ static  void recv_task (void* arg)
 static  void trans_task (void* arg)
 {
     TAKE_SEMA(sSemaphore, TAG, portMAX_DELAY);
-    lora_hw_init(); // Initialize the LoRa module (pins configured in menuconfig)
-    init_lora_common();     // Send / recv common config
+    lora_hw_init();         // Initialize LoRa (pins configured in menuconfig)
+    init_lora_common();     // Send / Recv common config
     GIVE_SEMA(sSemaphore);
 
     while(true)
@@ -494,6 +502,9 @@ void app_main(void)
       err3:
           ;
         }
+
+    snprintf(gl_version, sizeof(gl_version), "Version: %s Build: %s", PROG_VER, PROG_DATE);
+
     //ESP_LOGI(TAG, "ESP_WIFI_MODE_AP");
     wifi_init_softap();
     configure_led();

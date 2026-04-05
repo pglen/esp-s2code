@@ -72,6 +72,7 @@ static spi_device_handle_t __spi;
 
 static int __implicit;
 static long __frequency;
+static long __adj;
 
 /**
  * Write a value to a register.
@@ -236,12 +237,17 @@ lora_set_tx_power(int level)
     //lora_write_reg(REG_PA_CONFIG, level);
 }
 
+long    lora_get_frequency()
+
+{
+    return __frequency;
+}
+
 /**
  * Set carrier frequency.
  * @param frequency Frequency in Hz
  */
-void
-lora_set_frequency(long frequency)
+void    lora_set_frequency(long frequency)
 {
    __frequency = frequency;
 
@@ -434,7 +440,8 @@ lora_hw_init(void)
    lora_write_reg(REG_FIFO_RX_BASE_ADDR, 0);
    lora_write_reg(REG_FIFO_TX_BASE_ADDR, 0);
    lora_write_reg(REG_LNA, lora_read_reg(REG_LNA) | 0x03);
-   lora_write_reg(REG_MODEM_CONFIG_3, 0x04);
+   //lora_write_reg(REG_MODEM_CONFIG_3, 0x04);
+   lora_write_reg(REG_MODEM_CONFIG_3, 0x0c);
    lora_set_tx_power(15);
    disOCP();
 
@@ -553,8 +560,7 @@ lora_close(void)
 }
 
 
-int
-lora_read_freq_err()
+int     lora_read_freq_err()
 {
     uint8_t r1 = lora_read_reg(0x28);
     uint8_t r2 = lora_read_reg(0x29);
@@ -602,8 +608,19 @@ double  ppm_freq_deviation(int ret)
     return freq;
 }
 
-void
-lora_dump_registers(void)
+void    set_ppm_correction(int corr)
+
+{
+    lora_write_reg(0x27, corr & 0xff);
+}
+
+int    get_ppm_correction()
+
+{
+    return lora_read_reg(0x27) & 0xff;
+}
+
+void  lora_dump_registers(void)
 {
    int i;
    printf("00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n");

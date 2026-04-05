@@ -1,23 +1,25 @@
 # Make for AP
 
+COMM = idf.py ${ARGS}
+
 all:
 	./convpages.sh && ./genpages.sh
-	idf.py build flash monitor ${ARGS}
+	${COMM} build flash monitor
 
 target:
-	idf.py set-target esp32s2
+	${COMM}  set-target esp32s2
 
 convert:
 	./convpages.sh && ./genpages.sh
 
 build:
-	idf.py build
+	${COMM} build
 
 menuconfig:
-	idf.py menuconfig
+	${COMM} menuconfig
 
 monitor:
-	idf.py monitor
+	${COMM}  monitor
 
 clean:
 	idf.py clean

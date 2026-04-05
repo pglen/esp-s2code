@@ -49,16 +49,12 @@
 #include "wifi.h"
 #include "nvs.h"
 #include "strlib.h"
-#include "comline.h"
 #include "packets.h"
 #include "comline.h"
 #include "httpd.h"
 
 #include "lora.h"
 #include "leds.h"
-
-#define PROG_VER    "1.0"
-#define PROG_DATE   "Wed 25.Mar.2026"
 
 char    gl_netname[32] = {0, };
 char    gl_netpass[32] = {0, };
@@ -87,6 +83,7 @@ char *txpowstr  = "txpowtxpowtxpow";
 char *freqstr   = "freqfreqfreqfreqfreqfreq";
 char *chanstr   = "deftrenchdeftrench";
 char *trenchstr = "trenchtrenchtrench";
+char *tunestr   = "rxtunerxtunerxtune";
 
 const   char *gl_sentarr[SENTMAX] = {0, };
 char    *histx = "curr_hist";
@@ -177,9 +174,7 @@ void    httpd_register_uri(const httpd_uri_t *urivar)
 
 static  void    fill_version(char *mem)
 {
-    char vtmp[48];
-    snprintf(vtmp, sizeof(vtmp), "%s %s", PROG_VER, PROG_DATE);
-    subst_str(mem, softstr, vtmp);
+    subst_str(mem, softstr, gl_version);
 }
 
 static  void    fill_comstr(char *mem)
@@ -261,11 +256,21 @@ static esp_err_t lora_get_handler(httpd_req_t *req)
         return ESP_FAIL;
 
     // Send current parameters
+    char tmp[24];
     subst_str(resp_str, statstr,    "");
     subst_str(resp_str, spreadstr,  gl_spread    );
-    subst_str(resp_str, bandstr,    gl_bwidth    );
     subst_str(resp_str, txpowstr,   gl_txpower   );
-    subst_str(resp_str, freqstr,    gl_txfreq    );
+
+    double bbb = atofx(gl_bwidth); if(bbb > 1000) bbb /= 1000;
+    snprintf(tmp, sizeof(tmp), "%d", (int)bbb);
+    subst_str(resp_str, bandstr,    tmp         );
+
+    double ddd = atofx(gl_txfreq); if(ddd > 1000000) ddd /= 1000000;
+    snprintf(tmp, sizeof(tmp), "%d", (int)ddd);
+    subst_str(resp_str, freqstr,    tmp    );
+
+    subst_str(resp_str, tunestr,    gl_corrfreq );
+
     subst_footer(resp_str);
     httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
     free(resp_str);
@@ -374,9 +379,17 @@ static esp_err_t lora_post_handler(httpd_req_t *req)
     //printf("settings lora post cJSON '%s'\n", buff);
     cJSON *root3 = cJSON_Parse(buff);
     free(buff);
-
-    char *strxs, *strxb, *strxt, *strxx;
-    char   *reset = get_json_str(root3, "reset");
+    char   *tune = get_json_str(root3, "rxtune");
+    if(tune[0] != '\0')
+        {
+        int ttt = atoi(tune);
+        printf("tune pressed %d\n", ttt);
+        snprintf(gl_corrfreq, sizeof(gl_corrfreq), "%d", ttt);
+        resp_str = "Tuning parameter set.";
+        goto done;
+        }
+    char    *strxs, *strxb, *strxt, *strxx;
+    char    *reset = get_json_str(root3, "reset");
     if(strcmp(reset, "1") == 0)
         {
         printf("reset pressed\n");
@@ -385,7 +398,6 @@ static esp_err_t lora_post_handler(httpd_req_t *req)
         strxt =  DEF_POWER;
         strxx =  DEF_FREQ;
         resp_str = "LORA parameters reset.";
-        //refesh page for new parameters.";
         }
     else
         {
@@ -427,11 +439,9 @@ static esp_err_t lora_post_handler(httpd_req_t *req)
     lora_set_spreading_factor(atoi(strxs));
     GIVE_SEMA(sSemaphore);
 
+  done:
     cJSON_Delete(root3);
-
-    //printf("manual.html incoming query %s\n", req->uri);
     httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
-
     return ESP_OK;
 }
 
