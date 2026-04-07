@@ -100,7 +100,8 @@
     point number multiplied by megahertz. The bandwidth parameter is a floating
     point number multiplied by kilohertz. Please note: for communication
     stability the lowest recommended bandwidth is 40+ kHz. (This is due to the
-    LORA Board's chrystal instability)
+    LORA Board's chrystal inaccuracy and / or instability) See the
+    'Tune RX offset' section for more information.
 
     <tr><td colspan=2 align=center>
         <table align=center border=0 width=100%  frame=void>
@@ -142,7 +143,7 @@
             <tr><td colspan=3 width=100%>
                     <tr bgcolor=#eeeeee><td align=center>
                     <div style="font-size:large" align=center>
-                    <b>Tune LORA receive:</b><br>
+                    <b>Tune LORA RX (receive) offset:</b><br>
                     </div>
         </table>
     <tr><td colspan=3>
@@ -151,6 +152,8 @@
     is difficult at lower bandwidths. The tuning value can be derived from
     the Main LORA page's 'devi' field. The tuning value should be set to
     decrease the 'devi' field on the main page as close to zero as possible.
+    The tuning value approximates the -devi/2. (minus (half devi)). For instance
+    if devi is -10000 the tuning value should be 5000.
     <tr><td align=right>
         LORA RX tuning (+-) (0-10000):
                 &nbsp<td><input id=rxtune type=text
@@ -173,12 +176,12 @@
     manufacturer's defaults. This may be necessary if communication
     configuration becomes out of sync with the target. Please remember
     to change these parameters for increased distance and increased privacy.
-    Note that both tr sender and reciver needs identical parameters to
-    communicate.
+    Note that both the sender and receiver needs identical parameters to
+    communicate. This action also resets the RX tuning.
 
     <tr><td><td>
     <input type=button onclick=default_lora() id=defbutt name=defbutt
-                                            value='Reset LORA Recive Frequency'>
+                                            value='Reset LORA Parameters'>
     <tr><td colspan=3>
 
 </table>

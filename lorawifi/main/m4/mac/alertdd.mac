@@ -1,0 +1,11 @@
+<tr><td align=center>
+    <table width=90% border=0>
+        <tr><td style=DDCOLOR align=center >
+            <div class="chris2" align=center>
+            Current Drone Detection status: &nbsp;
+            </div>
+            <div class="chris2" align=center>
+            DDSTATUS
+            </div>
+    </table>
+

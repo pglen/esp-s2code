@@ -383,8 +383,9 @@ static esp_err_t lora_post_handler(httpd_req_t *req)
     if(tune[0] != '\0')
         {
         int ttt = atoi(tune);
-        printf("tune pressed %d\n", ttt);
+        //printf("tune pressed %d\n", ttt);
         snprintf(gl_corrfreq, sizeof(gl_corrfreq), "%d", ttt);
+        submit_nvs_str("corrfreq", gl_corrfreq);
         resp_str = "Tuning parameter set.";
         goto done;
         }
@@ -392,11 +393,14 @@ static esp_err_t lora_post_handler(httpd_req_t *req)
     char    *reset = get_json_str(root3, "reset");
     if(strcmp(reset, "1") == 0)
         {
-        printf("reset pressed\n");
+        //printf("reset pressed\n");
         strxs =  DEF_SPREAD;
         strxb =  DEF_BWIDTH;
         strxt =  DEF_POWER;
         strxx =  DEF_FREQ;
+        snprintf(gl_corrfreq, sizeof(gl_corrfreq), "%d", 0);
+        submit_nvs_str("corrfreq", gl_corrfreq);
+
         resp_str = "LORA parameters reset.";
         }
     else

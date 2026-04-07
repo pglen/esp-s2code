@@ -9,7 +9,7 @@
 
       REV   DATE            BY              DESCRIPTION
       ----  -----------     ----------      ------------------------------
-      0.00  Sun, 05-04-26   Peter Glen      Initial version.
+      0.00  Mon, 06-04-26   Peter Glen      Initial version.
 
    ======================================================================= */
 
@@ -223,7 +223,8 @@ const char lora_html [] =
 "    point number multiplied by megahertz. The bandwidth parameter is a floating\n"
 "    point number multiplied by kilohertz. Please note: for communication\n"
 "    stability the lowest recommended bandwidth is 40+ kHz. (This is due to the\n"
-"    LORA Board's chrystal instability)\n"
+"    LORA Board's chrystal inaccuracy and / or instability) See the\n"
+"    'Tune RX offset' section for more information.\n"
 "    <tr><td colspan=2 align=center>\n"
 "        <table align=center border=0 width=100%  frame=void>\n"
 "            <tr><td colspan=3 width=100%>\n"
@@ -264,7 +265,7 @@ const char lora_html [] =
 "            <tr><td colspan=3 width=100%>\n"
 "                    <tr bgcolor=#eeeeee><td align=center>\n"
 "                    <div style=\"font-size:large\" align=center>\n"
-"                    <b>Tune LORA receive:</b><br>\n"
+"                    <b>Tune LORA RX (receive) offset:</b><br>\n"
 "                    </div>\n"
 "        </table>\n"
 "    <tr><td colspan=3>\n"
@@ -273,6 +274,8 @@ const char lora_html [] =
 "    is difficult at lower bandwidths. The tuning value can be derived from\n"
 "    the Main LORA page's 'devi' field. The tuning value should be set to\n"
 "    decrease the 'devi' field on the main page as close to zero as possible.\n"
+"    The tuning value approximates the -devi/2. (minus (half devi)). For instance\n"
+"    if devi is -10000 the tuning value should be 5000.\n"
 "    <tr><td align=right>\n"
 "        LORA RX tuning (+-) (0-10000):\n"
 "                &nbsp<td><input id=rxtune type=text\n"
@@ -294,11 +297,11 @@ const char lora_html [] =
 "    manufacturer's defaults. This may be necessary if communication\n"
 "    configuration becomes out of sync with the target. Please remember\n"
 "    to change these parameters for increased distance and increased privacy.\n"
-"    Note that both tr sender and reciver needs identical parameters to\n"
-"    communicate.\n"
+"    Note that both the sender and receiver needs identical parameters to\n"
+"    communicate. This action also resets the RX tuning.\n"
 "    <tr><td><td>\n"
 "    <input type=button onclick=default_lora() id=defbutt name=defbutt\n"
-"                                            value='Reset LORA Recive Frequency'>\n"
+"                                            value='Reset LORA Parameters'>\n"
 "    <tr><td colspan=3>\n"
 "</table>\n"
 "<center><code>\n"

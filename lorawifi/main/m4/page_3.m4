@@ -6,7 +6,7 @@ dnl standard footer
 include(mac/header.mac)
 include(mac/styles.mac) define(SUBTITLE, LORA Parameters Configuration)dnl
 include(mac/banner.mac)
-include(mac/status.mac)
+dnl include(mac/status.mac)
 include(mac/loraconf.mac)
 include(mac/fcc.mac)
 include(mac/lowmenu.mac)

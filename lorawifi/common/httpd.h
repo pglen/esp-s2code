@@ -1,4 +1,4 @@
-/* =====[ access point template project ]=================================
+/* =====[ lorawifi ]======================================================
 
    File Name:       httpd.h
 
@@ -9,6 +9,7 @@
       REV       DATE               BY          DESCRIPTION
       ----  -----------         ----------      -------------------------
       0.00  Wed 25.Mar.2026     Peter Glen      Initial version.
+      0.00  Sun 05.Apr.2026     Peter Glen      Added more gl_ vars.
 
    ======================================================================= */
 
@@ -18,7 +19,8 @@
 #define DEF_FREQ      "433.375"
 #define DEF_TRENCH    "0"
 
-#define SENTMAX 24        // Maximum history items
+#define SENTMAX 24          // Maximum history items
+#define NVS_WRAP 24         // How many to make permanent
 
 extern  int     gl_recala       ;
 extern  int     gl_sentprog     ;
@@ -46,9 +48,6 @@ extern  int     gl_prom ;
 
 extern  char    gl_netname[32] ;
 extern  char    gl_netpass[32] ;
-
-// Make it permanent
-#define NVS_WRAP 24
 
 extern  void    stop_webservers(void);
 extern  void    start_webservers(void);

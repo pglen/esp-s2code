@@ -164,14 +164,17 @@ void    read_nvs_vars()
     snprintf(netname, sizeof(netname),
                 "LoraWiFi-%02X%02X", self_mac[4], self_mac[5]);
 
-    read_set_def(my_handle, "netname", gl_netname, sizeof(gl_netname), netname);
-    read_set_def(my_handle, "netpass", gl_netpass, sizeof(gl_netpass), "12345678");
+    read_set_def(my_handle, "netname",  gl_netname, sizeof(gl_netname), netname);
+    read_set_def(my_handle, "netpass",  gl_netpass, sizeof(gl_netpass), "12345678");
 
-    read_set_def(my_handle, "spread",    gl_spread,    sizeof(gl_spread),   DEF_SPREAD);
-    read_set_def(my_handle, "bwidth",    gl_bwidth,    sizeof(gl_bwidth),   DEF_BWIDTH);
-    read_set_def(my_handle, "txpower",   gl_txpower,   sizeof(gl_txpower),  DEF_POWER);
-    read_set_def(my_handle, "txfreq",    gl_txfreq,    sizeof(gl_txfreq),   DEF_FREQ);
-    read_set_def(my_handle, "deftrench", gl_deftren, sizeof(gl_deftren),DEF_TRENCH);
+    read_set_def(my_handle, "spread",   gl_spread,    sizeof(gl_spread),   DEF_SPREAD);
+    read_set_def(my_handle, "bwidth",   gl_bwidth,    sizeof(gl_bwidth),   DEF_BWIDTH);
+    read_set_def(my_handle, "txpower",  gl_txpower,   sizeof(gl_txpower),  DEF_POWER);
+    read_set_def(my_handle, "txfreq",   gl_txfreq,    sizeof(gl_txfreq),   DEF_FREQ);
+
+    read_set_def(my_handle, "deftrench", gl_deftren, sizeof(gl_deftren),    DEF_TRENCH);
+
+    read_set_def(my_handle, "corrfreq",   gl_corrfreq, sizeof(gl_corrfreq), "0");
 
     nvs_close(my_handle);
 }
@@ -498,6 +501,7 @@ void app_main(void)
         nvs_erase_key(my_handle, "txpower");
         nvs_erase_key(my_handle, "txfreq");
         nvs_erase_key(my_handle, "deftrench");
+        nvs_erase_key(my_handle, "corrfreq");
         nvs_close(my_handle);
       err3:
           ;
