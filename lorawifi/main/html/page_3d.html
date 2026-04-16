@@ -114,25 +114,9 @@ textarea {
             LoraWiFi Drone Detector
         </div>
      <div class="chris3" align=center>
-            Main Page
+            Detection Settings
         </div>
     </a>
-    </table>
-
-
-
-
-
-
-<tr><td align=center>
-    <table width=90% border=0>
-        <tr><td style=background:#80ee80 align=center >
-            <div class="chris2" align=center>
-            Current Drone Detection status: &nbsp;
-            </div>
-            <div class="chris2" align=center>
-            Active
-            </div>
     </table>
 
 
@@ -285,260 +269,96 @@ function redo_timer()
 </script>
 
 
-<style>
 
-.container {
-  display: flex; /* Makes the container a flex container */
-  //width: 100%;
-  border-width: 0px;
-}
-
-.resdiv {
-    border-style: solid;
-    border-width: 1px;
-    display: inline-block;
-    vertical-align: top;
-    horizontal-align: right;
-    flex-grow: 1;
-    overflow: auto;
-    height: 200px;
-}
-
-</style>
-
-<script async>
-
-    //console.log("Start program");
-    //alert("start");
-    window.addEventListener('load', function() {
-        //console.log("Start load");
-        const checkInput = document.getElementById('prom');
-        if (checkInput) {
-            checkInput.addEventListener('change', checkprom , false);
+<script>
+    function pressed_param() {
+        console.log("Pressed param submit");
+    for (aa = 1; aa <= 12; aa++)
+        {
+        //console.log("name-" + aa, "val-" + aa);
+        const nameInput = document.getElementById("name-" + aa);
+        const valInput = document.getElementById("val-" + aa);
+        console.log("input: " + nameInput.value, " value: " + valInput.value)
         }
-    document.querySelector('form').addEventListener('submit', (event) => {
-        event.preventDefault();
-        // Handle data manually here
-        });
-    });
-    const isNumeric = (str) => Number.isFinite(+str);
-
-    const truncateString = (str, num) => {
-          if (str.length > num) {
-            return str.slice(0, num) + "...";
-          } else {
-            return str;
-          }
-        };
-
-    var escapeHTML = function(unsafe) {
-      return unsafe.replace(/[&<>"']/g, function(m) {
-        switch (m) {
-          case '&':
-            return '&amp;';
-          case '<':
-            return '&lt;';
-          case '>':
-            return '&gt;';
-          case '"':
-            return '&quot;';
-          default:
-            return '&#039;';
-        }
-      });
-    };
-
-    // Re - write in javascript
-    function chksum(strx) {
-        //console.log("chksum() strx='%s'", strx);
-        let ret = 0;
-        for(aa = 0; aa < strx.length; aa++)
-            {
-            nn = strx.charCodeAt(aa);
-            //console.log(nn);
-            qq = nn << 7 | nn;
-            qq = qq & 0xffff;
-            ret += qq + 10000;
-            ret = ret & 0xffff;
-            ret ^= 0x5aa5;
-            ret = ret & 0xffff;
-            }
-        //console.log("sum ret=%s", ret.toString(16));
-        return(ret);
+    const formData = new FormData(myform);
+    console.log(formData);
     }
-
-    // Pressed checkbox
-    async function checkprom() {
-        const checkInput = document.getElementById('prom');
-        const chanInput = document.getElementById('chan');
-        //console.log("Check pressed", checkInput.checked)
-        if (!chanInput.value)
-            return;
-        jsonString = '{"check": ' + checkInput.checked + ', "chan": "'
-                        + chanInput.value +  '" }';
-        redo_timer();
-        const response = await fetch("post.html", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: jsonString
-                })
-    }
-    function check_number(valx, lower, upper) {
-
-        if (valx < lower || valx > upper)
-            {
-            alert("Trench number out of range.");
-            return 0;
-            }
-        return 1;
-        }
-
-    async function pressed_sub() {
-        // Check parameters
-        const textInput = document.getElementById('txt');
-        const chanInput = document.getElementById('chan');
-
-        if (chanInput.value == "")
-            chanInput.value = 0;       // Auto zero
-        if (!isNumeric(chanInput.value))
-            {
-            alert("Cannot submit a non number for trench ");
-            textInput.focus();
-            return;
-            }
-        if (!check_number(chanInput.value, 0, 0xffff))
-            {
-            return;
-            }
-        if (textInput.value == "")
-            {
-            //console.log("Empty string. Not Submitting");
-            alert("Cannot submit empty message.");
-            textInput.focus();
-            return;
-            }
-        textInput.value = escapeHTML(textInput.value);
-        const formData = new FormData(myform);
-        const plainFormData = Object.fromEntries(formData.entries());
-        if(plainFormData['text'].length > 230)
-            {
-            alert("Truncating message to 230 bytes");
-            plainFormData['text'] = truncateString(plainFormData['text'], 230);
-            }
-        textInput.disabled = true
-
-        const num = chksum(plainFormData['text']);
-        plainFormData['hash'] = num.toString(16);
-        //plainFormData['answer'] = "Awaiting ...";
-        const jsonString = JSON.stringify(plainFormData);
-
-        //console.log("Submitting '%s'", jsonString);
-        const response = await fetch("post.html", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: jsonString
-                })
-        const data = await response.text();
-        //console.log("Data from await: '%s'", data);
-
-        // Fill in current state
-        const textOutput = document.getElementById('current');
-        textOutput.innerHTML = data;
-        setTimeout(updateLiveData, 1000);
-    }
-
-function textUpdate() {
-    const textInput = document.getElementById('txt');
-    //console.log('Text area content changed in real-time.' +
-    //                 textInput.value.length);
-    const cntOutput = document.getElementById('cnt');
-    cntOutput.innerHTML = "Count: " + textInput.value.length;
-}
-
-function chanUpdate() {
-    checkprom();
-}
-
-window.addEventListener('load', () => {
-    const textInput = document.getElementById('txt');
-    textInput.addEventListener('input', textUpdate)
-    const chanInput = document.getElementById('chan');
-    chanInput.addEventListener('input', chanUpdate)
-    const cntOutput = document.getElementById('cnt');
-    cntOutput.innerHTML = "Count: " + textInput.value.length;
-});
-
-window.addEventListener("keydown", onKeyDown, true);
-window.addEventListener("keyup", onKeyUp, true);
-
-ctrl = 0;
-function onKeyDown(e){
-    //console.log("Dn " + e.key);
-    if(e.key == "Enter" && ctrl == 1)
-        {
-        const textInput = document.getElementById('txt');
-        //console.log("Ctrl-Enter: '%s'", textInput.value )
-        //e.preventDefault();
-        pressed_sub();
-        }
-    if(e.key == "Control")
-        {
-        ctrl = 1
-        }
-    else
-        {
-        ctrl = 0
-        }
-  }
-function onKeyUp(e){
-    //console.log("Up " + e.key);
-    if(e.key == "Control")
-        {
-        ctrl = 0
-        }
-  }
 </script>
 
-<table align=center width=100% padding=1>
+<br>
+&nbsp; &nbsp; &nbsp; The detection parameters can be specified in the following
+sections. The detection parameters consist of the detection name and detecton
+frequenct compnents. The name is transmitted in the alarm string after
+detection of a prticular item. The detection parameters consist of the 5
+dominant frequencies. The order of the parameters matters, as the first
+parameter matching the incoming signal will trigger detection.
+<p>
 
-    <tr><td> Past Alerts: <td colspan=3>
-        <div class="container">
-            <div class=resdiv id=hist> No alerts yet ... &nbsp; </div>
-        </div>
-    <tr><td>
-        Trench:
-        <td><input type=text name=chan id=chan value=trenchtrenchtrench> (0-65534)
-        <td>
-        <input type=checkbox name=prom id=prom>
-        <label for="prom">Show all trenches</label>
-        <td> &nbsp;
-    <tr><td>
-        Send:
-        <td colspan=2>
-        <textarea autofocus name=text rows=4 cols=64 id=txt></textarea>
-        <td align=center>
-                          <div id=cnt>Count: 0</div>
-                          <i>Max 230 Characters</i><br>
-                          Ctrl-Enter to submit <p>
-            <input type=button value=Send onclick=pressed_sub()><br>
-            <div id=status></div>
-    <tr><td>
-        Status:
-        <td class=mydiv>
-            <div class=mytext id=current>Idle.</div>
-        <td class=mydiv colspan=2>
-            <table width=100%>
-                <td class=mydiv>
-                    <div class=mytext id=rssi> Last RSSI: 0
-                    </div>
-                <td class=mydiv>
-                    <div class=mytext id=devi> Last devi: 0
-                    </div>
-                <td class=mydiv>
-                    <div class=mytext id=ppm> Last PPM: 0
-                    </div>
-            </table>
+<table align=center border=0 width=90%>
+
+<tr><td> Detected name: <td>
+                    <input name=name-1 id=name-1 type=text value=name-1>
+        <td> Parameters:    <td>
+                    <input name=val-1 id=val-1 size=40 type=text value=val-1>
+        <tr><td> Detected name: <td>
+                    <input name=name-2 id=name-2 type=text value=name-2>
+        <td> Parameters:    <td>
+                    <input name=val-2 id=val-2 size=40 type=text value=val-2>
+        <tr><td> Detected name: <td>
+                    <input name=name-3 id=name-3 type=text value=name-3>
+        <td> Parameters:    <td>
+                    <input name=val-3 id=val-3 size=40 type=text value=val-3>
+        <tr><td> Detected name: <td>
+                    <input name=name-4 id=name-4 type=text value=name-4>
+        <td> Parameters:    <td>
+                    <input name=val-4 id=val-4 size=40 type=text value=val-4>
+        <tr><td> Detected name: <td>
+                    <input name=name-5 id=name-5 type=text value=name-5>
+        <td> Parameters:    <td>
+                    <input name=val-5 id=val-5 size=40 type=text value=val-5>
+        <tr><td> Detected name: <td>
+                    <input name=name-6 id=name-6 type=text value=name-6>
+        <td> Parameters:    <td>
+                    <input name=val-6 id=val-6 size=40 type=text value=val-6>
+        <tr><td> Detected name: <td>
+                    <input name=name-7 id=name-7 type=text value=name-7>
+        <td> Parameters:    <td>
+                    <input name=val-7 id=val-7 size=40 type=text value=val-7>
+        <tr><td> Detected name: <td>
+                    <input name=name-8 id=name-8 type=text value=name-8>
+        <td> Parameters:    <td>
+                    <input name=val-8 id=val-8 size=40 type=text value=val-8>
+        <tr><td> Detected name: <td>
+                    <input name=name-9 id=name-9 type=text value=name-9>
+        <td> Parameters:    <td>
+                    <input name=val-9 id=val-9 size=40 type=text value=val-9>
+        <tr><td> Detected name: <td>
+                    <input name=name-10 id=name-10 type=text value=name-10>
+        <td> Parameters:    <td>
+                    <input name=val-10 id=val-10 size=40 type=text value=val-10>
+        <tr><td> Detected name: <td>
+                    <input name=name-11 id=name-11 type=text value=name-11>
+        <td> Parameters:    <td>
+                    <input name=val-11 id=val-11 size=40 type=text value=val-11>
+        <tr><td> Detected name: <td>
+                    <input name=name-12 id=name-12 type=text value=name-12>
+        <td> Parameters:    <td>
+                    <input name=val-12 id=val-12 size=40 type=text value=val-12>
+        
+
 </table>
+<p>
+&nbsp; &nbsp; &nbsp; The overall detection threshold specifies the strictness
+of the detection compare operation. Too strict, detection is rare, too loose
+detection is frequent. This parameter may be tuned for optimum false positives
+and optimum false negatives.
+<p>
+&nbsp; &nbsp; &nbsp; Overall detection threshold:
+                    <input name=thresh id=thresh type=text value=threshthresh>
+
+<p> <center>
+    <input type=button value="Submit Parameters" onclick=pressed_param()><br>
+</center>
 
 <tr><td>
   <table width=100% border=0>

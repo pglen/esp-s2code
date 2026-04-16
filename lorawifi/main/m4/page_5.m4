@@ -1,5 +1,5 @@
 include(mac/general.mac)
-define(TITLE, LORAWIFI Drne Detector)dnl
+define(TITLE, LORAWIFI Drone Detector)dnl
 include(mac/header.mac)
 include(mac/styles.mac)
 define(SUBTITLE, Product by Peter Glen)dnl

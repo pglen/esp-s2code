@@ -1,0 +1,33 @@
+    <tr> <td>
+        Monitoringx is done in two main sections: a.) Drone alarm monitoring
+        b.) Heartbeat monitoring.
+        <tr bgcolor=COLX><td align=center>
+            <div style="font-size:large" align=center>
+            <b>Drone Detection Alarm</b>
+            </div>
+        <tr><td style="text-align:justify;">
+        &nbsp; &nbsp; The LORANAME is ready to communicate out of the box; Just plug
+        <br>
+        <table width=100% border=1>
+            <tr><td align=right> Enable detection monitoring:
+            <td><input type=checkbox name=prom id=prom>
+            <tr><td align=right> Broadcast  string:
+            <td><input type=text name=ttt id=tttt>
+            <tr><td align=right> Enable LED alert:
+            <td><input type=checkbox name=prom id=prom>
+            <tr><td align=right> Enable WiFI alert:
+            <td><input type=checkbox name=prom id=prom>
+            <tr><td align=right> WiFi alert host:
+            <td><input type=text name=ttt id=tttt>
+            <tr><td align=right> Password:
+            <td><input type=text name=ttt id=tttt>
+            </table>
+        <br>
+
+        <tr bgcolor=COLX><td align=center>
+            <div style="font-size:large" align=center>
+            <b>Missing heartbeat Moniting</b>
+            </div>
+
+        <tr><td  style="text-align:justify;">
+        &nbsp; &nbsp; The LORANAME is ready to communicate out of the box; Just plug
